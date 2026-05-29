@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Ultimate Premium Edition</title>
+    <title>OurSpace - YouTube Shorts Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -65,10 +65,9 @@
         .video-status-toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(0, 0, 0, 0.75); color: #c77dff; padding: 15px; border-radius: 50%; font-size: 24px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 50; }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         
-        /* AUDIO CONTROLLER SYSTEM */
         .mute-btn-overlay { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; z-index: 60; cursor: pointer; }
 
-        /* ACTION TRAY INCLUDING SAVE BUTTON */
+        /* TIMELINE ACTION TRAY */
         .action-tray { display: flex; align-items: center; justify-content: flex-start; padding: 12px 14px 8px 14px; gap: 20px; }
         .action-tray-btn { cursor: pointer; font-size: 22px; display: flex; align-items: center; color: #f1f3f9; transition: transform 0.2s; user-select: none; }
         .action-tray-btn:hover { transform: scale(1.1); }
@@ -86,14 +85,65 @@
         .comment-input-form-holder input { margin-bottom: 0; padding: 10px; font-size: 13px; border-radius: 20px; background: #090613; border: 1px solid rgba(157, 78, 221, 0.3); }
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
-        /* SPACE VIEW REELS MODE WITH INTEGRATED REEL SAVE BUTTON */
-        #reelsSpaceView { display: none; width: 100%; max-width: 420px; height: calc(100vh - 180px); margin: 0 auto; position: relative; background: #000; border-radius: 24px; border: 1px solid rgba(157, 78, 221, 0.25); overflow: hidden; }
+        /* ==========================================
+           🌟 YOUTUBE SHORTS (SPACE VIEW) SYSTEM OVERHAUL
+           ========================================== */
+        #reelsSpaceView { 
+            display: none; 
+            width: 100%; 
+            max-width: 440px; 
+            height: calc(100vh - 140px); 
+            margin: 0 auto; 
+            position: relative; 
+            background: #000; 
+            border-radius: 24px; 
+            border: 1px solid rgba(157, 78, 221, 0.25); 
+            overflow: hidden; 
+        }
         .reel-video-wrapper { width: 100%; height: 100%; position: relative; }
         .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        .reel-overlay-info { position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 50; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
-        .reel-info-left { text-align: left; }
-        .reel-overlay-info b { font-size: 15px; color: #c77dff; display: block; margin-bottom: 4px; }
-        .reel-save-trigger-btn { font-size: 24px; cursor: pointer; color: #f1f3f9; user-select: none; padding: 5px; }
+        
+        /* YouTube Shorts Style Bottom Title Overlays */
+        .reel-overlay-info { 
+            position: absolute; bottom: 0; left: 0; width: 82%; 
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); 
+            padding: 30px 15px 20px 15px; z-index: 50; 
+        }
+        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 6px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .reel-overlay-info p { font-size: 13px; color: #e1e1e1; text-shadow: 0 1px 3px rgba(0,0,0,0.8); line-height: 1.4; }
+
+        /* YouTube Shorts Side Action Menu Layer Layouts */
+        .yt-shorts-side-actions {
+            position: absolute; right: 10px; bottom: 40px; 
+            display: flex; flex-direction: column; gap: 20px; 
+            align-items: center; z-index: 60;
+        }
+        .yt-action-item {
+            display: flex; flex-direction: column; align-items: center;
+            cursor: pointer; user-select: none;
+        }
+        .yt-action-circle-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(10px);
+            display: flex; justify-content: center; align-items: center;
+            font-size: 20px; color: #fff; transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+        .yt-action-item:hover .yt-action-circle-btn { transform: scale(1.15); background: rgba(255,255,255,0.2); }
+        .yt-action-item span { font-size: 11px; margin-top: 5px; font-weight: 600; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+
+        /* REALTIME GLOWING TOAST POP-UP SYSTEM FOR SAVE NOTIFICATION */
+        .premium-toast-popup {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(90deg, #9d4edd, #5a189a);
+            color: #fff; padding: 12px 24px; border-radius: 30px;
+            font-size: 13.5px; font-weight: bold; font-family: inherit;
+            box-shadow: 0 10px 25px rgba(157, 78, 221, 0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+            z-index: 999999 !important; transition: top 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; align-items: center; gap: 8px;
+        }
+        .premium-toast-popup.show-popup { top: 25px; }
 
         /* SEARCH TAB */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; padding: 0 15px; }
@@ -154,6 +204,10 @@
     </style>
 </head>
 <body>
+
+    <div class="premium-toast-popup" id="globalToastPopupNotification">
+        <span style="font-size: 16px;">🔖</span> <span id="globalToastPopupMessageText">Post saved successfully!</span>
+    </div>
 
     <div class="auth-container" id="authZoneWrapper">
         <div class="glass-box" id="loginBox">
@@ -286,6 +340,16 @@
 
         let uploadedVideoURL = ""; 
         let currentProfileTab = "posts";
+
+        // PREMIUM INSTANT TOAST POP-UP HANDLER ENGINE
+        function triggerGlowToastNotification(msg) {
+            let toast = document.getElementById("globalToastPopupNotification");
+            document.getElementById("globalToastPopupMessageText").innerText = msg;
+            toast.classList.add("show-popup");
+            setTimeout(() => {
+                toast.classList.remove("show-popup");
+            }, 2500);
+        }
 
         function openCloudinaryUploadWidget(target) {
             window.cloudinary.openUploadWidget({
@@ -469,7 +533,7 @@
                                 <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')">🤍</div>
                                 <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                 <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
-                                <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}')" id="saveIconFeed_${doc.id}">🔖</div>
+                                <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}', 'Home Feed')", id="saveIconFeed_${doc.id}">🔖</div>
                             </div>
                             
                             <div class="post-text-details">
@@ -501,9 +565,11 @@
                     title: `OurSpace Post by @${author}`,
                     text: `${text} - Check it out on OurSpace!`,
                     url: window.location.href
-                }).catch(err => console.log(err));
+                }).then(() => triggerGlowToastNotification("Link shared successfully! 🔗"))
+                .catch(err => console.log(err));
             } else {
-                alert(`Link copied for @${author}'s post!`);
+                navigator.clipboard.writeText(window.location.href);
+                triggerGlowToastNotification("Link copied to clipboard! 🔗");
             }
         }
 
@@ -662,24 +728,31 @@
                 });
             } else {
                 db.collection("users").doc(currentUID).collection("savedPosts").get().then(snap => {
-                    if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert" style="grid-column: 1/4; margin-top:20px;">No Saved Posts</div>`; return; }
+                    if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert">No Saved Posts</div>`; return; }
                     snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item" onclick="showFeed()"><video src="${doc.data().video}"></video></div>`; });
                 });
             }
         }
 
-        /* REAL BOOKMARK POST SAVE ENGINE LINK */
-        function triggerSaveHandler(el, postId) {
+        /* REAL BOOKMARK POST SAVE ENGINE LINK (WITH PREMIUM TOAST CALLS) */
+        function triggerSaveHandler(el, postId, viewSource) {
             db.collection("posts").doc(postId).get().then(doc => {
                 if(doc.exists) {
                     let d = doc.data();
                     let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
                     ref.get().then(sDoc => {
                         if(sDoc.exists) {
-                            ref.delete().then(() => { el.style.color = "#f1f3f9"; });
+                            ref.delete().then(() => { 
+                                el.style.color = "#f1f3f9"; 
+                                triggerGlowToastNotification("Removed from Saved! ❌");
+                            });
                         } else {
                             ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                               .then(() => { el.style.color = "#c77dff"; });
+                               .then(() => { 
+                                   el.style.color = "#c77dff"; 
+                                   // GLOWING NOTIFICATION TOAST TRIGGER
+                                   triggerGlowToastNotification("Post saved successfully! 🔖");
+                               });
                         }
                     });
                 }
@@ -695,7 +768,9 @@
             });
         }
 
-        /* REELS SPACE WITH REEL INSTANT SAVE CONTROLLER */
+        /* =======================================================
+           🌟 YOUTUBE SHORTS (SPACE SYSTEM) LOGIC MODULE
+           ======================================================= */
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
@@ -705,20 +780,44 @@
                 snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
                 if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Space khali h!</div>`; } 
                 else {
+                    // COMPLETE YOUTUBE SHORTS SIDE TOOLBAR INTERFACE DOCK
                     container.innerHTML = `
                         <video src="${videoPost.video}" autoplay loop playsinline style="width:100%; height:100%; object-fit:cover;"></video>
-                        <div class="reel-overlay-info">
-                            <div class="reel-info-left">
-                                <b>@${videoPost.author}</b>
-                                <p>${videoPost.text || ""}</p>
+                        
+                        <div class="yt-shorts-side-actions">
+                            <div class="yt-action-item" onclick="triggerLikeHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}')">
+                                <div class="yt-action-circle-btn">👍</div>
+                                <span>${videoPost.likes || 0}</span>
                             </div>
-                            <div class="reel-save-trigger-btn" onclick="triggerSaveHandler(this, '${videoDocId}')" id="spaceSaveBtn_${videoDocId}">🔖</div>
+                            <div class="yt-action-item" onclick="alert('Disliked!')">
+                                <div class="yt-action-circle-btn">👎</div>
+                                <span>Dislike</span>
+                            </div>
+                            <div class="yt-action-item" onclick="showFeed()">
+                                <div class="yt-action-circle-btn">💬</div>
+                                <span>Reply</span>
+                            </div>
+                            <div class="yt-action-item" onclick="triggerNativeShareApi('${videoPost.author}', '${videoPost.text || ''}')">
+                                <div class="yt-action-circle-btn">🔗</div>
+                                <span>Share</span>
+                            </div>
+                            <div class="yt-action-item" onclick="triggerSaveHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}', 'Space Reel')" id="spaceSaveBtn_${videoDocId}">
+                                <div class="yt-action-circle-btn">🔖</div>
+                                <span>Save</span>
+                            </div>
+                        </div>
+
+                        <div class="reel-overlay-info">
+                            <b onclick="navigateToUserProfile('${videoPost.author}')">@${videoPost.author}</b>
+                            <p>${videoPost.text || ""}</p>
                         </div>`;
                     
-                    // Check if current space reel is already saved
+                    // Verify if current video is bookmarked already
                     db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
                         let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
-                        if(doc.exists && sBtn) sBtn.style.color = "#c77dff";
+                        if(doc.exists && sBtn) {
+                            sBtn.querySelector('.yt-action-circle-btn').style.color = "#c77dff";
+                        }
                     });
                 }
                 document.getElementById("reelsSpaceView").style.display = "block";
@@ -760,6 +859,20 @@
         function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         
         function triggerLikeHandler(el, postId) {
+            let isCircle = el.classList.contains('yt-action-circle-btn');
+            if(isCircle) {
+                // Shorts Layout Mode
+                if(el.style.color === "rgb(199, 125, 255)") {
+                    el.style.color = "#fff";
+                    triggerGlowToastNotification("Like removed! 👎");
+                } else {
+                    el.style.color = "#c77dff";
+                    triggerGlowToastNotification("Liked Shorts Video! 👍");
+                }
+                return;
+            }
+
+            // Regular Feed Mode
             let postEl = el.closest('.post'); let countSpan = postEl.querySelector('.like-counter-val'); let current = parseInt(countSpan.innerText);
             if(el.innerText === "🤍") { el.innerText = "❤️"; el.style.color = "#ff3040"; countSpan.innerText = current + 1; db.collection("posts").doc(postId).update({ likes: current + 1 }); } 
             else { el.innerText = "🤍"; el.style.color = "#f1f3f9"; countSpan.innerText = current - 1; db.collection("posts").doc(postId).update({ likes: current - 1 }); }
