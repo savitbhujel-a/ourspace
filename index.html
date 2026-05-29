@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - YouTube Shorts Edition</title>
+    <title>OurSpace - Ultimate YouTube Shorts Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -84,7 +84,7 @@
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
         /* ==========================================
-           🌟 YOUTUBE SHORTS (SPACE VIEW) - COMPACT FIT Layout
+           🌟 COMPACT YOUTUBE SHORTS (SPACE VIEW)
            ========================================== */
         #reelsSpaceView { 
             display: none; 
@@ -102,17 +102,15 @@
         .reel-video-wrapper { width: 100%; height: 100%; position: relative; background: #000; }
         .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* Bottom Title Descriptions */
         .reel-overlay-info { 
             position: absolute; bottom: 0; left: 0; width: 80%; 
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); 
             padding: 40px 15px 20px 15px; z-index: 50; 
-            pointer-events: none;
         }
-        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; pointer-events: auto; cursor: pointer; }
+        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; }
         .reel-overlay-info p { font-size: 13px; color: #e1e1e1; line-height: 1.4; }
 
-        /* YouTube Shorts Side Fixed Panel Actions (PERFECTLY ALIGNED) */
+        /* SHORTS VERTICAL ACTION PANEL (DISLIKE REMOVED) */
         .yt-shorts-side-actions {
             position: absolute; right: 12px; bottom: 30px; 
             display: flex; flex-direction: column; gap: 18px; 
@@ -126,14 +124,24 @@
             width: 44px; height: 44px; border-radius: 50%;
             background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(12px);
             display: flex; justify-content: center; align-items: center;
-            font-size: 20px; color: #fff; transition: transform 0.2s, color 0.2s;
+            font-size: 20px; color: #fff; transition: transform 0.2s;
             border: 1px solid rgba(255,255,255,0.08);
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
         .yt-action-item:hover .yt-action-circle-btn { transform: scale(1.1); background: rgba(255,255,255,0.2); }
         .yt-action-item span { font-size: 11px; margin-top: 4px; font-weight: 600; color: #f1f3f9; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
 
-        /* TOAST NOTIFICATION POP-UP SYSTEMS */
+        /* SHORTS INTEGRATED COMMENT DRAWER FIX */
+        .shorts-comments-drawer {
+            position: absolute; bottom: -100%; left: 0; width: 100%; height: 60%;
+            background: #110d1f; border-top: 2px solid rgba(157, 78, 221, 0.4);
+            border-radius: 20px 20px 0 0; z-index: 100; padding: 15px;
+            transition: bottom 0.3s ease; display: flex; flex-direction: column;
+        }
+        .shorts-comments-drawer.open { bottom: 0; }
+        .shorts-comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+
+        /* TOAST POP-UP SYSTEM */
         .premium-toast-popup {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(90deg, #9d4edd, #5a189a);
@@ -157,8 +165,6 @@
         .search-user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #5a189a; display: flex; justify-content: center; align-items: center; font-weight: bold; overflow: hidden; font-size: 14px; }
         .search-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .search-user-details { text-align: left; }
-        .search-user-details h4 { color: #fff; font-size: 14px; }
-        .search-user-details p { color: #8a8d9b; font-size: 12px; }
 
         /* PROFILE */
         #profileView { display: none; width: 100%; max-width: 650px; margin: 0 auto; padding: 0 15px; }
@@ -180,9 +186,7 @@
         .modal-card { background: #110d1f; border: 1px solid rgba(157, 78, 221, 0.3); padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; }
         .dropdown-menu-list { background: #18132b; border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 12px; padding: 5px 0; display: none; position: absolute; right: 14px; top: 45px; z-index: 100; min-width: 130px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .dropdown-menu-item { padding: 10px 14px; font-size: 13px; color: #ff5555; cursor: pointer; text-align: left; font-weight: bold; }
-        .security-badge { text-align: left; background: rgba(255,255,255,0.03); border: 1px solid rgba(157,78,221,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; font-size: 12px; }
 
-        /* PHONE RESPONSIVE SHIFTERS */
         @media screen and (min-width: 769px) {
             .top-nav { background: rgba(9, 6, 19, 0.95); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(157,78,221,0.2); width: 100%; }
             .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -258,6 +262,15 @@
 
             <div id="reelsSpaceView">
                 <div class="reel-video-wrapper" id="reelVideoPlayerContainer"></div>
+                
+                <div class="shorts-comments-drawer" id="shortsCommentsDrawerBox">
+                    <div class="shorts-comments-header">
+                        <h4 style="color:#c77dff;">Comments 💬</h4>
+                        <span style="cursor:pointer; font-weight:bold; font-size:18px;" onclick="closeShortsCommentDrawerTray()">✕</span>
+                    </div>
+                    <div class="comments-list-box" id="shortsCommentsListBox" style="flex:1;"></div>
+                    <div class="comment-input-form-holder" id="shortsCommentInputArea"></div>
+                </div>
             </div>
 
             <div id="profileView">
@@ -430,6 +443,7 @@
             document.getElementById("reelsSpaceView").style.display = "none";
             document.getElementById("searchViewTab").style.display = "none";
             document.getElementById("reelVideoPlayerContainer").innerHTML = "";
+            closeShortsCommentDrawerTray();
             closeModal('settingsModal');
         }
 
@@ -533,7 +547,7 @@
                             </div>
                             
                             <div class="post-text-details">
-                                <div class="likes-count-text"><span class="like-counter-val">${p.likes || 0}</span> likes</div>
+                                <div class="likes-count-text"><span class="like-counter-val" id="likeCountVal_${doc.id}">${p.likes || 0}</span> likes</div>
                                 <div class="post-caption-block">
                                     <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>${p.text}
                                 </div>
@@ -549,7 +563,7 @@
                         </div>`;
                     
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
-                    listenToLivePostComments(doc.id);
+                    listenToLivePostComments(doc.id, `commentsListBox_${doc.id}`);
                     verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
                 });
             });
@@ -580,12 +594,6 @@
             menu.style.display = (menu.style.display === "block") ? "none" : "block";
         }
 
-        document.addEventListener('click', function(e) {
-            if (!e.target.matches('.post-header-right')) {
-                document.querySelectorAll('.dropdown-menu-list').forEach(el => el.style.display = 'none');
-            }
-        });
-
         function deletePostFromDatabaseRegistry(postId) {
             if(confirm("Bhai, kya sach me ye post delete karna hai?")) {
                 db.collection("posts").doc(postId).delete().then(() => alert("Deleted!"));
@@ -610,17 +618,19 @@
             tray.style.display = (tray.style.display === "block") ? "none" : "block";
         }
 
-        function submitNewComment(postId) {
-            let inp = document.getElementById(`commentFieldInput_${postId}`);
-            if(!inp.value.trim()) return;
+        function submitNewComment(postId, source = 'feed') {
+            let inpId = source === 'shorts' ? 'shortsCommentFieldInput' : `commentFieldInput_${postId}`;
+            let inp = document.getElementById(inpId);
+            if(!inp || !inp.value.trim()) return;
+            
             db.collection("posts").doc(postId).collection("comments").add({
                 commenter: currentUsername, text: inp.value.trim(), timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => inp.value = "");
         }
 
-        function listenToLivePostComments(postId) {
+        function listenToLivePostComments(postId, boxId) {
             db.collection("posts").doc(postId).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
-                let box = document.getElementById(`commentsListBox_${postId}`); if(!box) return; box.innerHTML = "";
+                let box = document.getElementById(boxId); if(!box) return; box.innerHTML = "";
                 snap.forEach(doc => { let c = doc.data(); box.innerHTML += `<div class="comment-item"><b>@${c.commenter}</b><span>${c.text}</span></div>`; });
             });
         }
@@ -703,15 +713,16 @@
                     let d = doc.data();
                     let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
                     ref.get().then(sDoc => {
+                        let iconEl = el.classList.contains('yt-action-circle-btn') ? el : el;
                         if(sDoc.exists) {
                             ref.delete().then(() => { 
-                                el.style.color = "#ffffff"; 
+                                iconEl.style.color = "#ffffff"; 
                                 triggerGlowToastNotification("Removed from Saved! ❌");
                             });
                         } else {
                             ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
                                .then(() => { 
-                                   el.style.color = "#c77dff"; 
+                                   iconEl.style.color = "#c77dff"; 
                                    triggerGlowToastNotification("Post saved successfully! 🔖");
                                });
                         }
@@ -728,7 +739,7 @@
         }
 
         /* =======================================================
-           🌟 NEW PERFECT YOUTUBE SHORTS LAYOUT WITH FULL SIDE ACTIONS
+           🌟 ASLI YOUTUBE SHORTS LOGIC WITH COMMENT AND LIKE FIX
            ======================================================= */
         function showSpaceReels() {
             hideAllViews();
@@ -745,15 +756,11 @@
                         <div class="yt-shorts-side-actions">
                             <div class="yt-action-item" onclick="triggerLikeHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}')">
                                 <div class="yt-action-circle-btn" id="shortsLikeBtn_${videoDocId}">👍</div>
-                                <span>${videoPost.likes || 0}</span>
+                                <span id="shortsLikeCountText_${videoDocId}">${videoPost.likes || 0}</span>
                             </div>
-                            <div class="yt-action-item" onclick="triggerGlowToastNotification('Feedback added! 👎')">
-                                <div class="yt-action-circle-btn">👎</div>
-                                <span>Dislike</span>
-                            </div>
-                            <div class="yt-action-item" onclick="showFeed()">
+                            <div class="yt-action-item" onclick="openShortsCommentDrawerTray('${videoDocId}')">
                                 <div class="yt-action-circle-btn">💬</div>
-                                <span>Reply</span>
+                                <span>Comment</span>
                             </div>
                             <div class="yt-action-item" onclick="triggerNativeShareApi('${videoPost.author}', '${videoPost.text || ''}')">
                                 <div class="yt-action-circle-btn">🔗</div>
@@ -770,6 +777,11 @@
                             <p>${videoPost.text || ""}</p>
                         </div>`;
                     
+                    // Direct like status verify check
+                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
+                        document.getElementById(`shortsLikeBtn_${videoDocId}`).style.color = "#c77dff";
+                    }
+
                     db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
                         let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
                         if(doc.exists && sBtn) sBtn.querySelector('.yt-action-circle-btn').style.color = "#c77dff";
@@ -777,6 +789,21 @@
                 }
                 document.getElementById("reelsSpaceView").style.display = "block";
             });
+        }
+
+        // Shorts Drawer functions so it doesn't close space window screen
+        function openShortsCommentDrawerTray(postId) {
+            document.getElementById("shortsCommentsListBox").innerHTML = "Loading...";
+            document.getElementById("shortsCommentInputArea").innerHTML = `
+                <input type="text" id="shortsCommentFieldInput" placeholder="Add a public comment...">
+                <button class="comment-post-action-btn" onclick="submitNewComment('${postId}', 'shorts')">Post</button>
+            `;
+            listenToLivePostComments(postId, "shortsCommentsListBox");
+            document.getElementById("shortsCommentsDrawerBox").classList.add("open");
+        }
+
+        function closeShortsCommentDrawerTray() {
+            document.getElementById("shortsCommentsDrawerBox").classList.remove("open");
         }
 
         function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
@@ -796,21 +823,53 @@
 
         function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         
+        // UPGRADED LIKE AND UNLIKE COUNTER SYNC MATRIX ENGINE
         function triggerLikeHandler(el, postId) {
             let isShorts = el.classList.contains('yt-action-circle-btn');
-            if(isShorts) {
-                if(el.style.color === "rgb(199, 125, 255)") {
-                    el.style.color = "#ffffff";
-                    triggerGlowToastNotification("Like removed! 👎");
+            let postRef = db.collection("posts").doc(postId);
+
+            postRef.get().then(doc => {
+                if (!doc.exists) return;
+                let data = doc.data();
+                let likedByArray = data.likedBy || [];
+                let currentLikes = data.likes || 0;
+
+                if (likedByArray.includes(currentUID)) {
+                    // Unlike condition process block
+                    let newLikes = Math.max(0, currentLikes - 1);
+                    likedByArray = likedByArray.filter(uid => uid !== currentUID);
+                    
+                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
+                        if (isShorts) {
+                            el.style.color = "#ffffff";
+                            let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
+                            if (countTxt) countTxt.innerText = newLikes;
+                            triggerGlowToastNotification("Like removed! 👎");
+                        } else {
+                            el.innerText = "🤍"; el.style.color = "#f1f3f9";
+                            let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
+                            if (feedCountTxt) feedCountTxt.innerText = newLikes;
+                        }
+                    });
                 } else {
-                    el.style.color = "#c77dff";
-                    triggerGlowToastNotification("Liked Shorts Video! 👍");
+                    // Like condition process block
+                    let newLikes = currentLikes + 1;
+                    likedByArray.push(currentUID);
+
+                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
+                        if (isShorts) {
+                            el.style.color = "#c77dff";
+                            let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
+                            if (countTxt) countTxt.innerText = newLikes;
+                            triggerGlowToastNotification("Liked Shorts Video! 👍");
+                        } else {
+                            el.innerText = "❤️"; el.style.color = "#ff3040";
+                            let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
+                            if (feedCountTxt) feedCountTxt.innerText = newLikes;
+                        }
+                    });
                 }
-                return;
-            }
-            let postEl = el.closest('.post'); let countSpan = postEl.querySelector('.like-counter-val'); let current = parseInt(countSpan.innerText);
-            if(el.innerText === "🤍") { el.innerText = "❤️"; el.style.color = "#ff3040"; countSpan.innerText = current + 1; db.collection("posts").doc(postId).update({ likes: current + 1 }); } 
-            else { el.innerText = "🤍"; el.style.color = "#f1f3f9"; countSpan.innerText = current - 1; db.collection("posts").doc(postId).update({ likes: current - 1 }); }
+            });
         }
     </script>
 </body>
