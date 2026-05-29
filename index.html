@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Production Edition</title>
+    <title>OurSpace - Final Fixed Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -213,11 +213,11 @@
 
         let uploadedVideoURL = ""; 
 
-        // OFFICIAL SECURE WIDGET STREAM FLOW
+        // MATCHED SPELLING `ourspace_preset` WITH YOUR DASHBOARD SCREENSHOT
         function openCloudinaryUploadWidget() {
             window.cloudinary.openUploadWidget({
                 cloudName: "dcq9lsea7",
-                uploadPreset: "urspace_preset",
+                uploadPreset: "ourspace_preset",
                 sources: ["local"],
                 multiple: false,
                 resourceType: "video"
@@ -228,7 +228,7 @@
                     document.getElementById("uploadWidgetTrigger").style.color = "#00ff88";
                 }
                 if (error) {
-                    alert("Widget Upload Error! Settings matched correctly.");
+                    alert("Widget Upload Error! Connection Refused.");
                 }
             });
         }
@@ -415,7 +415,6 @@
             document.getElementById("profileView").style.display = "block";
         }
 
-        // CONTROL VIEWS
         function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
         function openEditProfileModal() { document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
         function saveProfileData() {
