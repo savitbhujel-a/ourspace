@@ -110,7 +110,7 @@
         .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; }
         .reel-overlay-info p { font-size: 13px; color: #e1e1e1; line-height: 1.4; }
 
-        /* SHORTS VERTICAL ACTION PANEL (DISLIKE REMOVED) */
+        /* SHORTS VERTICAL ACTION PANEL WITH REAL DIL ICON SYSTEM */
         .yt-shorts-side-actions {
             position: absolute; right: 12px; bottom: 30px; 
             display: flex; flex-direction: column; gap: 18px; 
@@ -186,6 +186,7 @@
         .modal-card { background: #110d1f; border: 1px solid rgba(157, 78, 221, 0.3); padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; }
         .dropdown-menu-list { background: #18132b; border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 12px; padding: 5px 0; display: none; position: absolute; right: 14px; top: 45px; z-index: 100; min-width: 130px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .dropdown-menu-item { padding: 10px 14px; font-size: 13px; color: #ff5555; cursor: pointer; text-align: left; font-weight: bold; }
+        .security-badge { text-align: left; background: rgba(255,255,255,0.03); border: 1px solid rgba(157,78,221,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; font-size: 12px; }
 
         @media screen and (min-width: 769px) {
             .top-nav { background: rgba(9, 6, 19, 0.95); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(157,78,221,0.2); width: 100%; }
@@ -522,6 +523,10 @@
 
                     let threeDotsBlock = (p.author === currentUsername) ? `<div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>` : "";
 
+                    // Setup real live fill heart state conditional logic check for home timeline feed posts look
+                    let heartStateSymbol = "🤍";
+                    if(p.likedBy && p.likedBy.includes(currentUID)) { heartStateSymbol = "❤️"; }
+
                     container.innerHTML += `
                         <div class="post" id="post_${doc.id}">
                             <div class="post-header">
@@ -540,7 +545,7 @@
                             ${videoBlock}
                             
                             <div class="action-tray">
-                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')">🤍</div>
+                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${heartStateSymbol}</div>
                                 <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                 <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
                                 <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}', 'Home Feed')" id="saveIconFeed_${doc.id}">🔖</div>
@@ -562,6 +567,11 @@
                             </div>
                         </div>`;
                     
+                    if(p.likedBy && p.likedBy.includes(currentUID)) {
+                        let fHrt = document.getElementById(`feedHeartBtn_${doc.id}`);
+                        if(fHrt) fHrt.style.color = "#ff3040";
+                    }
+
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
                     listenToLivePostComments(doc.id, `commentsListBox_${doc.id}`);
                     verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
@@ -660,6 +670,8 @@
         function navigateToUserProfile(targetUser) {
             hideAllViews(); viewedUser = targetUser;
             document.getElementById("profUsername").innerText = "@" + targetUser;
+            document.getElementById("profileGridMasterAvatar").innerHTML = "👤";
+            
             db.collection("users").where("username", "==", targetUser).get().then(snapshot => {
                 if(!snapshot.empty) {
                     snapshot.forEach(doc => {
@@ -713,16 +725,16 @@
                     let d = doc.data();
                     let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
                     ref.get().then(sDoc => {
-                        let iconEl = el.classList.contains('yt-action-circle-btn') ? el : el;
+                        let iconEl = el.classList.contains('yt-action-circle-btn') ? el.querySelector('span') || el : el;
                         if(sDoc.exists) {
                             ref.delete().then(() => { 
-                                iconEl.style.color = "#ffffff"; 
+                                if(viewSource === 'Space Reel') { el.style.color = "#ffffff"; } else { el.style.color = "#f1f3f9"; }
                                 triggerGlowToastNotification("Removed from Saved! ❌");
                             });
                         } else {
                             ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
                                .then(() => { 
-                                   iconEl.style.color = "#c77dff"; 
+                                   if(viewSource === 'Space Reel') { el.style.color = "#c77dff"; } else { el.style.color = "#c77dff"; }
                                    triggerGlowToastNotification("Post saved successfully! 🔖");
                                });
                         }
@@ -750,12 +762,20 @@
                 snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
                 if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Space khali h!</div>`; } 
                 else {
+                    // Mapped real glowing heart state icon symbol logic inside space view panels layout
+                    let shortsHeartIconSymbol = "🤍";
+                    let shortsHeartIconColor = "#ffffff";
+                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
+                        shortsHeartIconSymbol = "❤️";
+                        shortsHeartIconColor = "#c77dff";
+                    }
+
                     container.innerHTML = `
                         <video src="${videoPost.video}" autoplay loop playsinline style="width:100%; height:100%; object-fit:cover;"></video>
                         
                         <div class="yt-shorts-side-actions">
                             <div class="yt-action-item" onclick="triggerLikeHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}')">
-                                <div class="yt-action-circle-btn" id="shortsLikeBtn_${videoDocId}">👍</div>
+                                <div class="yt-action-circle-btn" id="shortsLikeBtn_${videoDocId}" style="color:${shortsHeartIconColor};">${shortsHeartIconSymbol}</div>
                                 <span id="shortsLikeCountText_${videoDocId}">${videoPost.likes || 0}</span>
                             </div>
                             <div class="yt-action-item" onclick="openShortsCommentDrawerTray('${videoDocId}')">
@@ -776,11 +796,6 @@
                             <b onclick="navigateToUserProfile('${videoPost.author}')">@${videoPost.author}</b>
                             <p>${videoPost.text || ""}</p>
                         </div>`;
-                    
-                    // Direct like status verify check
-                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
-                        document.getElementById(`shortsLikeBtn_${videoDocId}`).style.color = "#c77dff";
-                    }
 
                     db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
                         let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
@@ -791,7 +806,6 @@
             });
         }
 
-        // Shorts Drawer functions so it doesn't close space window screen
         function openShortsCommentDrawerTray(postId) {
             document.getElementById("shortsCommentsListBox").innerHTML = "Loading...";
             document.getElementById("shortsCommentInputArea").innerHTML = `
@@ -823,7 +837,7 @@
 
         function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         
-        // UPGRADED LIKE AND UNLIKE COUNTER SYNC MATRIX ENGINE
+        // UPGRADED SYNC HEART LIKE AND UNLIKE COUNTER ENGINE MATRIX
         function triggerLikeHandler(el, postId) {
             let isShorts = el.classList.contains('yt-action-circle-btn');
             let postRef = db.collection("posts").doc(postId);
@@ -835,13 +849,12 @@
                 let currentLikes = data.likes || 0;
 
                 if (likedByArray.includes(currentUID)) {
-                    // Unlike condition process block
                     let newLikes = Math.max(0, currentLikes - 1);
                     likedByArray = likedByArray.filter(uid => uid !== currentUID);
                     
                     postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
                         if (isShorts) {
-                            el.style.color = "#ffffff";
+                            el.innerText = "🤍"; el.style.color = "#ffffff";
                             let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
                             if (countTxt) countTxt.innerText = newLikes;
                             triggerGlowToastNotification("Like removed! 👎");
@@ -852,16 +865,15 @@
                         }
                     });
                 } else {
-                    // Like condition process block
                     let newLikes = currentLikes + 1;
                     likedByArray.push(currentUID);
 
                     postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
                         if (isShorts) {
-                            el.style.color = "#c77dff";
+                            el.innerText = "❤️"; el.style.color = "#c77dff";
                             let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
                             if (countTxt) countTxt.innerText = newLikes;
-                            triggerGlowToastNotification("Liked Shorts Video! 👍");
+                            triggerGlowToastNotification("Liked Shorts Video! ❤️");
                         } else {
                             el.innerText = "❤️"; el.style.color = "#ff3040";
                             let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
