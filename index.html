@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Final Fixed Widget Edition</title>
+    <title>OurSpace - Production Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -200,7 +200,7 @@
     </div>
 
     <script>
-        // 1. Firebase Configurations (Fixed bracket & syntax completely)
+        // 1. Firebase Configurations
         const firebaseConfig = {
             apiKey: "AIzaSyB-1zBcRW455Zd6L0JXP5QHM46fCGrXC8o",
             authDomain: "ourspace-6f129.firebaseapp.com",
@@ -211,7 +211,7 @@
             measurementId: "G-K6N9EXTB5Y"
         };
 
-        let uploadedVideoURL = ""; // Stores compressed cloud URL
+        let uploadedVideoURL = ""; 
 
         // OFFICIAL SECURE WIDGET STREAM FLOW
         function openCloudinaryUploadWidget() {
@@ -415,6 +415,7 @@
             document.getElementById("profileView").style.display = "block";
         }
 
+        // CONTROL VIEWS
         function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
         function openEditProfileModal() { document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
         function saveProfileData() {
