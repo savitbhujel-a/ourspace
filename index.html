@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Clean Responsive Interface</title>
+    <title>OurSpace - Perfect Reels Interface</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -77,11 +77,6 @@
         }
         input:focus, textarea:focus { outline: none; background-color: rgba(255, 255, 255, 0.08); border-color: rgba(0, 149, 246, 0.5); }
 
-        .file-label {
-            display: block; padding: 12px; background: rgba(255,255,255,0.05);
-            border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 13.5px; text-align: center;
-        }
-
         button.main-btn {
             width: 100%; padding: 14px; background: linear-gradient(135deg, #0095f6 0%, #0072b1 100%);
             color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer;
@@ -118,7 +113,7 @@
             align-items: center; 
         }
 
-        /* Timeline Shorts Video Layout Setup */
+        /* Timeline Feed Shorts Setup */
         #feedView { text-align: center; width: 100%; max-width: 420px; }
         
         .post {
@@ -137,7 +132,6 @@
             overflow: hidden;
         }
         
-        /* Browser default control decks stripped completely */
         .post video { 
             width: 100%; 
             height: 100%; 
@@ -145,7 +139,6 @@
             display: block;
         }
 
-        /* 1 SEC TOAST CONTROLS */
         .video-status-toast {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
             background: rgba(0, 0, 0, 0.65); color: white; padding: 15px; border-radius: 50%;
@@ -153,11 +146,9 @@
         }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-        /* SEEK TIMELINE LINE INDICATOR */
         .custom-timeline-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.2); z-index: 30; }
         .custom-progress-fill { height: 100%; width: 0%; background: #0095f6; }
 
-        /* REEL MUTE BUTTON OVERLAY */
         .audio-deck-trigger {
             position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 12px; border-radius: 20px;
@@ -179,18 +170,56 @@
         .action-tray-btn { cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 4px; user-select: none; color: rgba(255,255,255,0.7); }
         .action-tray-btn:hover { color: #0095f6; }
 
-        /* Viewport Tab Sheets */
+        /* ==========================================
+           4. REELS (SPACE VIEW) INSTAGRAM OVERHAUL
+           ========================================== */
+        #reelsSpaceView {
+            display: none; 
+            width: 100%; 
+            max-width: 420px; 
+            height: calc(100vh - 180px); /* Fixed phone dynamic calculation */
+            margin: 0 auto; 
+            position: relative; 
+            background: #000; 
+            border-radius: 24px; 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            overflow: hidden; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        
+        .reel-video-wrapper { 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+            background: #000;
+        }
+        
+        .reel-video-wrapper video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
+        
+        .reel-overlay-info { 
+            position: absolute; 
+            bottom: 20px; 
+            left: 15px; 
+            right: 15px; 
+            z-index: 50; 
+            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            text-align: left;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 10px;
+            border-radius: 12px;
+        }
+        .reel-overlay-info b { font-size: 15px; color: #0095f6; display: block; margin-bottom: 4px; } 
+        .reel-overlay-info p { font-size: 13.5px; color: #fff; line-height: 1.4; }
+
+        /* Other Tabs Layouts */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
         .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
-
-        #reelsSpaceView {
-            display: none; width: 100%; max-width: 360px; height: 68vh; min-height: 420px; margin: 0 auto; position: relative; background: #000; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        }
-        .reel-video-wrapper { width: 100%; height: 100%; position: relative; }
-        .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        .reel-overlay-info { position: absolute; bottom: 15px; left: 15px; right: 15px; z-index: 5; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
-        .reel-overlay-info b { font-size: 14.5px; color: #0095f6; } .reel-overlay-info p { font-size: 13px; margin: 4px 0 0 0; color: #fff; }
 
         #profileView { display: none; width: 100%; max-width: 650px; margin: 0 auto; }
         .profile-header { display: flex; align-items: center; gap: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 20px; width: 100%; }
@@ -211,17 +240,16 @@
 
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); justify-content: center; align-items: center; z-index: 99999 !important; padding: 15px; box-sizing: border-box; }
         .modal-card { background: #141622; border: 1px solid rgba(255,255,255,0.1); padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; box-sizing: border-box; }
-        .list-user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); cursor: pointer; font-size: 13px; }
+        .file-label { display: block; padding: 12px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 13.5px; text-align: center; }
 
         .saved-videos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 150px; overflow-y: auto; margin-top: 10px; padding: 2px; }
         .saved-item-box { background: #000; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
         .saved-item-box video { width: 100%; height: 100%; object-fit: cover; }
+        .list-user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); cursor: pointer; font-size: 13px; }
 
         /* ==========================================
-           5. ADAPTIVE PLATFORM VIEW SHIFTERS (PC vs PHONE)
+           5. ADAPTIVE RESPONSIVE MEDIA SHIFTERS
            ========================================== */
-        
-        /* 💻 LAPTOP SYSTEM STYLES */
         @media screen and (min-width: 769px) {
             .top-nav {
                 background: rgba(14, 16, 25, 0.95); backdrop-filter: blur(20px); padding: 16px 40px;
@@ -229,7 +257,6 @@
                 width: 100%; flex-shrink: 0;
             }
             .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; color: #fff; }
-            
             .nav-icons { display: flex; gap: 8px; align-items: center; position: static; background: transparent; padding: 0; width: auto; border: none; }
             .nav-icons span {
                 font-size: 13px; cursor: pointer; display: inline-block;
@@ -239,12 +266,10 @@
             .nav-icons span:hover { color: #fff; background: rgba(0, 149, 246, 0.15); border-color: rgba(0, 149, 246, 0.35); }
         }
 
-        /* 📱 FIXED DYNAMIC GRID MOBILE COMFORT BAR ENGINE */
         @media screen and (max-width: 768px) {
             .top-nav { padding: 14px 20px; justify-content: center; }
             .nav-logo { font-size: 1.4em; }
 
-            /* PREMIUM 2-LINE INSTAGRAM DOCK GRID PATTERN FOR MOBILE HANDLES */
             .nav-icons {
                 position: fixed !important;
                 bottom: 0 !important;
@@ -261,7 +286,6 @@
                 z-index: 9999 !important;
             }
             
-            /* High visibility micro design block structures */
             .nav-icons span {
                 padding: 10px 4px !important;
                 font-size: 12px !important;
@@ -278,15 +302,14 @@
                 color: rgba(255, 255, 255, 0.85);
             }
             .nav-icons span:hover { background: rgba(0, 149, 246, 0.15) !important; color: #fff !important; }
-            
-            /* Make logout button stand out securely at row base grid end spans */
             .nav-icons span:last-child {
                 grid-column: span 2 !important;
                 background: rgba(255, 85, 85, 0.1) !important;
                 border-color: rgba(255, 85, 85, 0.2) !important;
             }
 
-            .content-area { padding-bottom: 120px; } 
+            .content-area { padding-bottom: 125px; } 
+            #reelsSpaceView { height: calc(100vh - 210px); } /* Dynamic optimization patch for mobiles */
             .profile-header { flex-direction: column; text-align: center; gap: 15px; }
             .profile-stats { justify-content: center; }
             .action-inline-btn { margin-left: 0; margin-top: 8px; display: block; width: 100%; max-width: 160px; margin-inline: auto; }
@@ -297,7 +320,6 @@
 <body>
 
     <div class="auth-container" id="authZoneWrapper">
-        
         <div class="glass-box" id="loginBox">
             <div class="logo">OurSpace</div>
             <form onsubmit="handleLogin(event)">
@@ -320,13 +342,11 @@
             <div class="divider">YA</div>
             <div><span>Pehle se account hai?</span> <span class="switch-link" onclick="toggleView('loginBox')">Log In</span></div>
         </div>
-
     </div>
 
     <div id="appScreen">
         <div class="top-nav">
             <div class="nav-logo" onclick="showFeed()">OurSpace ✨</div>
-            
             <div class="nav-icons">
                 <span onclick="showFeed()">🏠 Home</span>
                 <span onclick="showSearchViewTab()" style="color:#0095f6;">🔍 Search</span>
@@ -339,9 +359,7 @@
         </div>
         
         <div class="content-area">
-            <div id="feedView">
-                <div id="dynamicFeedContainer"></div>
-            </div>
+            <div id="feedView"><div id="dynamicFeedContainer"></div></div>
 
             <div id="searchViewTab">
                 <h2>Search OurSpace Registry 🔍</h2><br>
@@ -493,6 +511,7 @@
         function showFeed() { hideAllViews(); document.getElementById("feedView").style.display = "block"; }
         function showSearchViewTab() { hideAllViews(); document.getElementById("searchResultFeedback").innerHTML = ""; document.getElementById("searchViewTab").style.display = "block"; }
 
+        /* REELS FIXED ACTION SYSTEM FOR PORTRAIT PREVIEWS */
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
@@ -504,11 +523,22 @@
             } else {
                 let activeReel = videoPosts[videoPosts.length - 1];
                 container.innerHTML = `
-                    <video src="${activeReel.video}" controls autoplay loop playsinline></video>
+                    <video src="${activeReel.video}" autoplay loop playsinline muted style="width:100%; height:100%; object-fit:cover;"></video>
                     <div class="reel-overlay-info">
                         <b>👤 @${activeReel.author}</b>
-                        <p>${activeReel.text || ""}</p>
+                        <p>${activeReel.text || "No caption provided."}</p>
                     </div>`;
+                
+                // Audio handler fallback sequence for browser privacy
+                let activeReelVideo = container.querySelector('video');
+                container.onclick = () => {
+                    if(activeReelVideo.muted) {
+                        activeReelVideo.muted = false;
+                    } else {
+                        if(activeReelVideo.paused) activeReelVideo.play();
+                        else activeReelVideo.pause();
+                    }
+                };
             }
             document.getElementById("reelsSpaceView").style.display = "block";
         }
@@ -675,6 +705,44 @@
                         </div>
                     </div>`;
             }
+        }
+
+        function addNewPost() {
+            let txt = document.getElementById("postContentInput").value.trim();
+            let fileInput = document.getElementById("videoFileInput");
+            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+            
+            if(!txt && fileInput.files.length === 0) { alert("Khali post publish nahi ho sakta!"); return; }
+
+            if(fileInput.files.length > 0) {
+                let videoBlobUrl = URL.createObjectURL(fileInput.files[0]);
+                posts.push({ author: sessionUser, text: txt, video: videoBlobUrl });
+                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
+                finalizePostCreation();
+            } else {
+                posts.push({ author: sessionUser, text: txt, video: "" });
+                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
+                finalizePostCreation();
+            }
+        }
+
+        function finalizePostCreation() {
+            document.getElementById("postContentInput").value = "";
+            document.getElementById("videoFileInput").value = "";
+            document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Optional)";
+            closeModal('postModal');
+            renderFeedEngine();
+            showFeed();
+        }
+
+        function launchVideoTheatreModal(url) {
+            if(!url) return;
+            document.getElementById("theatreVideoPlayer").src = url;
+            document.getElementById("videoTheatreModal").style.display = "flex";
+        }
+        function closeVideoTheatreModal() {
+            document.getElementById("theatreVideoPlayer").pause();
+            document.getElementById("videoTheatreModal").style.display = "none";
         }
 
         function navigateToUserProfile(targetUser) {
