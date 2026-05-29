@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OurSpace - Perfect Fixed Responsive App</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Skip"));
+      }
+    </script>
+
+    <style>
+        /* ==========================================
+           1. CORE RESET & DARK THEMING
+           ========================================== */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #0f111a 0%, #161925 50%, #0d0f17 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #f1f3f9;
+            overflow-x: hidden;
+        }
+
+        .main-btn, input, .nav-icons span, .glass-box, .post-grid-item, textarea {
+            transition: all 0.25s ease;
+        }
+
+        /* ==========================================
+           2. AUTHENTICATION MODULES
+           ========================================== */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        .glass-box {
+            background-color: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
+            padding: 40px 30px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            display: none;
+        }
+
+        .logo {
+            font-size: 2.6em;
+            font-weight: 800;
+            margin-bottom: 25px;
+            background: linear-gradient(45deg, #ff758c, #ff7eb3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        input, textarea {
+            width: 100%; padding: 14px; margin-bottom: 16px;
+            background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 12px; color: #fff; font-size: 14px; font-family: inherit;
+        }
+        input:focus, textarea:focus { outline: none; background-color: rgba(255, 255, 255, 0.08); border-color: rgba(0, 149, 246, 0.5); }
+
+        .file-label {
+            display: block; padding: 12px; background: rgba(255,255,255,0.05);
+            border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 13.5px; text-align: center;
+        }
+
+        button.main-btn {
+            width: 100%; padding: 14px; background: linear-gradient(135deg, #0095f6 0%, #0072b1 100%);
+            color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer;
+        }
+        button.main-btn:hover { background: linear-gradient(135deg, #1fa2ff 0%, #1281c7 100%); }
+
+        .divider { display: flex; align-items: center; margin: 20px 0; color: rgba(255, 255, 255, 0.3); font-size: 13px; }
+        .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
+        .divider::before { margin-right: 12px; } .divider::after { margin-left: 12px; }
+        .switch-link { color: #0095f6; cursor: pointer; font-weight: bold; }
+
+        /* ==========================================
+           3. MAIN APP STRUCTURE
+           ========================================== */
+        #appScreen { 
+            display: none; 
+            width: 100%; 
+            height: 100vh; 
+            flex-direction: column; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: #0f111a;
+            z-index: 100;
+        }
+
+        .content-area { 
+            flex: 1; 
+            padding: 25px 15px 40px 15px; 
+            overflow-y: auto; 
+            width: 100%; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
+
+        /* Timeline Shorts Video Layout Setup */
+        #feedView { text-align: center; width: 100%; max-width: 420px; }
+        .post {
+            background: #000000; border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 0; border-radius: 24px; width: 100%; margin: 0 auto 25px auto;
+            text-align: left; box-shadow: 0 15px 35px rgba(0,0,0,0.5); position: relative;
+            overflow: hidden; display: flex; flex-direction: column;
+        }
+        
+        .post-video-container { width: 100%; position: relative; background: #000; aspect-ratio: 9 / 14; cursor: pointer; }
+        .post video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+        .video-status-toast {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
+            background: rgba(0, 0, 0, 0.65); color: white; padding: 15px; border-radius: 50%;
+            font-size: 24px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 50;
+        }
+        .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
+        .custom-timeline-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.2); z-index: 30; }
+        .custom-progress-fill { height: 100%; width: 0%; background: #0095f6; }
+
+        .audio-deck-trigger {
+            position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 10px; border-radius: 20px;
+            font-size: 12px; z-index: 40; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;
+        }
+
+        .post-overlay-header { 
+            position: absolute; top: 0; left: 0; width: 100%; padding: 15px; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
+            display: flex; justify-content: space-between; align-items: center; z-index: 10;
+        }
+        .post-overlay-header b { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
+
+        .post-text-details { padding: 15px; background: #0b0c10; border-top: 1px solid rgba(255,255,255,0.05); }
+        .post-caption-txt { font-size: 14px; color: #f1f3f9; margin-bottom: 12px; line-height: 1.4; }
+
+        .action-tray { display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
+        .action-tray-btn { cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 4px; user-select: none; color: rgba(255,255,255,0.7); }
+        .action-tray-btn:hover { color: #0095f6; }
+
+        /* Other Sub-Tabs Layout Sheet */
+        #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; }
+        .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
+        .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
+
+        #reelsSpaceView {
+            display: none; width: 100%; max-width: 360px; height: 68vh; min-height: 420px; margin: 0 auto; position: relative; background: #000; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+        }
+        .reel-video-wrapper { width: 100%; height: 100%; position: relative; }
+        .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
+        .reel-overlay-info { position: absolute; bottom: 15px; left: 15px; right: 15px; z-index: 5; text-shadow: 0 2px 8px rgba(0,0,0,0.8); }
+        .reel-overlay-info b { font-size: 14.5px; color: #0095f6; } .reel-overlay-info p { font-size: 13px; margin: 4px 0 0 0; color: #fff; }
+
+        #profileView { display: none; width: 100%; max-width: 650px; margin: 0 auto; }
+        .profile-header { display: flex; align-items: center; gap: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 20px; width: 100%; }
+        .profile-pic-container { width: 95px; height: 95px; border-radius: 50%; background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); display: flex; justify-content: center; align-items: center; padding: 2px; flex-shrink: 0; }
+        .inner-pic { width: 100%; height: 100%; background: #1a1d29; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2em; }
+        .profile-details { flex: 1; min-width: 0; }
+        .profile-details h2 { margin: 0; font-size: 1.5em; display: inline-block; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; }
+        .profile-stats { display: flex; gap: 20px; margin: 10px 0; font-size: 13.5px; flex-wrap: wrap; } 
+        .profile-stats span { cursor: pointer; } .profile-stats b { color: #0095f6; }
+        .profile-bio { font-size: 13px; color: rgba(255, 255, 255, 0.75); line-height: 1.4; word-wrap: break-word; }
+
+        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; width: 100%; }
+        .post-grid-item { background: rgba(0, 0, 0, 0.3); aspect-ratio: 1 / 1; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: center; align-items: center; overflow: hidden; position: relative; cursor: pointer; }
+        .post-grid-item video { width: 100%; height: 100%; object-fit: cover; border-radius: 10px; pointer-events: none; }
+        .post-grid-item:hover { transform: scale(1.02); border-color: rgba(0, 149, 246, 0.3); }
+        .no-posts-alert { grid-column: 1 / -1; text-align: center; color: rgba(255,255,255,0.3); padding: 35px 0; font-size: 13.5px; }
+        .action-inline-btn { margin-left: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid rgba(255,255,255,0.18); background: rgba(255,255,255,0.08); color: white; cursor: pointer; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(6px); justify-content: center; align-items: center; z-index: 99999 !important; padding: 15px; box-sizing: border-box; }
+        .modal-card { background: #141622; border: 1px solid rgba(255,255,255,0.1); padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; box-sizing: border-box; }
+        .list-user-item { display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(255,255,255,0.02); margin-bottom: 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.04); cursor: pointer; font-size: 13px; }
+
+        .saved-videos-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; max-height: 150px; overflow-y: auto; margin-top: 10px; padding: 2px; }
+        .saved-item-box { background: #000; aspect-ratio: 16/9; border-radius: 6px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; }
+        .saved-item-box video { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ==========================================
+           4. STYLING SEPARATION FORMULAS (PC vs PHONE)
+           ========================================== */
+        
+        /* 💻 LAPTOP MODE SYSTEM DESIGN */
+        @media screen and (min-width: 769px) {
+            .top-nav {
+                background: rgba(14, 16, 25, 0.95); backdrop-filter: blur(20px); padding: 16px 40px;
+                display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                width: 100%; flex-shrink: 0;
+            }
+            .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; color: #fff; }
+            
+            /* Buttons Locked on Right Side Top */
+            .nav-icons { display: flex; gap: 8px; align-items: center; position: static; background: transparent; padding: 0; width: auto; border: none; }
+            .nav-icons span {
+                font-size: 13px; cursor: pointer; display: inline-block;
+                padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+                white-space: nowrap; text-align: center; flex: none; max-width: none;
+            }
+            .nav-icons span:hover { color: #fff; background: rgba(0, 149, 246, 0.15); border-color: rgba(0, 149, 246, 0.35); }
+        }
+
+        /* 📱 MOBILE PHONE MODE SYSTEM DESIGN */
+        @media screen and (max-width: 768px) {
+            .top-nav { padding: 12px 20px; justify-content: center; }
+            .nav-logo { font-size: 1.4em; }
+
+            /* Buttons Strictly Locked on Sticky Bottom Bar */
+            .nav-icons {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                background: rgba(14, 16, 25, 0.98) !important;
+                backdrop-filter: blur(25px) !important;
+                border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+                border-bottom: none !important;
+                padding: 12px 6px !important;
+                display: flex !important;
+                justify-content: space-around !important;
+                align-items: center !important;
+                z-index: 9999 !important;
+                gap: 0 !important;
+            }
+            .nav-icons span {
+                padding: 6px 2px !important;
+                font-size: 11px !important;
+                border: none !important;
+                background: transparent !important;
+                flex: 1 !important;
+                text-align: center !important;
+                border-radius: 10px !important;
+                display: block !important;
+                max-width: none !important;
+            }
+            .nav-icons span:hover { background: rgba(255,255,255,0.05); }
+            .content-area { padding-bottom: 85px; } 
+            .profile-header { flex-direction: column; text-align: center; gap: 15px; }
+            .profile-stats { justify-content: center; }
+            .action-inline-btn { margin-left: 0; margin-top: 8px; display: block; width: 100%; max-width: 160px; margin-inline: auto; }
+            .saved-videos-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container" id="authZoneWrapper">
+        
+        <div class="glass-box" id="loginBox">
+            <div class="logo">OurSpace</div>
+            <form onsubmit="handleLogin(event)">
+                <input type="text" id="loginUser" placeholder="Username dalein" required>
+                <input type="password" id="loginPass" placeholder="Password daalein" required>
+                <button type="submit" class="main-btn">Log In</button>
+            </form>
+            <div class="divider">YA</div>
+            <div><span>Account nahi hai?</span> <span class="switch-link" onclick="toggleView('signupBox')">Sign up</span></div>
+        </div>
+
+        <div class="glass-box" id="signupBox">
+            <div class="logo">OurSpace</div>
+            <form onsubmit="handleSignup(event)">
+                <input type="text" id="signUser" placeholder="Apna Unique Username chunein" required>
+                <input type="text" id="signName" placeholder="Apna Full Name dalein" required>
+                <input type="email" id="signEmail" placeholder="Apna Private Email dalein" required>
+                <input type="password" id="signPass" placeholder="Password banayein" required>
+                <button type="submit" class="main-btn">Create Account</button>
+            </form>
+            <div class="divider">YA</div>
+            <div><span>Pehle se account hai?</span> <span class="switch-link" onclick="toggleView('loginBox')">Log In</span></div>
+        </div>
+
+    </div>
+
+    <div id="appScreen">
+        <div class="top-nav">
+            <div class="nav-logo" onclick="showFeed()">OurSpace ✨</div>
+            
+            <div class="nav-icons">
+                <span onclick="showSearchViewTab()" style="color:#0095f6; font-weight:bold;">🔍 Search</span>
+                <span onclick="showFeed()">🏠 Home</span>
+                <span onclick="showSpaceReels()" style="background: linear-gradient(45deg, #ff758c, #ff7eb3); font-weight:bold;">▶️ Space</span>
+                <span onclick="openModal('postModal')">➕ Post</span>
+                <span onclick="viewMyOwnProfile()">👤 Profile</span>
+                <span onclick="openModal('settingsModal')" style="background:rgba(255,255,255,0.05);" id="navSettingsBtn">⚙️ Settings</span>
+                <span onclick="logout()" style="color: #ff5555; font-weight: bold;">Logout</span>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <div id="feedView">
+                <div id="dynamicFeedContainer"></div>
+            </div>
+
+            <div id="searchViewTab">
+                <h2>Search OurSpace Registry 🔍</h2><br>
+                <div class="search-container-wrapper">
+                    <input type="text" id="standaloneSearchInput" placeholder="Kiski ID search karni hai? Enter username...">
+                    <button class="main-btn" onclick="executeStandaloneUserSearch()" style="width:100px; padding:0;">Search</button>
+                </div>
+                <div id="searchResultFeedback"></div>
+            </div>
+
+            <div id="reelsSpaceView">
+                <div class="reel-video-wrapper" id="reelVideoPlayerContainer"></div>
+            </div>
+
+            <div id="profileView">
+                <div class="profile-header">
+                    <div class="profile-pic-container"><div class="inner-pic">👤</div></div>
+                    <div class="profile-details">
+                        <div>
+                            <h2 id="profUsername">@user</h2>
+                            <button class="action-inline-btn" id="profileActionBtn" onclick="openEditProfileModal()">Edit Profile</button>
+                            <button class="action-inline-btn" id="followBtnAction" onclick="toggleFollowUser()" style="background:#0095f6; border-color:#0095f6; display:none;">Follow</button>
+                        </div>
+                        <div class="profile-stats">
+                            <span><b id="postCount">0</b> posts</span>
+                            <span onclick="showFollowersList()"><b id="followerCount">0</b> followers</span>
+                            <span onclick="showFollowingList()"><b id="followingCount">0</b> following</span>
+                        </div>
+                        <div class="profile-bio">
+                            <b id="profRealName">User Real Name</b><br>
+                            <span id="profBioText">User Bio text record lines.</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-grid" id="dynamicGridContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="postModal">
+        <div class="modal-card">
+            <h3>Naya Post Create Karein ➕</h3><br>
+            <textarea id="postContentInput" rows="3" placeholder="Kuch badhiya caption likho..." style="font-family: inherit; resize: none;"></textarea>
+            <label class="file-label" for="videoFileInput" id="fileLabelText">📁 Choose Video File (Optional)</label>
+            <input type="file" id="videoFileInput" accept="video/*" style="display: none;" onchange="updateFileLabelStatus()">
+            <button class="main-btn" onclick="addNewPost()">Publish</button><br><br>
+            <span class="switch-link" onclick="closeModal('postModal')">Cancel</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editProfileModal">
+        <div class="modal-card">
+            <h3>Edit Profile 👤</h3><br>
+            <input type="text" id="editNameInput" placeholder="Full Name badlein">
+            <input type="text" id="editUserInput" placeholder="New Unique Username">
+            <textarea id="editBioInput" rows="3" placeholder="Apna Bio likhein" style="font-family: inherit; resize: none;"></textarea>
+            <button class="main-btn" onclick="saveProfileData()">Save Changes</button><br><br>
+            <span class="switch-link" onclick="closeModal('editProfileModal')">Cancel</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-card">
+            <h3>Account Settings ⚙️</h3><br>
+            <div style="text-align: left; font-size:13px; margin-bottom:15px; background:rgba(255,255,255,0.04); padding:12px; border-radius:10px;">
+                <span style="color:rgba(255,255,255,0.5);">Aapki Current Laga Hua Gmail ID:</span> <br>
+                <b id="settingsEmailDisplay" style="color:#0095f6;">loading...</b>
+            </div>
+            <input type="password" id="oldPassInput" placeholder="Purana Password dalein" style="margin-bottom:10px; padding:10px;">
+            <input type="password" id="newPassInput" placeholder="Naya Secure Password" style="margin-bottom:15px; padding:10px;">
+            <button class="main-btn" onclick="executePasswordChangeChange()" style="padding:10px; font-size:14px;">Update Password</button>
+            <div class="divider">📁 Saved Videos Folder</div>
+            <div class="saved-videos-grid" id="settingsSavedVideosContainer"></div>
+            <br>
+            <span class="switch-link" onclick="closeModal('settingsModal')">Close</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="connectionListModal">
+        <div class="modal-card">
+            <h3 id="connectionModalTitle">Users List</h3><br>
+            <div id="connectionModalItemsStream" style="max-height: 250px; overflow-y: auto; text-align: left; padding: 4px;"></div><br>
+            <span class="switch-link" onclick="closeModal('connectionListModal')">Close</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="videoTheatreModal">
+        <div class="modal-card" style="max-width: 420px; padding: 15px; background: #05060a;">
+            <video id="theatreVideoPlayer" controls autoplay loop style="width: 100%; border-radius: 12px; background: #000; max-height: 420px;"></video>
+            <br><br><span class="switch-link" onclick="closeVideoTheatreModal()" style="color:#ff5555; font-weight: bold;">Close Player</span>
+        </div>
+    </div>
+
+    <script>
+        let sessionUser = ""; 
+        let viewedUser = "";  
+
+        window.onload = function() {
+            initGlobalMockDatabase();
+            if (localStorage.getItem('isAppActive') === 'active' && localStorage.getItem('currentSessionUser')) {
+                sessionUser = localStorage.getItem('currentSessionUser');
+                openApp();
+            } else {
+                toggleView('loginBox');
+            }
+        };
+
+        function initGlobalMockDatabase() {
+            let userRegistry = localStorage.getItem('global_users_db');
+            if(!userRegistry) {
+                let defaultUsers = {
+                    "roshan_dev": { name: "Roshan Dev", pass: "12345", email: "roshan@gmail.com", bio: "Learning HTML & SQL.", following: [] }
+                };
+                localStorage.setItem('global_users_db', JSON.stringify(defaultUsers));
+            }
+            if(!localStorage.getItem('permanent_global_posts')) {
+                localStorage.setItem('permanent_global_posts', JSON.stringify([]));
+            }
+            if(!localStorage.getItem('saved_videos_registry')) {
+                localStorage.setItem('saved_videos_registry', JSON.stringify({}));
+            }
+        }
+
+        function toggleView(boxId) {
+            document.getElementById("appScreen").style.display = "none";
+            document.getElementById("authZoneWrapper").style.display = "flex";
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("signupBox").style.display = "none";
+            document.getElementById(boxId).style.display = "block";
+        }
+
+        function openApp() {
+            document.getElementById("authZoneWrapper").style.display = "none";
+            document.getElementById("loginBox").style.display = "none";
+            document.getElementById("signupBox").style.display = "none";
+            document.getElementById("appScreen").style.display = "flex";
+            renderFeedEngine();
+            showFeed();
+        }
+
+        function hideAllViews() {
+            document.getElementById("feedView").style.display = "none";
+            document.getElementById("profileView").style.display = "none";
+            document.getElementById("reelsSpaceView").style.display = "none";
+            document.getElementById("searchViewTab").style.display = "none";
+            document.getElementById("reelVideoPlayerContainer").innerHTML = "";
+        }
+
+        function showFeed() { hideAllViews(); document.getElementById("feedView").style.display = "block"; }
+        function showSearchViewTab() { hideAllViews(); document.getElementById("searchResultFeedback").innerHTML = ""; document.getElementById("searchViewTab").style.display = "block"; }
+
+        function showSpaceReels() {
+            hideAllViews();
+            let container = document.getElementById("reelVideoPlayerContainer");
+            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+            let videoPosts = posts.filter(p => p.video !== "");
+
+            if (videoPosts.length === 0) {
+                container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai! <br><br>Pehle ➕ Post option se video file upload karo.</div>`;
+            } else {
+                let activeReel = videoPosts[videoPosts.length - 1];
+                container.innerHTML = `
+                    <video src="${activeReel.video}" controls autoplay loop playsinline></video>
+                    <div class="reel-overlay-info">
+                        <b>👤 @${activeReel.author}</b>
+                        <p>${activeReel.text || ""}</p>
+                    </div>`;
+            }
+            document.getElementById("reelsSpaceView").style.display = "block";
+        }
+
+        function logout() {
+            localStorage.removeItem('isAppActive');
+            localStorage.removeItem('currentSessionUser');
+            sessionUser = "";
+            toggleView('loginBox');
+        }
+
+        function openModal(id) { 
+            if(id === 'settingsModal') {
+                let db = JSON.parse(localStorage.getItem('global_users_db'));
+                document.getElementById("settingsEmailDisplay").innerText = db[sessionUser].email || "Not Linked";
+                renderSavedVideosFolderEngine(); 
+            }
+            document.getElementById(id).style.display = "flex"; 
+        }
+        function closeModal(id) { document.getElementById(id).style.display = "none"; }
+
+        function updateFileLabelStatus() {
+            let fileInput = document.getElementById("videoFileInput");
+            let label = document.getElementById("fileLabelText");
+            if(fileInput.files.length > 0) {
+                label.innerText = "✅ " + fileInput.files[0].name.substring(0, 15) + "...";
+            }
+        }
+
+        function togglePostDropdownActionBox(index) {
+            let box = document.getElementById(`postDropBox_${index}`);
+            box.style.display = (box.style.display === "block") ? "none" : "block";
+        }
+
+        function deleteSelectedPost(postUniqueId) {
+            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+            posts.splice(postUniqueId, 1);
+            localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
+            renderFeedEngine();
+            if(document.getElementById("profileView").style.display === "block") { navigateToUserProfile(viewedUser); }
+        }
+
+        function triggerLikeHandler(el) {
+            let countSpan = el.querySelector('span');
+            let current = parseInt(countSpan.innerText);
+            if(el.style.color === "rgb(0, 149, 246)") {
+                el.style.color = "inherit"; countSpan.innerText = current - 1;
+            } else {
+                el.style.color = "#0095f6"; countSpan.innerText = current + 1;
+            }
+        }
+        function triggerCommentHandler() { alert("Comment posted live!"); }
+        function triggerShareHandler() { alert("Post clip link transferred to clip-tray!"); }
+
+        function savePostVideoToDatabaseFolder(videoBlobUrl) {
+            if(!videoBlobUrl || videoBlobUrl === "") { alert("Bhai, is post me koi video nahi h save karne ke liye!"); return; }
+            let saveRegistry = JSON.parse(localStorage.getItem('saved_videos_registry')) || {};
+            if(!saveRegistry[sessionUser]) saveRegistry[sessionUser] = [];
+
+            if(saveRegistry[sessionUser].includes(videoBlobUrl)) {
+                alert("Bhai, yeh video pehle se settings folder me saved h!");
+                return;
+            }
+            saveRegistry[sessionUser].push(videoBlobUrl);
+            localStorage.setItem('saved_videos_registry', JSON.stringify(saveRegistry));
+            alert("Video successfully Saved Folder me save ho gayi!");
+        }
+
+        function renderSavedVideosFolderEngine() {
+            let container = document.getElementById("settingsSavedVideosContainer");
+            container.innerHTML = "";
+            let saveRegistry = JSON.parse(localStorage.getItem('saved_videos_registry')) || {};
+            let mySaves = saveRegistry[sessionUser] || [];
+
+            if(mySaves.length === 0) {
+                container.innerHTML = `<div style="grid-column:1/-1; font-size:12px; color:rgba(255,255,255,0.3);">Saved folder khali h bhai!</div>`;
+                return;
+            }
+            mySaves.forEach(url => {
+                container.innerHTML += `<div class="saved-item-box" onclick="closeModal('settingsModal'); launchVideoTheatreModal('${url}')"><video src="${url}"></video></div>`;
+            });
+        }
+
+        function toggleVideoPlayPauseState(containerEl, index) {
+            let vid = document.getElementById(`vidElement_${index}`);
+            let toast = document.getElementById(`toast_${index}`);
+            
+            if(vid.paused) {
+                vid.play();
+                toast.innerHTML = "▶";
+            } else {
+                vid.pause();
+                toast.innerHTML = "⏸";
+            }
+            
+            toast.classList.add("show-toast");
+            setTimeout(() => {
+                toast.classList.remove("show-toast");
+            }, 1000);
+        }
+
+        function updateVideoLiveProgressBarLine(vidEl, index) {
+            let fill = document.getElementById(`fill_${index}`);
+            if(vidEl.duration) {
+                let pct = (vidEl.currentTime / vidEl.duration) * 100;
+                fill.style.width = pct + "%";
+            }
+        }
+
+        function toggleVideoMuteDeckAction(event, vidId, btnId) {
+            event.stopPropagation(); 
+            let vid = document.getElementById(vidId);
+            let btn = document.getElementById(btnId);
+            if(vid.muted) {
+                vid.muted = false;
+                btn.innerHTML = "🔊 Mute";
+            } else {
+                vid.muted = true;
+                btn.innerHTML = "🔇 Unmute";
+            }
+        }
+
+        function renderFeedEngine() {
+            let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
+            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+
+            if(posts.length === 0) {
+                container.innerHTML = `<div class="no-posts-alert">Timeline khali hai bhai, pehla video post upload karo!</div>`;
+                return;
+            }
+            
+            for(let i = posts.length - 1; i >= 0; i--) {
+                let p = posts[i];
+                let menuHtml = (p.author === sessionUser) ? `<div class="three-dots-menu" onclick="event.stopPropagation(); togglePostDropdownActionBox(${i})">⋮<div class="dropdown-action-box" id="postDropBox_${i}"><button onclick="deleteSelectedPost(${i})">🚨 Delete Post</button></div></div>` : "";
+                
+                let videoBlock = "";
+                if(p.video) {
+                    videoBlock = `
+                        <div class="post-video-container" onclick="toggleVideoPlayPauseState(this, ${i})">
+                            <video id="vidElement_${i}" src="${p.video}" autoplay muted loop playsinline ontimeupdate="updateVideoLiveProgressBarLine(this, ${i})"></video>
+                            <div class="video-status-toast" id="toast_${i}">▶</div>
+                            <div class="audio-deck-trigger" id="muteBtn_${i}" onclick="toggleVideoMuteDeckAction(event, 'vidElement_${i}', 'muteBtn_${i}')">🔇 Unmute</div>
+                            <div class="custom-timeline-line">
+                                <div class="custom-progress-fill" id="fill_${i}"></div>
+                            </div>
+                        </div>`;
+                }
+
+                container.innerHTML += `
+                    <div class="post">
+                        <div class="post-overlay-header">
+                            <b style="cursor:pointer; color:#0095f6;" onclick="event.stopPropagation(); navigateToUserProfile('${p.author}')">👤 @${p.author}</b>
+                            ${menuHtml}
+                        </div>
+                        ${videoBlock}
+                        <div class="post-text-details">
+                            <div class="post-caption-txt">${p.text}</div>
+                            <div class="action-tray">
+                                <div class="action-tray-btn" onclick="triggerLikeHandler(this)">❤️ <span>0</span></div>
+                                <div class="action-tray-btn" onclick="triggerCommentHandler()">💬 Comment</div>
+                                <div class="action-tray-btn" onclick="triggerShareHandler()">🚀 Share</div>
+                                <div class="action-tray-btn" onclick="savePostVideoToDatabaseFolder('${p.video}')" style="margin-left:auto; color:#ff7eb3;">📥 Save</div>
+                            </div>
+                        </div>
+                    </div>`;
+            }
+        }
+
+        function addNewPost() {
+            let txt = document.getElementById("postContentInput").value.trim();
+            let fileInput = document.getElementById("videoFileInput");
+            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+            
+            if(!txt && fileInput.files.length === 0) { alert("Khali post publish nahi ho sakta!"); return; }
+
+            if(fileInput.files.length > 0) {
+                let videoBlobUrl = URL.createObjectURL(fileInput.files[0]);
+                posts.push({ author: sessionUser, text: txt, video: videoBlobUrl });
+                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
+                finalizePostCreation();
+            } else {
+                posts.push({ author: sessionUser, text: txt, video: "" });
+                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
+                finalizePostCreation();
+            }
+        }
+
+        function finalizePostCreation() {
+            document.getElementById("postContentInput").value = "";
+            document.getElementById("videoFileInput").value = "";
+            document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Optional)";
+            closeModal('postModal');
+            renderFeedEngine();
+            showFeed();
+        }
+
+        function launchVideoTheatreModal(url) {
+            if(!url) return;
+            document.getElementById("theatreVideoPlayer").src = url;
+            document.getElementById("videoTheatreModal").style.display = "flex";
+        }
+        function closeVideoTheatreModal() {
+            document.getElementById("theatreVideoPlayer").pause();
+            document.getElementById("videoTheatreModal").style.display = "none";
+        }
+
+        function navigateToUserProfile(targetUser) {
+            hideAllViews(); viewedUser = targetUser;
+            let db = JSON.parse(localStorage.getItem('global_users_db'));
+            let userData = db[targetUser];
+
+            document.getElementById("profUsername").innerText = "@" + targetUser;
+            document.getElementById("profRealName").innerText = userData.name;
+            document.getElementById("profBioText").innerText = userData.bio || "No bio added yet.";
+
+            let actionBtn = document.getElementById("profileActionBtn");
+            let followBtn = document.getElementById("followBtnAction");
+
+            if(targetUser === sessionUser) { actionBtn.style.display = "inline-block"; followBtn.style.display = "none"; } 
+            else { actionBtn.style.display = "none"; followBtn.style.display = "inline-block"; let myFollowingList = db[sessionUser].following || []; followBtn.innerText = myFollowingList.includes(targetUser) ? "Unfollow" : "Follow"; }
+
+            let grid = document.getElementById("dynamicGridContainer"); grid.innerHTML = "";
+            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+            let pCount = 0;
+
+            for(let i = posts.length - 1; i >= 0; i--) {
+                if(posts[i].author === targetUser) {
+                    pCount++;
+                    let gridInner = posts[i].video ? `<video src="${posts[i].video}"></video>` : `<div style="padding:15px; font-size:12px;">📝<br><br>${posts[i].text.substring(0,15)}...</div>`;
+                    grid.innerHTML += `<div class="post-grid-item" onclick="launchVideoTheatreModal('${posts[i].video || ''}')">${gridInner}</div>`;
+                }
+            }
+            if(pCount === 0) { grid.innerHTML = `<div class="no-posts-alert">No Posts Yet 📸</div>`; }
+            
+            let myFollowingsCount = userData.following ? userData.following.length : 0;
+            let myFollowersCount = 0;
+            Object.keys(db).forEach(key => { if(db[key].following && db[key].following.includes(targetUser)) { myFollowersCount++; } });
+
+            document.getElementById("postCount").innerText = pCount;
+            document.getElementById("followerCount").innerText = myFollowersCount;
+            document.getElementById("followingCount").innerText = myFollowingsCount;
+            document.getElementById("profileView").style.display = "block";
+        }
+
+        function viewMyOwnProfile() { navigateToUserProfile(sessionUser); }
+        function toggleFollowUser() { let db = JSON.parse(localStorage.getItem('global_users_db')); if(!db[sessionUser].following) db[sessionUser].following = []; let index = db[sessionUser].following.indexOf(viewedUser); if(index > -1) { db[sessionUser].following.splice(index, 1); } else { db[sessionUser].following.push(viewedUser); } localStorage.setItem('global_users_db', JSON.stringify(db)); navigateToUserProfile(viewedUser); }
+
+        function showFollowersList() {
+            let db = JSON.parse(localStorage.getItem('global_users_db'));
+            let stream = document.getElementById("connectionModalItemsStream");
+            document.getElementById("connectionModalTitle").innerText = "Followers List"; stream.innerHTML = "";
+            let count = 0;
+            Object.keys(db).forEach(userKey => { if(db[userKey].following && db[userKey].following.includes(viewedUser)) { count++; stream.innerHTML += `<div class="list-user-item" onclick="closeModal('connectionListModal'); navigateToUserProfile('${userKey}')"><span>👤 <b>@${userKey}</b> (${db[userKey].name})</span><span style="color:#0095f6; font-size:12px;">View Profile →</span></div>`; } });
+            if(count === 0) stream.innerHTML = "<div style='color:rgba(255,255,255,0.3); text-align:center;'>Is ID ka koi follower nahi hai abhi.</div>";
+            openModal("connectionListModal");
+        }
+
+        function showFollowingList() {
+            let db = JSON.parse(localStorage.getItem('global_users_db'));
+            let stream = document.getElementById("connectionModalItemsStream");
+            document.getElementById("connectionModalTitle").innerText = "Following List"; stream.innerHTML = "";
+            let myFollowings = db[viewedUser].following || [];
+            if(myFollowings.length === 0) { stream.innerHTML = "<div style='color:rgba(255,255,255,0.3); text-align:center;'>Yeh ID abhi kisi ko follow nahi kar rahi hai.</div>"; } 
+            else { myFollowings.forEach(followedUser => { if(db[followedUser]) { stream.innerHTML += `<div class="list-user-item" onclick="closeModal('connectionListModal'); navigateToUserProfile('${followedUser}')"><span>👤 <b>@${followedUser}</b> (${db[followedUser].name})</span><span style="color:#0095f6; font-size:12px;">View Profile →</span></div>`; } }); }
+            openModal("connectionListModal");
+        }
+
+        function executeStandaloneUserSearch() { let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase(); let db = JSON.parse(localStorage.getItem('global_users_db')); if(db[query]) { document.getElementById("standaloneSearchInput").value = ""; navigateToUserProfile(query); } else { document.getElementById("searchResultFeedback").innerHTML = `<span style="color:#ff5555; font-size:14px;">Bhai, is username se koi account nahi mila registry mein!</span>`; } }
+        function openEditProfileModal() { let db = JSON.parse(localStorage.getItem('global_users_db')); document.getElementById("editNameInput").value = db[sessionUser].name; document.getElementById("editUserInput").value = sessionUser; document.getElementById("editBioInput").value = db[sessionUser].bio || ""; openModal('editProfileModal'); }
+
+        function saveProfileData() {
+            let newName = document.getElementById("editNameInput").value.trim();
+            let newUser = document.getElementById("editUserInput").value.trim().toLowerCase();
+            let newBio = document.getElementById("editBioInput").value.trim();
+
+            if(!newName || !newUser) { alert("Fields khali nahi reh sakte!"); return; }
+            let db = JSON.parse(localStorage.getItem('global_users_db'));
+            if(newUser !== sessionUser && db[newUser]) { alert("Bhai, ye username pehle se kisi ne le rakha hai!"); return; }
+
+            let cacheUserData = db[sessionUser]; cacheUserData.name = newName; cacheUserData.bio = newBio;
+
+            if(newUser !== sessionUser) {
+                db[newUser] = cacheUserData; delete db[sessionUser]; 
+                let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
+                for(let i = 0; i < posts.length; i++) { if(posts[i].author === sessionUser) posts[i].author = newUser; }
+                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
+                sessionUser = newUser; localStorage.setItem('currentSessionUser', newUser);
+            } else { db[sessionUser] = cacheUserData; }
+
+            localStorage.setItem('global_users_db', JSON.stringify(db));
+            closeModal('editProfileModal'); navigateToUserProfile(sessionUser); renderFeedEngine();
+        }
+
+        function executePasswordChangeChange() {
+            let oldP = document.getElementById("oldPassInput").value;
+            let newP = document.getElementById("newPassInput").value.trim();
+            let db = JSON.parse(localStorage.getItem('global_users_db'));
+            if(!oldP || !newP) { alert("Password input boxes khali nahi chhod sakte!"); return; }
+            if(db[sessionUser].pass === oldP) { db[sessionUser].pass = newP; localStorage.setItem('global_users_db', JSON.stringify(db)); document.getElementById("oldPassInput").value = ""; document.getElementById("newPassInput").value = ""; closeModal('settingsModal'); alert("Password successfully change ho gaya bhai!"); } 
+            else { alert("Purana password match nahi hua bhai! Dobara check karo."); }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            let u = document.getElementById("signUser").value.trim().toLowerCase();
+            let n = document.getElementById("signName").value.trim();
+            let em = document.getElementById("signEmail").value.trim();
+            let p = document.getElementById("signPass").value;
+
+            let db = JSON.parse(localStorage.getItem('global_users_db')) || {};
+            if(db[u]) { alert("Bhai, ye username pehle se kisi ne le rakha hai!"); return; }
+
+            db[u] = { name: n, pass: p, email: em, bio: "", following: [] };
+            localStorage.setItem('global_users_db', JSON.stringify(db));
+            localStorage.setItem('isAppActive', 'active');
+            localStorage.setItem('currentSessionUser', u);
+            sessionUser = u; 
+            openApp();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            let u = document.getElementById("loginUser").value.trim().toLowerCase();
+            let p = document.getElementById("loginPass").value;
+            let db = JSON.parse(localStorage.getItem('global_users_db')) || {};
+            if(db[u] && db[u].pass === p) {
+                localStorage.setItem('isAppActive', 'active');
+                localStorage.setItem('currentSessionUser', u);
+                sessionUser = u; 
+                openApp();
+            } else { alert("Username ya Password galat hai bhai!"); }
+        }
+    </script>
+</body>
+</html>
