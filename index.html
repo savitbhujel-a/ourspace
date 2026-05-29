@@ -68,9 +68,10 @@
         /* AUDIO CONTROLLER SYSTEM */
         .mute-btn-overlay { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; z-index: 60; cursor: pointer; }
 
-        .action-tray { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; }
-        .action-tray-left { display: flex; gap: 18px; }
-        .action-tray-btn { cursor: pointer; font-size: 22px; display: flex; align-items: center; color: #f1f3f9; }
+        /* ACTION TRAY: LIKE, COMMENT, SHARE ONLY (NO REPOST) */
+        .action-tray { display: flex; align-items: center; justify-content: flex-start; padding: 12px 14px 8px 14px; gap: 20px; }
+        .action-tray-btn { cursor: pointer; font-size: 22px; display: flex; align-items: center; color: #f1f3f9; transition: transform 0.2s; }
+        .action-tray-btn:hover { transform: scale(1.1); }
 
         .post-text-details { padding: 0 14px 12px 14px; font-size: 14px; }
         .likes-count-text { font-weight: 700; color: #fff; margin-bottom: 4px; }
@@ -79,7 +80,7 @@
         /* REAL COMMENT SYSTEM BOX */
         .post-comments-section { padding: 12px 14px; border-top: 1px solid rgba(157, 78, 221, 0.1); display: none; background: rgba(0,0,0,0.3); border-radius: 0 0 20px 20px; }
         .comments-list-box { max-height: 140px; overflow-y: auto; margin-bottom: 10px; font-size: 13px; }
-        .comment-item { margin-bottom: 6px; }
+        .comment-item { margin-bottom: 6px; text-align: left; }
         .comment-item b { color: #c77dff; margin-right: 6px; }
         .comment-input-form-holder { display: flex; gap: 8px; }
         .comment-input-form-holder input { margin-bottom: 0; padding: 10px; font-size: 13px; border-radius: 20px; background: #090613; border: 1px solid rgba(157, 78, 221, 0.3); }
@@ -92,10 +93,19 @@
         .reel-overlay-info { position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 50; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 10px; border-radius: 12px; }
         .reel-overlay-info b { font-size: 15px; color: #c77dff; display: block; }
 
-        /* SEARCH TAB */
+        /* ADVANCED SEARCH REGISTRY VIEW */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; padding: 0 15px; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
         .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
+        .search-results-list { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+        .search-user-card { display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(157, 78, 221, 0.15); padding: 12px 16px; border-radius: 14px; cursor: pointer; }
+        .search-user-card:hover { background: rgba(157, 78, 221, 0.08); border-color: #9d4edd; }
+        .search-user-info { display: flex; align-items: center; gap: 12px; }
+        .search-user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #5a189a; display: flex; justify-content: center; align-items: center; font-weight: bold; overflow: hidden; font-size: 14px; }
+        .search-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .search-user-details { text-align: left; }
+        .search-user-details h4 { color: #fff; font-size: 14px; }
+        .search-user-details p { color: #8a8d9b; font-size: 12px; }
 
         /* PROFILE DESIGNS */
         #profileView { display: none; width: 100%; max-width: 650px; margin: 0 auto; padding: 0 15px; }
@@ -186,10 +196,9 @@
             <div id="searchViewTab">
                 <h2>Search OurSpace Registry 🔍</h2><br>
                 <div class="search-container-wrapper">
-                    <input type="text" id="standaloneSearchInput" placeholder="Enter unique username...">
-                    <button class="main-btn" onclick="executeStandaloneUserSearch()" style="width:100px; padding:0;">Search</button>
+                    <input type="text" id="standaloneSearchInput" oninput="executeLiveUserSearch()" placeholder="Type username to search instantly...">
                 </div>
-                <div id="searchResultFeedback"></div>
+                <div class="search-results-list" id="searchResultsFeedback"></div>
             </div>
 
             <div id="reelsSpaceView">
@@ -363,7 +372,12 @@
         }
 
         function showFeed() { hideAllViews(); document.getElementById("feedView").style.display = "block"; }
-        function showSearchViewTab() { hideAllViews(); document.getElementById("searchResultFeedback").innerHTML = ""; document.getElementById("searchViewTab").style.display = "block"; }
+        function showSearchViewTab() { 
+            hideAllViews(); 
+            document.getElementById("standaloneSearchInput").value = "";
+            document.getElementById("searchResultsFeedback").innerHTML = `<span style="color:#8a8d9b; font-size:14px; display:block; margin-top:20px;">Type to find accounts...</span>`; 
+            document.getElementById("searchViewTab").style.display = "block"; 
+        }
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
@@ -410,6 +424,7 @@
             closeModal('postModal');
         }
 
+        /* LIVE FEED ENGINE WITH LIKE, COMMENT, SHARE ONLY */
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
@@ -450,11 +465,9 @@
                             ${videoBlock}
                             
                             <div class="action-tray">
-                                <div class="action-tray-left">
-                                    <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')">🤍</div>
-                                    <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
-                                    <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}')">🔖</div>
-                                </div>
+                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')">🤍</div>
+                                <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
+                                <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
                             </div>
                             
                             <div class="post-text-details">
@@ -475,9 +488,21 @@
                     
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
                     listenToLivePostComments(doc.id);
-                    verifyIfPostAlreadySavedByUser(doc.id);
                 });
             });
+        }
+
+        /* NATIVE SHARE INTEGRATION FOR CHANNELS */
+        function triggerNativeShareApi(author, text) {
+            if (navigator.share) {
+                navigator.share({
+                    title: `OurSpace Post by @${author}`,
+                    text: `${text} - Check it out on OurSpace!`,
+                    url: window.location.href
+                }).catch(err => console.log(err));
+            } else {
+                alert(`Link copied for @${author}'s post!`);
+            }
         }
 
         function togglePostVideoSoundAudio(id, event) {
@@ -535,9 +560,52 @@
             });
         }
 
+        /* ADVANCED LIVE INSTANT USER SEARCH REGISTRY */
+        function executeLiveUserSearch() {
+            let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
+            let targetBox = document.getElementById("searchResultsFeedback");
+            
+            if(!query) {
+                targetBox.innerHTML = `<span style="color:#8a8d9b; font-size:14px; display:block; margin-top:20px;">Type to find accounts...</span>`;
+                return;
+            }
+
+            db.collection("users").get().then(snap => {
+                targetBox.innerHTML = "";
+                let matchesFound = 0;
+
+                snap.forEach(doc => {
+                    let userData = doc.data();
+                    let userNameString = userData.username.toLowerCase();
+                    
+                    // Instant Prefix/Sub-string match logic
+                    if(userNameString.includes(query)) {
+                        matchesFound++;
+                        let avatarMarkup = userData.avatar ? `<img src="${userData.avatar}">` : "👤";
+                        
+                        targetBox.innerHTML += `
+                            <div class="search-user-card" onclick="navigateToUserProfile('${userData.username}')">
+                                <div class="search-user-info">
+                                    <div class="search-user-avatar">${avatarMarkup}</div>
+                                    <div class="search-user-details">
+                                        <h4>@${userData.username}</h4>
+                                        <p>${userData.bio || 'No bio available'}</p>
+                                    </div>
+                                </div>
+                                <span style="color:#c77dff; font-size:18px;">➔</span>
+                            </div>`;
+                    }
+                });
+
+                if(matchesFound === 0) {
+                    targetBox.innerHTML = `<span style="color:#ff5555; font-size:14px; display:block; margin-top:20px;">No matching ID found!</span>`;
+                }
+            });
+        }
+
         function navigateToUserProfile(targetUser) {
             hideAllViews(); viewedUser = targetUser;
-            document.getElementById("profUsername").innerText = targetUser;
+            document.getElementById("profUsername").innerText = "@" + targetUser;
             document.getElementById("profileGridMasterAvatar").innerHTML = "👤";
             
             db.collection("users").where("username", "==", targetUser).get().then(snapshot => {
@@ -589,44 +657,15 @@
             if(tab === "posts") {
                 db.collection("posts").where("author", "==", viewedUser).get().then(snap => {
                     document.getElementById("postCountNum").innerText = snap.size;
-                    if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert">No Posts Yet</div>`; return; }
-                    snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item">${doc.data().video ? `<video src="${doc.data().video}"></video>` : `📝`}</div>`; });
+                    if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert" style="grid-column: 1/4; margin-top:20px;">No Posts Yet</div>`; return; }
+                    snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item" onclick="showFeed()">${doc.data().video ? `<video src="${doc.data().video}"></video>` : `📝`}</div>`; });
                 });
             } else {
                 db.collection("users").doc(currentUID).collection("savedPosts").get().then(snap => {
-                    if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert">No Saved Posts</div>`; return; }
-                    snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item"><video src="${doc.data().video}"></video></div>`; });
+                    if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert" style="grid-column: 1/4; margin-top:20px;">No Saved Posts</div>`; return; }
+                    snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item" onclick="showFeed()"><video src="${doc.data().video}"></video></div>`; });
                 });
             }
-        }
-
-        function triggerSaveHandler(el, postId) {
-            db.collection("posts").doc(postId).get().then(doc => {
-                if(doc.exists) {
-                    let d = doc.data();
-                    let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
-                    ref.get().then(sDoc => {
-                        if(sDoc.exists) {
-                            ref.delete().then(() => { el.style.color = "#f1f3f9"; });
-                        } else {
-                            ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                               .then(() => { el.style.color = "#c77dff"; });
-                        }
-                    });
-                }
-            });
-        }
-
-        function verifyIfPostAlreadySavedByUser(postId) {
-            db.collection("users").doc(currentUID).collection("savedPosts").doc(postId).get().then(doc => {
-                if(doc.exists) {
-                    let postEl = document.getElementById(`post_${postId}`);
-                    if(postEl) {
-                        let btn = postEl.querySelector('[onclick*="triggerSaveHandler"]');
-                        if(btn) btn.style.color = "#c77dff";
-                    }
-                }
-            });
         }
 
         function showSpaceReels() {
@@ -675,7 +714,6 @@
             }
         }
 
-        function executeStandaloneUserSearch() { let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase(); db.collection("users").where("username", "==", query).get().then(snap => { if(!snap.empty) { navigateToUserProfile(query); } else { document.getElementById("searchResultFeedback").innerHTML = `<span>Not Found</span>`; } }); }
         function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         
         function triggerLikeHandler(el, postId) {
