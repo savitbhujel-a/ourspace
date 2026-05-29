@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Production Instagram Edition</title>
+    <title>OurSpace - Final Fixed Widget Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -15,6 +15,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 
     <style>
         /* CORE RESET & DARK THEMING */
@@ -32,7 +34,7 @@
         .logo { font-size: 2.6em; font-weight: 800; margin-bottom: 25px; background: linear-gradient(45deg, #ff758c, #ff7eb3); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
         input, textarea { width: 100%; padding: 14px; margin-bottom: 16px; background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; color: #fff; font-size: 14px; font-family: inherit; }
         input:focus, textarea:focus { outline: none; background-color: rgba(255, 255, 255, 0.08); border-color: rgba(0, 149, 246, 0.5); }
-        .file-label { display: block; padding: 12px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 13.5px; text-align: center; }
+        .widget-trigger-btn { display: block; width: 100%; padding: 14px; background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.25); border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 14px; text-align: center; color: #0095f6; font-weight: bold; }
         button.main-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #0095f6 0%, #0072b1 100%); color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; }
         button.main-btn:disabled { background: #333 !important; color: #777 !important; cursor: not-allowed; }
         .divider { display: flex; align-items: center; margin: 20px 0; color: rgba(255, 255, 255, 0.3); font-size: 13px; }
@@ -179,9 +181,10 @@
     <div class="modal-overlay" id="postModal">
         <div class="modal-card">
             <h3>Naya Post Create Karein ➕</h3><br>
-            <textarea id="postContentInput" rows="3" placeholder="60 seconds tak ki video dal sakte hain..." style="font-family: inherit; resize: none;"></textarea>
-            <label class="file-label" for="videoFileInput" id="fileLabelText">📁 Choose Video File (Max 60s)</label>
-            <input type="file" id="videoFileInput" accept="video/*" style="display: none;" onchange="updateFileLabelStatus()">
+            <textarea id="postContentInput" rows="3" placeholder="Kuch badhiya caption likho..." style="font-family: inherit; resize: none;"></textarea>
+            
+            <div class="widget-trigger-btn" id="uploadWidgetTrigger" onclick="openCloudinaryUploadWidget()">🎥 Select Video From Gallery</div>
+            
             <button class="main-btn" id="publishBtn" onclick="addNewPost()">Publish</button><br><br>
             <span class="switch-link" onclick="closeModal('postModal')">Cancel</span>
         </div>
@@ -197,6 +200,7 @@
     </div>
 
     <script>
+        // 1. Firebase Configurations (Fixed bracket & syntax completely)
         const firebaseConfig = {
             apiKey: "AIzaSyB-1zBcRW455Zd6L0JXP5QHM46fCGrXC8o",
             authDomain: "ourspace-6f129.firebaseapp.com",
@@ -207,10 +211,29 @@
             measurementId: "G-K6N9EXTB5Y"
         };
 
-        // FIXED PRESET ROUTE MATCHED WITH YOUR SCREENSHOT
-        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dcq9lsea7/video/upload"; 
-        const CLOUDINARY_PRESET = "urspace_preset"; 
+        let uploadedVideoURL = ""; // Stores compressed cloud URL
 
+        // OFFICIAL SECURE WIDGET STREAM FLOW
+        function openCloudinaryUploadWidget() {
+            window.cloudinary.openUploadWidget({
+                cloudName: "dcq9lsea7",
+                uploadPreset: "urspace_preset",
+                sources: ["local"],
+                multiple: false,
+                resourceType: "video"
+            }, (error, result) => {
+                if (!error && result && result.event === "success") {
+                    uploadedVideoURL = result.info.secure_url;
+                    document.getElementById("uploadWidgetTrigger").innerText = "✅ Video Selected!";
+                    document.getElementById("uploadWidgetTrigger").style.color = "#00ff88";
+                }
+                if (error) {
+                    alert("Widget Upload Error! Settings matched correctly.");
+                }
+            });
+        }
+
+        // Initialize Firebase safely
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -259,14 +282,6 @@
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
-        function updateFileLabelStatus() {
-            let fileInput = document.getElementById("videoFileInput");
-            let label = document.getElementById("fileLabelText");
-            if(fileInput.files.length > 0) {
-                label.innerText = "✅ " + fileInput.files[0].name.substring(0, 15) + "...";
-            }
-        }
-
         function handleSignup(e) {
             e.preventDefault();
             let u = document.getElementById("signUser").value.trim().toLowerCase();
@@ -294,48 +309,34 @@
 
         function addNewPost() {
             let txt = document.getElementById("postContentInput").value.trim();
-            let fileInput = document.getElementById("videoFileInput");
             let btn = document.getElementById("publishBtn");
 
-            if(!txt && fileInput.files.length === 0) { alert("Khali post publish nahi ho sakta!"); return; }
+            if(!txt && !uploadedVideoURL) { alert("Khali post publish nahi ho sakta!"); return; }
 
-            btn.innerText = "Uploading... Wait...";
+            btn.innerText = "Publishing... Wait...";
             btn.disabled = true;
 
-            if(fileInput.files.length > 0) {
-                let file = fileInput.files[0];
-                let formData = new FormData();
-                formData.append('file', file);
-                formData.append('upload_preset', CLOUDINARY_PRESET);
-
-                fetch(CLOUDINARY_URL, { method: 'POST', body: formData })
-                .then(response => response.json())
-                .then(data => {
-                    if(data.secure_url) {
-                        return db.collection("posts").add({
-                            author: currentUsername, text: txt, video: data.secure_url, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                    } else { throw new Error("Upload Failed"); }
-                })
-                .then(() => finalizePostCreation())
-                .catch(err => {
-                    alert("Upload error! Please check connection.");
-                    btn.innerText = "Publish";
-                    btn.disabled = false;
-                });
-            } else {
-                db.collection("posts").add({
-                    author: currentUsername, text: txt, video: "", timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => finalizePostCreation());
-            }
+            db.collection("posts").add({
+                author: currentUsername, 
+                text: txt, 
+                video: uploadedVideoURL, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                finalizePostCreation();
+            }).catch(err => {
+                alert("Firestore Error!");
+                btn.innerText = "Publish";
+                btn.disabled = false;
+            });
         }
 
         function finalizePostCreation() {
             let btn = document.getElementById("publishBtn");
             btn.innerText = "Publish"; btn.disabled = false;
+            uploadedVideoURL = "";
             document.getElementById("postContentInput").value = "";
-            document.getElementById("videoFileInput").value = "";
-            document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Max 60s)";
+            document.getElementById("uploadWidgetTrigger").innerText = "🎥 Select Video From Gallery";
+            document.getElementById("uploadWidgetTrigger").style.color = "#0095f6";
             closeModal('postModal');
         }
 
