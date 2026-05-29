@@ -360,7 +360,7 @@
             <textarea id="postContentInput" rows="3" placeholder="Kuch badhiya caption likho..." style="font-family: inherit; resize: none;"></textarea>
             <label class="file-label" for="videoFileInput" id="fileLabelText">📁 Choose Video File (Optional)</label>
             <input type="file" id="videoFileInput" accept="video/*" style="display: none;" onchange="updateFileLabelStatus()">
-            <button class="main-btn" onclick="addNewPost()">Publish</button><br><br>
+            <button class="main-btn" id="publishBtn" onclick="addNewPost()">Publish</button><br><br>
             <span class="switch-link" onclick="closeModal('postModal')">Cancel</span>
         </div>
     </div>
@@ -441,7 +441,14 @@
             let fileInput = document.getElementById("videoFileInput");
             let label = document.getElementById("fileLabelText");
             if(fileInput.files.length > 0) {
-                label.innerText = "✅ " + fileInput.files[0].name.substring(0, 15) + "...";
+                let sizeInMB = fileInput.files[0].size / (1024 * 1024);
+                if(sizeInMB > 12) {
+                    alert("Bhai video 12MB se badi h! Firebase crash se bachne ke liye choti video chunein.");
+                    fileInput.value = "";
+                    label.innerText = "📁 Choose Video File (Optional)";
+                } else {
+                    label.innerText = "✅ " + fileInput.files[0].name.substring(0, 15) + "...";
+                }
             }
         }
 
@@ -476,15 +483,25 @@
         function addNewPost() {
             let txt = document.getElementById("postContentInput").value.trim();
             let fileInput = document.getElementById("videoFileInput");
+            let btn = document.getElementById("publishBtn");
 
             if(!txt && fileInput.files.length === 0) { alert("Khali post publish nahi ho sakta!"); return; }
+
+            btn.innerText = "Uploading... Wait...";
+            btn.disabled = true;
 
             if(fileInput.files.length > 0) {
                 let reader = new FileReader();
                 reader.onload = function(event) {
                     db.collection("posts").add({
                         author: currentUsername, text: txt, video: event.target.result, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => finalizePostCreation());
+                    }).then(() => {
+                        finalizePostCreation();
+                    }).catch(err => {
+                        alert("Upload fail! Video size thoda chota karke try karein bhai.");
+                        btn.innerText = "Publish";
+                        btn.disabled = false;
+                    });
                 };
                 reader.readAsDataURL(fileInput.files[0]);
             } else {
@@ -495,6 +512,9 @@
         }
 
         function finalizePostCreation() {
+            let btn = document.getElementById("publishBtn");
+            btn.innerText = "Publish";
+            btn.disabled = false;
             document.getElementById("postContentInput").value = "";
             document.getElementById("videoFileInput").value = "";
             document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Optional)";
@@ -535,16 +555,13 @@
             });
         }
 
-        // PERFECTED FIXED REELS SEARCH WITH SMOOTH CLOUD ENGINE
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
             
-            // Fixed direct ordering query fallback rule
             db.collection("posts").orderBy("timestamp", "desc").get().then(snapshot => {
                 let videoPost = null;
                 
-                // Smart client filter logic to match local uploaded videos
                 snapshot.forEach(doc => {
                     if(!videoPost && doc.data().video && doc.data().video !== "") {
                         videoPost = doc.data();
@@ -563,7 +580,6 @@
                 }
                 document.getElementById("reelsSpaceView").style.display = "block";
             }).catch(err => {
-                console.log(err);
                 container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai!</div>`;
                 document.getElementById("reelsSpaceView").style.display = "block";
             });
