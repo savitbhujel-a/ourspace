@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Firebase Cloud Edition</title>
+    <title>OurSpace - Production Instagram Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -91,6 +91,7 @@
             color: white; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer;
         }
         button.main-btn:hover { background: linear-gradient(135deg, #1fa2ff 0%, #1281c7 100%); }
+        button.main-btn:disabled { background: #333 !important; color: #777 !important; cursor: not-allowed; }
 
         .divider { display: flex; align-items: center; margin: 20px 0; color: rgba(255, 255, 255, 0.3); font-size: 13px; }
         .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
@@ -154,30 +155,6 @@
             font-size: 24px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 50;
         }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-
-        .custom-timeline-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.2); z-index: 30; }
-        .custom-progress-fill { height: 100%; width: 0%; background: #0095f6; }
-
-        .audio-deck-trigger {
-            position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 12px; border-radius: 20px;
-            font-size: 11px; z-index: 40; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;
-            font-weight: 600;
-        }
-
-        .post-overlay-header { 
-            position: absolute; top: 0; left: 0; width: 100%; padding: 15px; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%);
-            display: flex; justify-content: space-between; align-items: center; z-index: 10;
-        }
-        .post-overlay-header b { color: #fff; text-shadow: 0 1px 4px rgba(0,0,0,0.6); }
-
-        .post-text-details { padding: 15px; background: #0b0c10; border-top: 1px solid rgba(255,255,255,0.05); }
-        .post-caption-txt { font-size: 14px; color: #f1f3f9; margin-bottom: 12px; line-height: 1.4; }
-
-        .action-tray { display: flex; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; }
-        .action-tray-btn { cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 4px; user-select: none; color: rgba(255,255,255,0.7); }
-        .action-tray-btn:hover { color: #0095f6; }
 
         /* ==========================================
            4. REELS (SPACE VIEW) OVERHAUL
@@ -357,8 +334,8 @@
     <div class="modal-overlay" id="postModal">
         <div class="modal-card">
             <h3>Naya Post Create Karein ➕</h3><br>
-            <textarea id="postContentInput" rows="3" placeholder="Kuch badhiya caption likho..." style="font-family: inherit; resize: none;"></textarea>
-            <label class="file-label" for="videoFileInput" id="fileLabelText">📁 Choose Video File (Optional)</label>
+            <textarea id="postContentInput" rows="3" placeholder="60 seconds tak ki video dal sakte hain..." style="font-family: inherit; resize: none;"></textarea>
+            <label class="file-label" for="videoFileInput" id="fileLabelText">📁 Choose Video File (Max 60s)</label>
             <input type="file" id="videoFileInput" accept="video/*" style="display: none;" onchange="updateFileLabelStatus()">
             <button class="main-btn" id="publishBtn" onclick="addNewPost()">Publish</button><br><br>
             <span class="switch-link" onclick="closeModal('postModal')">Cancel</span>
@@ -375,6 +352,7 @@
     </div>
 
     <script>
+        // 1. Firebase Configurations
         const firebaseConfig = {
             apiKey: "AIzaSyB-1zBcRW455Zd6L0JXP5QHM46fCGrXC8o",
             authDomain: "ourspace-6f129.firebaseapp.com",
@@ -385,7 +363,11 @@
             measurementId: "G-K6N9EXTB5Y"
         };
 
-        // Initialize Firebase Engines
+        // 2. Cloudinary Credentials (Your Cloud Name Plugs Here)
+        const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dcq9lsea7/video/upload"; 
+        const CLOUDINARY_PRESET = "ourspace_preset"; 
+
+        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -403,9 +385,7 @@
                         openApp();
                     } else { logout(); }
                 });
-            } else {
-                toggleView('loginBox');
-            }
+            } else { toggleView('loginBox'); }
         });
 
         function toggleView(boxId) {
@@ -433,7 +413,6 @@
 
         function showFeed() { hideAllViews(); document.getElementById("feedView").style.display = "block"; }
         function showSearchViewTab() { hideAllViews(); document.getElementById("searchResultFeedback").innerHTML = ""; document.getElementById("searchViewTab").style.display = "block"; }
-
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
@@ -441,14 +420,7 @@
             let fileInput = document.getElementById("videoFileInput");
             let label = document.getElementById("fileLabelText");
             if(fileInput.files.length > 0) {
-                let sizeInMB = fileInput.files[0].size / (1024 * 1024);
-                if(sizeInMB > 12) {
-                    alert("Bhai video 12MB se badi h! Firebase crash se bachne ke liye choti video chunein.");
-                    fileInput.value = "";
-                    label.innerText = "📁 Choose Video File (Optional)";
-                } else {
-                    label.innerText = "✅ " + fileInput.files[0].name.substring(0, 15) + "...";
-                }
+                label.innerText = "✅ " + fileInput.files[0].name.substring(0, 15) + "...";
             }
         }
 
@@ -459,13 +431,10 @@
             let p = document.getElementById("signPass").value;
 
             db.collection("users").where("username", "==", u).get().then(snapshot => {
-                if(!snapshot.empty) {
-                    alert("Bhai, ye username pehle se kisi ne le rakha hai!");
-                } else {
+                if(!snapshot.empty) { alert("Bhai, ye username pehle se kisi ne le rakha hai!"); } 
+                else {
                     auth.createUserWithEmailAndPassword(em, p).then(cred => {
-                        return db.collection("users").doc(cred.user.uid).set({
-                            username: u, email: em, bio: "Welcome to my space."
-                        });
+                        return db.collection("users").doc(cred.user.uid).set({ username: u, email: em, bio: "Welcome to my space." });
                     }).catch(err => alert(err.message));
                 }
             });
@@ -480,6 +449,7 @@
 
         function logout() { auth.signOut(); }
 
+        // INSTAGRAM PRODUCTION VIDEO UPLOAD LOGIC
         function addNewPost() {
             let txt = document.getElementById("postContentInput").value.trim();
             let fileInput = document.getElementById("videoFileInput");
@@ -491,19 +461,27 @@
             btn.disabled = true;
 
             if(fileInput.files.length > 0) {
-                let reader = new FileReader();
-                reader.onload = function(event) {
-                    db.collection("posts").add({
-                        author: currentUsername, text: txt, video: event.target.result, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => {
-                        finalizePostCreation();
-                    }).catch(err => {
-                        alert("Upload fail! Video size thoda chota karke try karein bhai.");
-                        btn.innerText = "Publish";
-                        btn.disabled = false;
-                    });
-                };
-                reader.readAsDataURL(fileInput.files[0]);
+                let file = fileInput.files[0];
+                let formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', CLOUDINARY_PRESET);
+
+                // Direct background compression upload stream
+                fetch(CLOUDINARY_URL, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.secure_url) {
+                        return db.collection("posts").add({
+                            author: currentUsername, text: txt, video: data.secure_url, timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } else { throw new Error("Preset settings missing!"); }
+                })
+                .then(() => finalizePostCreation())
+                .catch(err => {
+                    alert("Upload error! Make sure your upload preset is Unsigned inside Cloudinary Settings.");
+                    btn.innerText = "Publish";
+                    btn.disabled = false;
+                });
             } else {
                 db.collection("posts").add({
                     author: currentUsername, text: txt, video: "", timestamp: firebase.firestore.FieldValue.serverTimestamp()
@@ -513,20 +491,18 @@
 
         function finalizePostCreation() {
             let btn = document.getElementById("publishBtn");
-            btn.innerText = "Publish";
-            btn.disabled = false;
+            btn.innerText = "Publish"; btn.disabled = false;
             document.getElementById("postContentInput").value = "";
             document.getElementById("videoFileInput").value = "";
-            document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Optional)";
+            document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Max 60s)";
             closeModal('postModal');
         }
 
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
-                let container = document.getElementById("dynamicFeedContainer");
-                container.innerHTML = "";
+                let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
                 if(snapshot.empty) {
-                    container.innerHTML = `<div class="no-posts-alert">Timeline khali hai bhai, pehla cloud post dalo!</div>`;
+                    container.innerHTML = `<div class="no-posts-alert">Timeline khali hai bhai, pehla video dalo!</div>`;
                     return;
                 }
                 snapshot.forEach(doc => {
@@ -558,18 +534,13 @@
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
-            
             db.collection("posts").orderBy("timestamp", "desc").get().then(snapshot => {
                 let videoPost = null;
-                
                 snapshot.forEach(doc => {
-                    if(!videoPost && doc.data().video && doc.data().video !== "") {
-                        videoPost = doc.data();
-                    }
+                    if(!videoPost && doc.data().video && doc.data().video !== "") { videoPost = doc.data(); }
                 });
-
                 if (!videoPost) {
-                    container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai! <br><br>Pehle ➕ Post option se video upload karo.</div>`;
+                    container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai!</div>`;
                 } else {
                     container.innerHTML = `
                         <video src="${videoPost.video}" autoplay loop playsinline muted style="width:100%; height:100%; object-fit:cover;"></video>
@@ -579,33 +550,20 @@
                         </div>`;
                 }
                 document.getElementById("reelsSpaceView").style.display = "block";
-            }).catch(err => {
-                container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai!</div>`;
-                document.getElementById("reelsSpaceView").style.display = "block";
             });
         }
 
         function navigateToUserProfile(targetUser) {
             hideAllViews(); viewedUser = targetUser;
             document.getElementById("profUsername").innerText = "@" + targetUser;
-
             db.collection("users").where("username", "==", targetUser).get().then(snapshot => {
-                if(!snapshot.empty) {
-                    snapshot.forEach(doc => {
-                        document.getElementById("profBioText").innerText = doc.data().bio || "No bio added yet.";
-                    });
-                }
+                if(!snapshot.empty) { snapshot.forEach(doc => { document.getElementById("profBioText").innerText = doc.data().bio || "No bio added yet."; }); }
             });
-
             let actionBtn = document.getElementById("profileActionBtn");
             actionBtn.style.display = (targetUser === currentUsername) ? "inline-block" : "none";
-
             let grid = document.getElementById("dynamicGridContainer"); grid.innerHTML = "";
             db.collection("posts").where("author", "==", targetUser).get().then(snapshot => {
-                if(snapshot.empty) {
-                    grid.innerHTML = `<div class="no-posts-alert">No Posts Yet 📸</div>`;
-                    return;
-                }
+                if(snapshot.empty) { grid.innerHTML = `<div class="no-posts-alert">No Posts Yet 📸</div>`; return; }
                 snapshot.forEach(doc => {
                     let p = doc.data();
                     let gridInner = p.video ? `<video src="${p.video}"></video>` : `<div style="padding:15px; font-size:12px;">📝<br>${p.text.substring(0,15)}...</div>`;
@@ -617,12 +575,9 @@
 
         function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
         function openEditProfileModal() { document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
-
         function saveProfileData() {
             let newBio = document.getElementById("editBioInput").value.trim();
-            db.collection("users").doc(currentUID).update({ bio: newBio }).then(() => {
-                closeModal('editProfileModal'); navigateToUserProfile(currentUsername);
-            });
+            db.collection("users").doc(currentUID).update({ bio: newBio }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); });
         }
 
         function executeStandaloneUserSearch() {
@@ -636,15 +591,12 @@
         function toggleVideoPlayPauseState(containerEl, id) {
             let vid = document.getElementById(`vidElement_${id}`);
             let toast = document.getElementById(`toast_${id}`);
-            if(vid.paused) { vid.play(); toast.innerHTML = "▶"; } 
-            else { vid.pause(); toast.innerHTML = "⏸"; }
-            toast.classList.add("show-toast");
-            setTimeout(() => toast.classList.remove("show-toast"), 1000);
+            if(vid.paused) { vid.play(); toast.innerHTML = "▶"; } else { vid.pause(); toast.innerHTML = "⏸"; }
+            toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000);
         }
 
         function triggerLikeHandler(el) {
-            let countSpan = el.querySelector('span');
-            let current = parseInt(countSpan.innerText);
+            let countSpan = el.querySelector('span'); let current = parseInt(countSpan.innerText);
             if(el.style.color === "rgb(0, 149, 246)") { el.style.color = "inherit"; countSpan.innerText = current - 1; } 
             else { el.style.color = "#0095f6"; countSpan.innerText = current + 1; }
         }
