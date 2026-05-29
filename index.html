@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Premium Purple Edition</title>
+    <title>OurSpace - Ultimate Premium Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -36,7 +36,7 @@
         .glass-box { background-color: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(157, 78, 221, 0.25); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; display: none; }
         .logo { font-size: 2.6em; font-weight: 800; margin-bottom: 25px; background: linear-gradient(45deg, #e0aaff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
         input, textarea { width: 100%; padding: 14px; margin-bottom: 16px; background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; color: #fff; font-size: 14px; font-family: inherit; }
-        input:focus, textarea:focus { outline: none; background-color: rgba(255, 255, 255, 0.07); border-color: #9d4eded; }
+        input:focus, textarea:focus { outline: none; background-color: rgba(255, 255, 255, 0.07); border-color: #9d4edd; }
         .widget-trigger-btn { display: block; width: 100%; padding: 14px; background: rgba(157,78,221,0.06); border: 1px dashed rgba(157,78,221,0.5); border-radius: 12px; cursor: pointer; margin-bottom: 16px; font-size: 14px; text-align: center; color: #c77dff; font-weight: bold; }
         button.main-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #9d4edd 0%, #5a189a 100%); color: #fff; border: none; border-radius: 12px; font-weight: bold; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(157, 78, 221, 0.3); }
         button.main-btn:disabled { background: #333 !important; color: #777 !important; cursor: not-allowed; box-shadow: none; }
@@ -48,9 +48,9 @@
         #appScreen { display: none; width: 100%; height: 100vh; flex-direction: column; position: fixed; top: 0; left: 0; background: linear-gradient(135deg, #090613 0%, #120c24 100%); z-index: 100; }
         .content-area { flex: 1; padding: 25px 0 40px 0; overflow-y: auto; width: 100%; display: flex; flex-direction: column; align-items: center; }
         
-        /* PREMIUM PURPLE TIMELINE LOOK */
-        #feedView { width: 100%; max-width: 470px; margin: 0 auto; }
-        .post { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.12); border-radius: 20px; width: 100%; margin-bottom: 24px; padding: 4px 0; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        /* TIMELINE LAYOUT */
+        #feedView { width: 100%; max-width: 470px; margin: 0 auto; padding: 0 10px; }
+        .post { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.12); border-radius: 20px; width: 100%; margin-bottom: 24px; padding: 4px 0; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; }
         
         .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; }
         .post-header-left { display: flex; align-items: center; gap: 10px; }
@@ -64,6 +64,9 @@
         .post video { width: 100%; height: 100%; object-fit: cover; display: block; }
         .video-status-toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(0, 0, 0, 0.75); color: #c77dff; padding: 15px; border-radius: 50%; font-size: 24px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 50; }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        
+        /* CHOTA MUTE BUTTON OVERLAY */
+        .mute-btn-overlay { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2); width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; z-index: 60; cursor: pointer; }
 
         .action-tray { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; }
         .action-tray-left { display: flex; gap: 18px; }
@@ -73,7 +76,7 @@
         .likes-count-text { font-weight: 700; color: #fff; margin-bottom: 4px; }
         .post-caption-block b { color: #c77dff; margin-right: 6px; cursor: pointer; }
 
-        /* COMMENTS EXTRA DRAWER SYSTEM */
+        /* COMMENTS SYSTEM */
         .post-comments-section { padding: 12px 14px; border-top: 1px solid rgba(157, 78, 221, 0.1); display: none; background: rgba(0,0,0,0.3); border-radius: 0 0 20px 20px; }
         .comments-list-box { max-height: 140px; overflow-y: auto; margin-bottom: 10px; font-size: 13px; }
         .comment-item { margin-bottom: 6px; }
@@ -82,19 +85,19 @@
         .comment-input-form-holder input { margin-bottom: 0; padding: 10px; font-size: 13px; border-radius: 20px; background: #090613; border: 1px solid rgba(157, 78, 221, 0.3); }
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
-        /* REELS (SPACE VIEW) */
+        /* SPACE REELS ENGINE */
         #reelsSpaceView { display: none; width: 100%; max-width: 420px; height: calc(100vh - 180px); margin: 0 auto; position: relative; background: #000; border-radius: 24px; border: 1px solid rgba(157, 78, 221, 0.25); overflow: hidden; }
         .reel-video-wrapper { width: 100%; height: 100%; position: relative; }
         .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
         .reel-overlay-info { position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 50; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 10px; border-radius: 12px; }
         .reel-overlay-info b { font-size: 15px; color: #c77dff; display: block; }
 
-        /* SEARCH TAB */
+        /* SEARCH MODULE */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; padding: 0 15px; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
         .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
 
-        /* PROFILE SCREEN CONTROLS WITH DP CLICK INSTANT CHANGER */
+        /* PROFILE CONFIGURATIONS */
         #profileView { display: none; width: 100%; max-width: 650px; margin: 0 auto; padding: 0 15px; }
         .profile-header { display: flex; align-items: center; gap: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(157, 78, 221, 0.15); width: 100%; }
         .profile-pic-container { width: 95px; height: 95px; border-radius: 50%; background: linear-gradient(45deg, #5a189a, #9d4edd, #e0aaff); display: flex; justify-content: center; align-items: center; padding: 2px; cursor: pointer; position: relative; }
@@ -110,24 +113,28 @@
         .post-grid-item video { width: 100%; height: 100%; object-fit: cover; }
         .action-inline-btn { margin-left: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid rgba(157,78,221,0.3); background: rgba(157,78,221,0.05); color: #c77dff; cursor: pointer; }
 
-        /* WINDOW MODAL OVERLAYS */
+        /* MODAL LAYER OVERLAYS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); justify-content: center; align-items: center; z-index: 99999 !important; padding: 15px; }
         .modal-card { background: #110d1f; border: 1px solid rgba(157, 78, 221, 0.3); padding: 25px 20px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; }
         .dropdown-menu-list { background: #18132b; border: 1px solid rgba(157, 78, 221, 0.3); border-radius: 12px; padding: 5px 0; display: none; position: absolute; right: 14px; top: 45px; z-index: 100; min-width: 130px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         .dropdown-menu-item { padding: 10px 14px; font-size: 13px; color: #ff5555; cursor: pointer; text-align: left; font-weight: bold; }
         .dropdown-menu-item:hover { background: rgba(255,85,85,0.1); }
+        
+        .security-badge { text-align: left; background: rgba(255,255,255,0.03); border: 1px solid rgba(157,78,221,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; font-size: 12px; }
 
-        /* RESPONSIVE PREMIUM NAVIGATION SYSTEMS */
+        /* RESPONSIVE LAYOUTS FOR PHONES & LAPTOPS */
         @media screen and (min-width: 769px) {
             .top-nav { background: rgba(9, 6, 19, 0.95); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(157,78,221,0.2); width: 100%; }
             .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             .nav-icons { display: flex; gap: 8px; align-items: center; }
             .nav-icons span { font-size: 13px; cursor: pointer; display: inline-block; padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157,78,221,0.1); }
             .nav-icons span:hover { color: #c77dff; border-color: #c77dff; }
+            .desktop-hidden { display: none !important; }
         }
         @media screen and (max-width: 768px) {
+            /* REMOVED EXTRA MID LOGOS / ALIGNMENTS CLEANED FOR MOBILE DEVICE */
             .top-nav { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #090613; border-bottom: 1px solid rgba(157,78,221,0.15); width: 100%; }
-            .nav-logo { font-size: 1.4em; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 auto; }
+            .nav-logo { font-size: 1.4em; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
             .nav-icons { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; background: #090613 !important; border-top: 1px solid rgba(157,78,221,0.2) !important; padding: 10px 8px 12px 8px !important; display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 4px !important; z-index: 9999 !important; }
             .nav-icons span { padding: 10px 2px !important; font-size: 11px !important; font-weight: 600 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; color: #a5a7b4; }
             .nav-icons span:hover { color: #c77dff !important; }
@@ -167,14 +174,12 @@
     <div id="appScreen">
         <div class="top-nav">
             <div class="nav-logo" onclick="showFeed()">OurSpace ✨</div>
-            <div style="font-size: 20px; cursor: pointer; color: #c77dff;" onclick="openModal('settingsModal')" class="desktop-hidden">⚙️</div>
             <div class="nav-icons">
                 <span onclick="showFeed()">🏠 Home</span>
                 <span onclick="showSearchViewTab()">🔍 Search</span>
                 <span onclick="showSpaceReels()">▶️ Space</span>
                 <span onclick="openModal('postModal')">➕ Post</span>
                 <span onclick="viewMyOwnProfile()">👤 Profile</span>
-                <span style="color: #ff5555;" onclick="openModal('settingsModal')">⚙️ Settings</span>
             </div>
         </div>
         
@@ -196,13 +201,13 @@
 
             <div id="profileView">
                 <div class="profile-header">
-                    <input type="file" id="userAvatarFileHiddenInput" accept="image/*" style="display:none;" onchange="uploadNewUserProfileAvatar()">
                     <div class="profile-pic-container" onclick="triggerProfileAvatarChangerWindow()"><div class="inner-pic" id="profileGridMasterAvatar">👤</div></div>
                     <div class="profile-details">
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                             <h2 id="profUsername">@user</h2>
                             <div id="followActionContainer"></div>
                             <button class="action-inline-btn" id="profileActionBtn" onclick="openEditProfileModal()">Edit Profile</button>
+                            <button class="action-inline-btn" style="border-color:#ff5555; color:#ff3b30;" onclick="openModal('settingsModal')">⚙️ Security</button>
                         </div>
                         <div class="profile-stats">
                             <span>Posts: <b id="postCountNum">0</b></span>
@@ -236,16 +241,29 @@
     <div class="modal-overlay" id="editProfileModal">
         <div class="modal-card">
             <h3>Edit Profile 👤</h3><br>
+            <input type="text" id="editUsernameInput" placeholder="Badlein Apna Username">
             <textarea id="editBioInput" rows="3" placeholder="Apna Bio likhein"></textarea>
-            <button class="main-btn" onclick="saveProfileData()">Save Bio</button><br><br>
+            <button class="main-btn" onclick="saveProfileData()">Save Profile</button><br><br>
             <span class="switch-link" onclick="closeModal('editProfileModal')">Cancel</span>
         </div>
     </div>
 
     <div class="modal-overlay" id="settingsModal">
         <div class="modal-card">
-            <h3 style="color:#c77dff;">⚙️ System Settings</h3><br>
-            <p style="font-size:13px; color:#8a8d9b;">OurSpace Account Configuration Engine</p><br>
+            <h3 style="color:#c77dff; margin-bottom:15px;">⚙️ Security Registry</h3>
+            
+            <div class="security-badge">
+                <span>Current Gmail:</span>
+                <b id="currentActiveEmailDisplay" style="color:#fff; display:block; word-break:break-all;">Loading account...</b>
+            </div>
+
+            <input type="email" id="secureEmailInput" placeholder="Enter new email address">
+            <button class="main-btn" style="padding:10px; font-size:13px; margin-bottom:16px;" onclick="executeEmailUpdateEngine()">Replace Email</button>
+            
+            <input type="password" id="securePasswordInput" placeholder="Enter new custom password">
+            <button class="main-btn" style="padding:10px; font-size:13px; background:linear-gradient(135deg, #7b2cbf, #5a189a);" onclick="executePasswordUpdateEngine()">Update Security Password</button>
+            
+            <div class="divider"></div>
             <button class="main-btn" style="background:linear-gradient(45deg, #ff5555, #cc3333); color:white;" onclick="logout()">Logout Account</button><br><br>
             <span class="switch-link" onclick="closeModal('settingsModal')">Close</span>
         </div>
@@ -296,6 +314,7 @@
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUID = user.uid;
+                document.getElementById("currentActiveEmailDisplay").innerText = user.email;
                 db.collection("users").doc(user.uid).get().then(doc => {
                     if(doc.exists) {
                         currentUsername = doc.data().username;
@@ -304,6 +323,28 @@
                 });
             } else { toggleView('loginBox'); }
         });
+
+        // EMAIL & PASSWORD CORE ENGINES
+        function executeEmailUpdateEngine() {
+            let newEmail = document.getElementById("secureEmailInput").value.trim();
+            if(!newEmail) return alert("Pehle valid email id likhein!");
+            auth.currentUser.updateEmail(newEmail).then(() => {
+                db.collection("users").doc(currentUID).update({ email: newEmail }).then(() => {
+                    alert("Email successfully replace ho gaya hai!");
+                    window.location.reload();
+                });
+            }).catch(err => alert("Re-login required! Security wajah se is change se pehle fir se login karein."));
+        }
+
+        function executePasswordUpdateEngine() {
+            let newPass = document.getElementById("securePasswordInput").value;
+            if(!newPass || newPass.length < 6) return alert("Password kam se kam 6 char ka hona chahiye!");
+            auth.currentUser.updatePassword(newPass).then(() => {
+                alert("Security Password update ho gaya h!");
+                document.getElementById("securePasswordInput").value = "";
+                closeModal('settingsModal');
+            }).catch(err => alert("Error: Re-login required!"));
+        }
 
         function toggleView(boxId) {
             document.getElementById("appScreen").style.display = "none";
@@ -377,7 +418,7 @@
             closeModal('postModal');
         }
 
-        // FIXED Look, Real Time/Date Format & Conditional 3-Dot Delete Options
+        // LIVE FEED ENGINE WITH UNMUTED DYNAMIC PLAYER & CHOTA TOGGLE MUTE OPTION
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
@@ -391,17 +432,18 @@
                         postDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     }
 
+                    // SOUND UNMUTED DEFAULT OVERRIDE SYSTEM WITH MUTE OVERLAY CONTROL
                     let videoBlock = p.video ? `
-                        <div class="post-video-container" onclick="toggleVideoPlayPauseState(this, '${doc.id}')">
-                            <video id="vidElement_${doc.id}" src="${p.video}" autoplay muted loop playsinline></video>
+                        <div class="post-video-container" style="position:relative;">
+                            <video id="vidElement_${doc.id}" src="${p.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${doc.id}')"></video>
                             <div class="video-status-toast" id="toast_${doc.id}">▶</div>
+                            <div class="mute-btn-overlay" onclick="togglePostVideoSoundAudio('${doc.id}', event)" id="muteBtn_${doc.id}">🔊</div>
                         </div>` : "";
 
-                    // Show 3-dots dropdown list block option only to post owner
                     let threeDotsBlock = (p.author === currentUsername) ? `<div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>` : "";
 
                     container.innerHTML += `
-                        <div class="post" id="post_${doc.id}" style="position:relative;">
+                        <div class="post" id="post_${doc.id}">
                             <div class="post-header">
                                 <div class="post-header-left">
                                     <div class="post-avatar" id="feedAvatarHolder_${doc.id}">👤</div>
@@ -443,8 +485,20 @@
                     
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
                     listenToLivePostComments(doc.id);
+                    verifyIfPostAlreadySavedByUser(doc.id);
                 });
             });
+        }
+
+        function togglePostVideoSoundAudio(id, event) {
+            event.stopPropagation();
+            let vid = document.getElementById(`vidElement_${id}`);
+            let btn = document.getElementById(`muteBtn_${id}`);
+            if(vid.muted) {
+                vid.muted = false; btn.innerText = "🔊";
+            } else {
+                vid.muted = true; btn.innerText = "🔇";
+            }
         }
 
         function togglePostDropdownMenu(postId) {
@@ -491,7 +545,7 @@
             });
         }
 
-        // FIXED REALTIME DYNAMIC POST COUNTER ENGINE CONTROL CONNECTORS
+        // PROFILE SYSTEM INTERFACE WITH REALTIME COUNT MAPPING
         function navigateToUserProfile(targetUser) {
             hideAllViews(); viewedUser = targetUser;
             document.getElementById("profUsername").innerText = targetUser;
@@ -545,7 +599,6 @@
 
             if(tab === "posts") {
                 db.collection("posts").where("author", "==", viewedUser).get().then(snap => {
-                    // Sahi dynamic counting mapping set karke browser block update kara diya h
                     document.getElementById("postCountNum").innerText = snap.size;
                     if(snap.empty) { grid.innerHTML = `<div class="no-posts-alert">No Posts Yet</div>`; return; }
                     snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item">${doc.data().video ? `<video src="${doc.data().video}"></video>` : `📝`}</div>`; });
@@ -558,12 +611,32 @@
             }
         }
 
+        // PERFECT BOOKMARK REALTIME POST SAVE ENGINE LINK
         function triggerSaveHandler(el, postId) {
             db.collection("posts").doc(postId).get().then(doc => {
-                if(doc.exists && doc.data().video) {
-                    db.collection("users").doc(currentUID).collection("savedPosts").doc(postId).set({
-                        video: doc.data().video, savedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => { el.innerText = "🔖"; el.style.color = "#c77dff"; });
+                if(doc.exists) {
+                    let d = doc.data();
+                    let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
+                    ref.get().then(sDoc => {
+                        if(sDoc.exists) {
+                            ref.delete().then(() => { el.innerText = "🔖"; el.style.color = "#f1f3f9"; });
+                        } else {
+                            ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                               .then(() => { el.innerText = "🔖"; el.style.color = "#c77dff"; });
+                        }
+                    });
+                }
+            });
+        }
+
+        function verifyIfPostAlreadySavedByUser(postId) {
+            db.collection("users").doc(currentUID).collection("savedPosts").doc(postId).get().then(doc => {
+                if(doc.exists) {
+                    let postEl = document.getElementById(`post_${postId}`);
+                    if(postEl) {
+                        let btn = postEl.querySelector('[onclick*="triggerSaveHandler"]');
+                        if(btn) btn.style.color = "#c77dff";
+                    }
                 }
             });
         }
@@ -576,17 +649,47 @@
                 snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); } });
                 if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Space khali h!</div>`; } 
                 else {
-                    container.innerHTML = `<video src="${videoPost.video}" autoplay loop playsinline muted style="width:100%; height:100%; object-fit:cover;"></video><div class="reel-overlay-info"><b>@${videoPost.author}</b><p>${videoPost.text || ""}</p></div>`;
+                    container.innerHTML = `<video src="${videoPost.video}" autoplay loop playsinline style="width:100%; height:100%; object-fit:cover;"></video><div class="reel-overlay-info"><b>@${videoPost.author}</b><p>${videoPost.text || ""}</p></div>`;
                 }
                 document.getElementById("reelsSpaceView").style.display = "block";
             });
         }
 
         function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
-        function openEditProfileModal() { document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
-        function saveProfileData() { db.collection("users").doc(currentUID).update({ bio: document.getElementById("editBioInput").value.trim() }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
+        
+        function openEditProfileModal() { 
+            document.getElementById("editUsernameInput").value = currentUsername;
+            document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; 
+            openModal('editProfileModal'); 
+        }
+
+        // USERNAME AND BIO EDIT ENGINE FIXED
+        function saveProfileData() { 
+            let newU = document.getElementById("editUsernameInput").value.trim().toLowerCase();
+            let newB = document.getElementById("editBioInput").value.trim();
+            if(!newU) return alert("Username khali nahi ho sakta!");
+
+            if(newU !== currentUsername) {
+                db.collection("users").where("username", "==", newU).get().then(snap => {
+                    if(!snap.empty) { alert("Ye username pehle se kisi aur ka hai!"); }
+                    else {
+                        db.collection("users").doc(currentUID).update({ username: newU, bio: newB }).then(() => {
+                            currentUsername = newU;
+                            closeModal('editProfileModal'); 
+                            navigateToUserProfile(currentUsername);
+                        });
+                    }
+                });
+            } else {
+                db.collection("users").doc(currentUID).update({ bio: newB }).then(() => {
+                    closeModal('editProfileModal'); 
+                    navigateToUserProfile(currentUsername);
+                });
+            }
+        }
+
         function executeStandaloneUserSearch() { let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase(); db.collection("users").where("username", "==", query).get().then(snap => { if(!snap.empty) { navigateToUserProfile(query); } else { document.getElementById("searchResultFeedback").innerHTML = `<span>Not Found</span>`; } }); }
-        function toggleVideoPlayPauseState(containerEl, id) { let vid = document.getElementById(`vidElement_${id}`); let toast = document.getElementById(`toast_${id}`); if(vid.paused) { vid.play(); toast.innerHTML = "▶"; } else { vid.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
+        function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         
         function triggerLikeHandler(el, postId) {
             let postEl = el.closest('.post'); let countSpan = postEl.querySelector('.like-counter-val'); let current = parseInt(countSpan.innerText);
