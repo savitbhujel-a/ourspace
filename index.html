@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Perfect Fixed Responsive App</title>
+    <title>OurSpace - Clean Responsive Interface</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -120,6 +120,7 @@
 
         /* Timeline Shorts Video Layout Setup */
         #feedView { text-align: center; width: 100%; max-width: 420px; }
+        
         .post {
             background: #000000; border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 0; border-radius: 24px; width: 100%; margin: 0 auto 25px auto;
@@ -127,9 +128,24 @@
             overflow: hidden; display: flex; flex-direction: column;
         }
         
-        .post-video-container { width: 100%; position: relative; background: #000; aspect-ratio: 9 / 14; cursor: pointer; }
-        .post video { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .post-video-container { 
+            width: 100%; 
+            position: relative; 
+            background: #000; 
+            aspect-ratio: 9 / 14; 
+            cursor: pointer;
+            overflow: hidden;
+        }
+        
+        /* Browser default control decks stripped completely */
+        .post video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block;
+        }
 
+        /* 1 SEC TOAST CONTROLS */
         .video-status-toast {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8);
             background: rgba(0, 0, 0, 0.65); color: white; padding: 15px; border-radius: 50%;
@@ -137,13 +153,16 @@
         }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
+        /* SEEK TIMELINE LINE INDICATOR */
         .custom-timeline-line { position: absolute; bottom: 0; left: 0; width: 100%; height: 3px; background: rgba(255, 255, 255, 0.2); z-index: 30; }
         .custom-progress-fill { height: 100%; width: 0%; background: #0095f6; }
 
+        /* REEL MUTE BUTTON OVERLAY */
         .audio-deck-trigger {
-            position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 10px; border-radius: 20px;
-            font-size: 12px; z-index: 40; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;
+            position: absolute; bottom: 12px; left: 12px; background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.15); padding: 6px 12px; border-radius: 20px;
+            font-size: 11px; z-index: 40; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 4px; user-select: none;
+            font-weight: 600;
         }
 
         .post-overlay-header { 
@@ -160,7 +179,7 @@
         .action-tray-btn { cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 4px; user-select: none; color: rgba(255,255,255,0.7); }
         .action-tray-btn:hover { color: #0095f6; }
 
-        /* Other Sub-Tabs Layout Sheet */
+        /* Viewport Tab Sheets */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
         .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
@@ -199,10 +218,10 @@
         .saved-item-box video { width: 100%; height: 100%; object-fit: cover; }
 
         /* ==========================================
-           4. STYLING SEPARATION FORMULAS (PC vs PHONE)
+           5. ADAPTIVE PLATFORM VIEW SHIFTERS (PC vs PHONE)
            ========================================== */
         
-        /* 💻 LAPTOP MODE SYSTEM DESIGN */
+        /* 💻 LAPTOP SYSTEM STYLES */
         @media screen and (min-width: 769px) {
             .top-nav {
                 background: rgba(14, 16, 25, 0.95); backdrop-filter: blur(20px); padding: 16px 40px;
@@ -211,7 +230,6 @@
             }
             .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; color: #fff; }
             
-            /* Buttons Locked on Right Side Top */
             .nav-icons { display: flex; gap: 8px; align-items: center; position: static; background: transparent; padding: 0; width: auto; border: none; }
             .nav-icons span {
                 font-size: 13px; cursor: pointer; display: inline-block;
@@ -221,42 +239,54 @@
             .nav-icons span:hover { color: #fff; background: rgba(0, 149, 246, 0.15); border-color: rgba(0, 149, 246, 0.35); }
         }
 
-        /* 📱 MOBILE PHONE MODE SYSTEM DESIGN */
+        /* 📱 FIXED DYNAMIC GRID MOBILE COMFORT BAR ENGINE */
         @media screen and (max-width: 768px) {
-            .top-nav { padding: 12px 20px; justify-content: center; }
+            .top-nav { padding: 14px 20px; justify-content: center; }
             .nav-logo { font-size: 1.4em; }
 
-            /* Buttons Strictly Locked on Sticky Bottom Bar */
+            /* PREMIUM 2-LINE INSTAGRAM DOCK GRID PATTERN FOR MOBILE HANDLES */
             .nav-icons {
                 position: fixed !important;
                 bottom: 0 !important;
                 left: 0 !important;
                 top: auto !important;
                 width: 100% !important;
-                background: rgba(14, 16, 25, 0.98) !important;
-                backdrop-filter: blur(25px) !important;
+                background: rgba(10, 12, 18, 0.98) !important;
+                backdrop-filter: blur(30px) !important;
                 border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-                border-bottom: none !important;
-                padding: 12px 6px !important;
-                display: flex !important;
-                justify-content: space-around !important;
-                align-items: center !important;
+                padding: 10px 8px 12px 8px !important;
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 8px 6px !important;
                 z-index: 9999 !important;
-                gap: 0 !important;
             }
+            
+            /* High visibility micro design block structures */
             .nav-icons span {
-                padding: 6px 2px !important;
-                font-size: 11px !important;
-                border: none !important;
-                background: transparent !important;
-                flex: 1 !important;
+                padding: 10px 4px !important;
+                font-size: 12px !important;
+                font-weight: 600 !important;
+                background: rgba(255, 255, 255, 0.04) !important;
+                border: 1px solid rgba(255, 255, 255, 0.06) !important;
+                border-radius: 12px !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                justify-content: center !important;
                 text-align: center !important;
-                border-radius: 10px !important;
-                display: block !important;
                 max-width: none !important;
+                color: rgba(255, 255, 255, 0.85);
             }
-            .nav-icons span:hover { background: rgba(255,255,255,0.05); }
-            .content-area { padding-bottom: 85px; } 
+            .nav-icons span:hover { background: rgba(0, 149, 246, 0.15) !important; color: #fff !important; }
+            
+            /* Make logout button stand out securely at row base grid end spans */
+            .nav-icons span:last-child {
+                grid-column: span 2 !important;
+                background: rgba(255, 85, 85, 0.1) !important;
+                border-color: rgba(255, 85, 85, 0.2) !important;
+            }
+
+            .content-area { padding-bottom: 120px; } 
             .profile-header { flex-direction: column; text-align: center; gap: 15px; }
             .profile-stats { justify-content: center; }
             .action-inline-btn { margin-left: 0; margin-top: 8px; display: block; width: 100%; max-width: 160px; margin-inline: auto; }
@@ -298,13 +328,13 @@
             <div class="nav-logo" onclick="showFeed()">OurSpace ✨</div>
             
             <div class="nav-icons">
-                <span onclick="showSearchViewTab()" style="color:#0095f6; font-weight:bold;">🔍 Search</span>
                 <span onclick="showFeed()">🏠 Home</span>
-                <span onclick="showSpaceReels()" style="background: linear-gradient(45deg, #ff758c, #ff7eb3); font-weight:bold;">▶️ Space</span>
+                <span onclick="showSearchViewTab()" style="color:#0095f6;">🔍 Search</span>
+                <span onclick="showSpaceReels()" style="background: linear-gradient(45deg, #ff758c, #ff7eb3); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">▶️ Space</span>
                 <span onclick="openModal('postModal')">➕ Post</span>
                 <span onclick="viewMyOwnProfile()">👤 Profile</span>
-                <span onclick="openModal('settingsModal')" style="background:rgba(255,255,255,0.05);" id="navSettingsBtn">⚙️ Settings</span>
-                <span onclick="logout()" style="color: #ff5555; font-weight: bold;">Logout</span>
+                <span onclick="openModal('settingsModal')">⚙️ Settings</span>
+                <span onclick="logout()" style="color: #ff5555;">Logout</span>
             </div>
         </div>
         
@@ -647,44 +677,6 @@
             }
         }
 
-        function addNewPost() {
-            let txt = document.getElementById("postContentInput").value.trim();
-            let fileInput = document.getElementById("videoFileInput");
-            let posts = JSON.parse(localStorage.getItem('permanent_global_posts')) || [];
-            
-            if(!txt && fileInput.files.length === 0) { alert("Khali post publish nahi ho sakta!"); return; }
-
-            if(fileInput.files.length > 0) {
-                let videoBlobUrl = URL.createObjectURL(fileInput.files[0]);
-                posts.push({ author: sessionUser, text: txt, video: videoBlobUrl });
-                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
-                finalizePostCreation();
-            } else {
-                posts.push({ author: sessionUser, text: txt, video: "" });
-                localStorage.setItem('permanent_global_posts', JSON.stringify(posts));
-                finalizePostCreation();
-            }
-        }
-
-        function finalizePostCreation() {
-            document.getElementById("postContentInput").value = "";
-            document.getElementById("videoFileInput").value = "";
-            document.getElementById("fileLabelText").innerText = "📁 Choose Video File (Optional)";
-            closeModal('postModal');
-            renderFeedEngine();
-            showFeed();
-        }
-
-        function launchVideoTheatreModal(url) {
-            if(!url) return;
-            document.getElementById("theatreVideoPlayer").src = url;
-            document.getElementById("videoTheatreModal").style.display = "flex";
-        }
-        function closeVideoTheatreModal() {
-            document.getElementById("theatreVideoPlayer").pause();
-            document.getElementById("videoTheatreModal").style.display = "none";
-        }
-
         function navigateToUserProfile(targetUser) {
             hideAllViews(); viewedUser = targetUser;
             let db = JSON.parse(localStorage.getItem('global_users_db'));
@@ -772,7 +764,6 @@
             closeModal('editProfileModal'); navigateToUserProfile(sessionUser); renderFeedEngine();
         }
 
-        /* FIXED: REGISTER HOOK CHANGES SYNCED WITHOUT FULL NAME KEY DEPENDENCY */
         function handleSignup(e) {
             e.preventDefault();
             let u = document.getElementById("signUser").value.trim().toLowerCase();
