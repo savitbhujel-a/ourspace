@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Instagram Layout Edition</title>
+    <title>OurSpace - Production Instagram Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -49,54 +49,42 @@
         #appScreen { display: none; width: 100%; height: 100vh; flex-direction: column; position: fixed; top: 0; left: 0; background: #000000; z-index: 100; }
         .content-area { flex: 1; padding: 25px 0 40px 0; overflow-y: auto; width: 100%; display: flex; flex-direction: column; align-items: center; }
         
-        /* INSTAGRAM FEED LAYOUT STYLE FROM SCREENSHOT */
+        /* INSTAGRAM FEED LAYOUT STYLE */
         #feedView { width: 100%; max-width: 470px; margin: 0 auto; }
+        .post { background: #000000; width: 100%; margin-bottom: 24px; border-bottom: 1px solid #1a1a1a; display: flex; flex-direction: column; }
         
-        .post { 
-            background: #000000; 
-            width: 100%; 
-            margin-bottom: 24px; 
-            border-bottom: 1px solid #1a1a1a;
-            display: flex; flex-direction: column; 
-        }
-        
-        /* Post Header: Username and Time */
-        .post-header {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 12px 14px; background: #000000;
-        }
+        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; background: #000000; }
         .post-header-left { display: flex; align-items: center; gap: 10px; }
         .post-avatar { width: 32px; height: 32px; border-radius: 50%; background: #262626; display: flex; justify-content: center; align-items: center; font-size: 14px; }
         .post-header-left b { font-size: 14px; color: #fff; cursor: pointer; }
         .post-header-left span { font-size: 13px; color: #737373; margin-left: 4px; }
         .post-header-right { color: #fff; cursor: pointer; font-size: 18px; letter-spacing: 1px; }
 
-        /* Post Main Video Box */
-        .post-video-container { 
-            width: 100%; 
-            position: relative; 
-            background: #000; 
-            aspect-ratio: 1 / 1; /* Squarish/Perfect Ratio look like Instagram screenshot */
-            cursor: pointer;
-            overflow: hidden;
-            border: 1px solid #1a1a1a;
-        }
+        .post-video-container { width: 100%; position: relative; background: #000; aspect-ratio: 1 / 1; cursor: pointer; overflow: hidden; border: 1px solid #1a1a1a; }
         .post video { width: 100%; height: 100%; object-fit: cover; display: block; }
         .video-status-toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(0, 0, 0, 0.65); color: white; padding: 15px; border-radius: 50%; font-size: 24px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 50; }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
 
-        /* Instagram Action Icons Row */
         .action-tray { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px 8px 14px; }
         .action-tray-left { display: flex; gap: 16px; }
         .action-tray-btn { cursor: pointer; font-size: 22px; display: flex; align-items: center; user-select: none; color: #f1f3f9; }
         .action-tray-btn:hover { opacity: 0.7; }
         .action-tray-right { font-size: 22px; cursor: pointer; }
 
-        /* Caption and Details area */
-        .post-text-details { padding: 0 14px 16px 14px; font-size: 14px; line-height: 1.5; }
+        .post-text-details { padding: 0 14px 12px 14px; font-size: 14px; line-height: 1.5; }
         .likes-count-text { font-weight: 700; font-size: 14px; margin-bottom: 6px; color: #fff; }
-        .post-caption-block { color: #f1f3f9; }
+        .post-caption-block color: #f1f3f9; }
         .post-caption-block b { color: #fff; margin-right: 6px; cursor: pointer; }
+
+        /* REAL INSTAGRAM STYLE COMMENT BOX SYSTEM */
+        .post-comments-section { padding: 0 14px 16px 14px; border-top: 1px solid #121212; display: none; }
+        .comments-list-box { max-height: 150px; overflow-y: auto; margin-bottom: 10px; font-size: 13.5px; }
+        .comment-item { margin-bottom: 6px; color: #f1f3f9; line-height: 1.4; }
+        .comment-item b { color: #fff; margin-right: 6px; }
+        .comment-input-form-holder { display: flex; gap: 8px; align-items: center; }
+        .comment-input-form-holder input { margin-bottom: 0; padding: 10px; font-size: 13px; border-radius: 20px; background: #121212; border: 1px solid #262626; }
+        .comment-post-action-btn { color: #0095f6; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; padding: 0 5px; }
+        .comment-post-action-btn:hover { color: #fff; }
 
         /* REELS (SPACE VIEW) */
         #reelsSpaceView { display: none; width: 100%; max-width: 420px; height: calc(100vh - 180px); margin: 0 auto; position: relative; background: #000; border-radius: 24px; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.6); }
@@ -135,7 +123,7 @@
             .nav-icons span { font-size: 13px; cursor: pointer; display: inline-block; padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); white-space: nowrap; }
             .nav-icons span:hover { color: #fff; background: rgba(0, 149, 246, 0.15); border-color: rgba(0, 149, 246, 0.35); }
         }
-        @media screen and (max-width: 768px) {
+        @media screen collector and (max-width: 768px) {
             .top-nav { padding: 14px 20px; justify-content: center; background: #000000; border-bottom: 1px solid #1a1a1a; }
             .nav-logo { font-size: 1.4em; }
             .nav-icons { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; background: #000000 !important; border-top: 1px solid #1a1a1a !important; padding: 10px 8px 12px 8px !important; display: grid !important; grid-template-columns: repeat(4, 1fr) !important; gap: 8px 6px !important; z-index: 9999 !important; }
@@ -249,7 +237,7 @@
     </div>
 
     <script>
-        // 1. Firebase Configurations
+        // Firebase Configurations
         const firebaseConfig = {
             apiKey: "AIzaSyB-1zBcRW455Zd6L0JXP5QHM46fCGrXC8o",
             authDomain: "ourspace-6f129.firebaseapp.com",
@@ -262,7 +250,6 @@
 
         let uploadedVideoURL = ""; 
 
-        // Cloudinary Unsigned Stream
         function openCloudinaryUploadWidget() {
             window.cloudinary.openUploadWidget({
                 cloudName: "dcq9lsea7",
@@ -279,7 +266,6 @@
             });
         }
 
-        // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
@@ -380,7 +366,7 @@
             closeModal('postModal');
         }
 
-        // INSTAGRAM TIMELINE REALTIME STREAM FROM SCREENSHOT DESIGN
+        // INSTAGRAM FEED ENGINE WITH LIVE STREAM COMMENTS LINK
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
@@ -397,12 +383,12 @@
                         </div>` : "";
 
                     container.innerHTML += `
-                        <div class="post">
+                        <div class="post" id="post_${doc.id}">
                             <div class="post-header">
                                 <div class="post-header-left">
                                     <div class="post-avatar">👤</div>
                                     <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>
-                                    <span>• 3h</span>
+                                    <span>• Live</span>
                                 </div>
                                 <div class="post-header-right">•••</div>
                             </div>
@@ -412,18 +398,66 @@
                             <div class="action-tray">
                                 <div class="action-tray-left">
                                     <div class="action-tray-btn" onclick="triggerLikeHandler(this)">🤍</div>
-                                    <div class="action-tray-btn" onclick="alert('Comments Live!')">💬</div>
+                                    <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                     <div class="action-tray-btn">✈️</div>
                                 </div>
                                 <div class="action-tray-right">🔖</div>
                             </div>
                             
                             <div class="post-text-details">
-                                <div class="likes-count-text"><span class="like-counter-val">8,842</span> likes</div>
+                                <div class="likes-count-text"><span class="like-counter-val">0</span> likes</div>
                                 <div class="post-caption-block">
                                     <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>${p.text}
                                 </div>
                             </div>
+
+                            <div class="post-comments-section" id="commentsSection_${doc.id}">
+                                <div class="comments-list-box" id="commentsListBox_${doc.id}"></div>
+                                <div class="comment-input-form-holder">
+                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Add a comment...">
+                                    <button class="comment-post-action-btn" onclick="submitNewComment('${doc.id}')">Post</button>
+                                </div>
+                            </div>
+                        </div>`;
+                        
+                    // Initialize live sub-snapshot reader for comments of this specific post
+                    listenToLivePostComments(doc.id);
+                });
+            });
+        }
+
+        // Toggles comment block drawer layout smooth
+        function toggleCommentsTray(postId) {
+            let tray = document.getElementById(`commentsSection_${postId}`);
+            tray.style.display = (tray.style.display === "block") ? "none" : "block";
+        }
+
+        // Send comments data mapped safely under Firestore documents sub-collection array matrix
+        function submitNewComment(postId) {
+            let inputField = document.getElementById(`commentFieldInput_${postId}`);
+            let textStr = inputField.value.trim();
+            if(!textStr) return;
+
+            db.collection("posts").doc(postId).collection("comments").add({
+                commenter: currentUsername,
+                text: textStr,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                inputField.value = "";
+            });
+        }
+
+        // Listens to real-time live comments sub-collections stream
+        function listenToLivePostComments(postId) {
+            db.collection("posts").doc(postId).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
+                let listContainer = document.getElementById(`commentsListBox_${postId}`);
+                if(!listContainer) return;
+                listContainer.innerHTML = "";
+                snap.forEach(doc => {
+                    let c = doc.data();
+                    listContainer.innerHTML += `
+                        <div class="comment-item">
+                            <b>@${c.commenter}</b><span>${c.text}</span>
                         </div>`;
                 });
             });
@@ -498,8 +532,9 @@
         function triggerLikeHandler(el) {
             let postEl = el.closest('.post');
             let countSpan = postEl.querySelector('.like-counter-val');
-            if(el.innerText === "🤍") { el.innerText = "❤️"; el.style.color = "#ff3040"; countSpan.innerText = "8,843"; } 
-            else { el.innerText = "🤍"; el.style.color = "#f1f3f9"; countSpan.innerText = "8,842"; }
+            let currentLikes = parseInt(countSpan.innerText);
+            if(el.innerText === "🤍") { el.innerText = "❤️"; el.style.color = "#ff3040"; countSpan.innerText = currentLikes + 1; } 
+            else { el.innerText = "🤍"; el.style.color = "#f1f3f9"; countSpan.innerText = currentLikes - 1; }
         }
     </script>
 </body>
