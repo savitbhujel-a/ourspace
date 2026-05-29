@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OurSpace - Premium Edition</title>
+    <title>OurSpace - Ultimate Premium Edition</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
@@ -68,9 +68,9 @@
         /* AUDIO CONTROLLER SYSTEM */
         .mute-btn-overlay { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.15); width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; z-index: 60; cursor: pointer; }
 
-        /* ACTION TRAY: LIKE, COMMENT, SHARE ONLY (NO REPOST) */
+        /* ACTION TRAY INCLUDING SAVE BUTTON */
         .action-tray { display: flex; align-items: center; justify-content: flex-start; padding: 12px 14px 8px 14px; gap: 20px; }
-        .action-tray-btn { cursor: pointer; font-size: 22px; display: flex; align-items: center; color: #f1f3f9; transition: transform 0.2s; }
+        .action-tray-btn { cursor: pointer; font-size: 22px; display: flex; align-items: center; color: #f1f3f9; transition: transform 0.2s; user-select: none; }
         .action-tray-btn:hover { transform: scale(1.1); }
 
         .post-text-details { padding: 0 14px 12px 14px; font-size: 14px; }
@@ -86,14 +86,16 @@
         .comment-input-form-holder input { margin-bottom: 0; padding: 10px; font-size: 13px; border-radius: 20px; background: #090613; border: 1px solid rgba(157, 78, 221, 0.3); }
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
-        /* SPACE VIEW REELS MODE */
+        /* SPACE VIEW REELS MODE WITH INTEGRATED REEL SAVE BUTTON */
         #reelsSpaceView { display: none; width: 100%; max-width: 420px; height: calc(100vh - 180px); margin: 0 auto; position: relative; background: #000; border-radius: 24px; border: 1px solid rgba(157, 78, 221, 0.25); overflow: hidden; }
         .reel-video-wrapper { width: 100%; height: 100%; position: relative; }
         .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; }
-        .reel-overlay-info { position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 50; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 10px; border-radius: 12px; }
-        .reel-overlay-info b { font-size: 15px; color: #c77dff; display: block; }
+        .reel-overlay-info { position: absolute; bottom: 20px; left: 15px; right: 15px; z-index: 50; background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); padding: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .reel-info-left { text-align: left; }
+        .reel-overlay-info b { font-size: 15px; color: #c77dff; display: block; margin-bottom: 4px; }
+        .reel-save-trigger-btn { font-size: 24px; cursor: pointer; color: #f1f3f9; user-select: none; padding: 5px; }
 
-        /* ADVANCED SEARCH REGISTRY VIEW */
+        /* SEARCH TAB */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; padding: 0 15px; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
         .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
@@ -424,7 +426,6 @@
             closeModal('postModal');
         }
 
-        /* LIVE FEED ENGINE WITH LIKE, COMMENT, SHARE ONLY */
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
@@ -468,6 +469,7 @@
                                 <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')">🤍</div>
                                 <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                 <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
+                                <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}')" id="saveIconFeed_${doc.id}">🔖</div>
                             </div>
                             
                             <div class="post-text-details">
@@ -488,11 +490,11 @@
                     
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
                     listenToLivePostComments(doc.id);
+                    verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
                 });
             });
         }
 
-        /* NATIVE SHARE INTEGRATION FOR CHANNELS */
         function triggerNativeShareApi(author, text) {
             if (navigator.share) {
                 navigator.share({
@@ -560,7 +562,6 @@
             });
         }
 
-        /* ADVANCED LIVE INSTANT USER SEARCH REGISTRY */
         function executeLiveUserSearch() {
             let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
             let targetBox = document.getElementById("searchResultsFeedback");
@@ -578,7 +579,6 @@
                     let userData = doc.data();
                     let userNameString = userData.username.toLowerCase();
                     
-                    // Instant Prefix/Sub-string match logic
                     if(userNameString.includes(query)) {
                         matchesFound++;
                         let avatarMarkup = userData.avatar ? `<img src="${userData.avatar}">` : "👤";
@@ -668,15 +668,58 @@
             }
         }
 
+        /* REAL BOOKMARK POST SAVE ENGINE LINK */
+        function triggerSaveHandler(el, postId) {
+            db.collection("posts").doc(postId).get().then(doc => {
+                if(doc.exists) {
+                    let d = doc.data();
+                    let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
+                    ref.get().then(sDoc => {
+                        if(sDoc.exists) {
+                            ref.delete().then(() => { el.style.color = "#f1f3f9"; });
+                        } else {
+                            ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
+                               .then(() => { el.style.color = "#c77dff"; });
+                        }
+                    });
+                }
+            });
+        }
+
+        function verifyIfPostAlreadySavedByUser(postId, elementId) {
+            db.collection("users").doc(currentUID).collection("savedPosts").doc(postId).get().then(doc => {
+                let el = document.getElementById(elementId);
+                if(doc.exists && el) {
+                    el.style.color = "#c77dff";
+                }
+            });
+        }
+
+        /* REELS SPACE WITH REEL INSTANT SAVE CONTROLLER */
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
             db.collection("posts").orderBy("timestamp", "desc").get().then(snapshot => {
                 let videoPost = null;
-                snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); } });
+                let videoDocId = "";
+                snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
                 if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Space khali h!</div>`; } 
                 else {
-                    container.innerHTML = `<video src="${videoPost.video}" autoplay loop playsinline style="width:100%; height:100%; object-fit:cover;"></video><div class="reel-overlay-info"><b>@${videoPost.author}</b><p>${videoPost.text || ""}</p></div>`;
+                    container.innerHTML = `
+                        <video src="${videoPost.video}" autoplay loop playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                        <div class="reel-overlay-info">
+                            <div class="reel-info-left">
+                                <b>@${videoPost.author}</b>
+                                <p>${videoPost.text || ""}</p>
+                            </div>
+                            <div class="reel-save-trigger-btn" onclick="triggerSaveHandler(this, '${videoDocId}')" id="spaceSaveBtn_${videoDocId}">🔖</div>
+                        </div>`;
+                    
+                    // Check if current space reel is already saved
+                    db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
+                        let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
+                        if(doc.exists && sBtn) sBtn.style.color = "#c77dff";
+                    });
                 }
                 document.getElementById("reelsSpaceView").style.display = "block";
             });
