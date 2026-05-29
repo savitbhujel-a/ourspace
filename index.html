@@ -375,7 +375,6 @@
     </div>
 
     <script>
-        // Connected directly with your keys from Firebase screenshot
         const firebaseConfig = {
             apiKey: "AIzaSyB-1zBcRW455Zd6L0JXP5QHM46fCGrXC8o",
             authDomain: "ourspace-6f129.firebaseapp.com",
@@ -395,7 +394,6 @@
         let currentUID = "";
         let viewedUser = "";
 
-        // Track user lifecycle session active links
         auth.onAuthStateChanged(user => {
             if (user) {
                 currentUID = user.uid;
@@ -447,16 +445,12 @@
             }
         }
 
-        // ==========================================
-        // FIREBASE INTERACTION ENGINE LOGICS
-        // ==========================================
         function handleSignup(e) {
             e.preventDefault();
             let u = document.getElementById("signUser").value.trim().toLowerCase();
             let em = document.getElementById("signEmail").value.trim();
             let p = document.getElementById("signPass").value;
 
-            // Search if username registry blocks match
             db.collection("users").where("username", "==", u).get().then(snapshot => {
                 if(!snapshot.empty) {
                     alert("Bhai, ye username pehle se kisi ne le rakha hai!");
@@ -541,23 +535,36 @@
             });
         }
 
+        // PERFECTED FIXED REELS SEARCH WITH SMOOTH CLOUD ENGINE
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
-            db.collection("posts").where("video", "!=", "").limit(1).get().then(snapshot => {
-                if(snapshot.empty) {
+            
+            // Fixed direct ordering query fallback rule
+            db.collection("posts").orderBy("timestamp", "desc").get().then(snapshot => {
+                let videoPost = null;
+                
+                // Smart client filter logic to match local uploaded videos
+                snapshot.forEach(doc => {
+                    if(!videoPost && doc.data().video && doc.data().video !== "") {
+                        videoPost = doc.data();
+                    }
+                });
+
+                if (!videoPost) {
                     container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai! <br><br>Pehle ➕ Post option se video upload karo.</div>`;
                 } else {
-                    snapshot.forEach(doc => {
-                        let activeReel = doc.data();
-                        container.innerHTML = `
-                            <video src="${activeReel.video}" autoplay loop playsinline muted style="width:100%; height:100%; object-fit:cover;"></video>
-                            <div class="reel-overlay-info">
-                                <b>👤 @${activeReel.author}</b>
-                                <p>${activeReel.text || ""}</p>
-                            </div>`;
-                    });
+                    container.innerHTML = `
+                        <video src="${videoPost.video}" autoplay loop playsinline muted style="width:100%; height:100%; object-fit:cover;"></video>
+                        <div class="reel-overlay-info">
+                            <b>👤 @${videoPost.author}</b>
+                            <p>${videoPost.text || ""}</p>
+                        </div>`;
                 }
+                document.getElementById("reelsSpaceView").style.display = "block";
+            }).catch(err => {
+                console.log(err);
+                container.innerHTML = `<div class="no-posts-alert" style="padding-top:40%;">Space khali h bhai!</div>`;
                 document.getElementById("reelsSpaceView").style.display = "block";
             });
         }
