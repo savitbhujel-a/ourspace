@@ -84,7 +84,7 @@
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
         /* ==========================================
-           🌟 COMPACT YOUTUBE SHORTS (SPACE VIEW)
+           🌟 COMPACT YOUTUBE SHORTS (SPACE VIEW) - NO BLACK GRADIENT
            ========================================== */
         #reelsSpaceView { 
             display: none; 
@@ -102,13 +102,14 @@
         .reel-video-wrapper { width: 100%; height: 100%; position: relative; background: #000; }
         .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
         
+        /* REMOVED BLACK GRADIENT OVERLAY FOR FULL TRANSPARENCY */
         .reel-overlay-info { 
             position: absolute; bottom: 0; left: 0; width: 80%; 
-            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%); 
-            padding: 40px 15px 20px 15px; z-index: 50; 
+            padding: 20px 15px; z-index: 50; 
+            background: transparent; /* Clean and clear look */
         }
-        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; }
-        .reel-overlay-info p { font-size: 13px; color: #e1e1e1; line-height: 1.4; }
+        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
+        .reel-overlay-info p { font-size: 13px; color: #e1e1e1; line-height: 1.4; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
 
         /* SHORTS VERTICAL ACTION PANEL WITH REAL DIL ICON SYSTEM */
         .yt-shorts-side-actions {
@@ -486,7 +487,7 @@
             let txt = document.getElementById("postContentInput").value.trim();
             let btn = document.getElementById("publishBtn");
             if(!txt && !uploadedVideoURL) return;
-            btn.innerText = "Publishing..."; btn.disabled = true;
+            btn.innerText = "Publishing... Wait..."; btn.disabled = true;
 
             db.collection("posts").add({
                 author: currentUsername, text: txt, video: uploadedVideoURL, timestamp: firebase.firestore.FieldValue.serverTimestamp(), likes: 0
@@ -523,7 +524,6 @@
 
                     let threeDotsBlock = (p.author === currentUsername) ? `<div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>` : "";
 
-                    // Setup real live fill heart state conditional logic check for home timeline feed posts look
                     let heartStateSymbol = "🤍";
                     if(p.likedBy && p.likedBy.includes(currentUID)) { heartStateSymbol = "❤️"; }
 
@@ -751,7 +751,7 @@
         }
 
         /* =======================================================
-           🌟 ASLI YOUTUBE SHORTS LOGIC WITH COMMENT AND LIKE FIX
+           🌟 CLEAN TRANSPARENT SHORTS VIEW ENGINE
            ======================================================= */
         function showSpaceReels() {
             hideAllViews();
@@ -762,7 +762,6 @@
                 snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
                 if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Space khali h!</div>`; } 
                 else {
-                    // Mapped real glowing heart state icon symbol logic inside space view panels layout
                     let shortsHeartIconSymbol = "🤍";
                     let shortsHeartIconColor = "#ffffff";
                     if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
@@ -796,7 +795,7 @@
                             <b onclick="navigateToUserProfile('${videoPost.author}')">@${videoPost.author}</b>
                             <p>${videoPost.text || ""}</p>
                         </div>`;
-
+                    
                     db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
                         let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
                         if(doc.exists && sBtn) sBtn.querySelector('.yt-action-circle-btn').style.color = "#c77dff";
@@ -837,7 +836,6 @@
 
         function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         
-        // UPGRADED SYNC HEART LIKE AND UNLIKE COUNTER ENGINE MATRIX
         function triggerLikeHandler(el, postId) {
             let isShorts = el.classList.contains('yt-action-circle-btn');
             let postRef = db.collection("posts").doc(postId);
