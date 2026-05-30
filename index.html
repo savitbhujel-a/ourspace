@@ -84,7 +84,7 @@
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
         /* ==========================================
-           🌟 COMPACT YOUTUBE SHORTS (SPACE VIEW) - NO BLACK GRADIENT
+           🌟 COMPACT YOUTUBE SHORTS (SPACE VIEW)
            ========================================== */
         #reelsSpaceView { 
             display: none; 
@@ -99,16 +99,16 @@
             overflow: hidden; 
             box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
-        .reel-video-wrapper { width: 100%; height: 100%; position: relative; background: #000; }
+        .reel-video-wrapper { width: 100%; height: 100%; position: relative; background: #000; cursor: pointer; }
         .reel-video-wrapper video { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        /* REMOVED BLACK GRADIENT OVERLAY FOR FULL TRANSPARENCY */
         .reel-overlay-info { 
             position: absolute; bottom: 0; left: 0; width: 80%; 
             padding: 20px 15px; z-index: 50; 
-            background: transparent; /* Clean and clear look */
+            background: transparent;
+            pointer-events: none;
         }
-        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
+        .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); pointer-events: auto; }
         .reel-overlay-info p { font-size: 13px; color: #e1e1e1; line-height: 1.4; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
 
         /* SHORTS VERTICAL ACTION PANEL WITH REAL DIL ICON SYSTEM */
@@ -751,7 +751,7 @@
         }
 
         /* =======================================================
-           🌟 CLEAN TRANSPARENT SHORTS VIEW ENGINE
+           🌟 ASLI YOUTUBE SHORTS LOGIC - TAP TO PAUSE CHALU FIXED
            ======================================================= */
         function showSpaceReels() {
             hideAllViews();
@@ -769,8 +769,12 @@
                         shortsHeartIconColor = "#c77dff";
                     }
 
+                    // ADDED DYNAMIC TOAST & ONCLICK CLICK/TAP FUNCTION SAME AS HOME FEED
                     container.innerHTML = `
-                        <video src="${videoPost.video}" autoplay loop playsinline style="width:100%; height:100%; object-fit:cover;"></video>
+                        <div class="reel-video-wrapper" style="position:relative; width:100%; height:100%;">
+                            <video id="spaceVidElement_${videoDocId}" src="${videoPost.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${videoDocId}', 'space')"></video>
+                            <div class="video-status-toast" id="spaceToast_${videoDocId}">▶</div>
+                        </div>
                         
                         <div class="yt-shorts-side-actions">
                             <div class="yt-action-item" onclick="triggerLikeHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}')">
@@ -796,6 +800,10 @@
                             <p>${videoPost.text || ""}</p>
                         </div>`;
                     
+                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
+                        document.getElementById(`shortsLikeBtn_${videoDocId}`).style.color = "#c77dff";
+                    }
+
                     db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
                         let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
                         if(doc.exists && sBtn) sBtn.querySelector('.yt-action-circle-btn').style.color = "#c77dff";
@@ -834,7 +842,23 @@
             } else { db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
         }
 
-        function toggleVideoPlayPauseState(videoEl, id) { let toast = document.getElementById(`toast_${id}`); if(videoEl.paused) { videoEl.play(); toast.innerHTML = "▶"; } else { videoEl.pause(); toast.innerHTML = "⏸"; } toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
+        // UNIVERSAL PLAY/PAUSE CONTROLLER SYSTEM (FOR BOTH TIMELINE & SPACE SYSTEM)
+        function toggleVideoPlayPauseState(videoEl, id, type = 'feed') { 
+            let toastId = type === 'space' ? `spaceToast_${id}` : `toast_${id}`;
+            let toast = document.getElementById(toastId); 
+            
+            if(videoEl.paused) { 
+                videoEl.play(); 
+                if(toast) toast.innerHTML = "▶"; 
+            } else { 
+                videoEl.pause(); 
+                if(toast) toast.innerHTML = "⏸"; 
+            } 
+            if(toast) {
+                toast.classList.add("show-toast"); 
+                setTimeout(() => toast.classList.remove("show-toast"), 1000); 
+            }
+        }
         
         function triggerLikeHandler(el, postId) {
             let isShorts = el.classList.contains('yt-action-circle-btn');
