@@ -77,7 +77,17 @@
         .post-header-left span { font-size: 12px; color: #8a8d9b; }
         .post-header-right { color: #c77dff; cursor: pointer; font-size: 18px; padding: 0 5px; }
 
-        .post-video-container { width: 100%; position: relative; background: #000; aspect-ratio: 1 / 1; cursor: pointer; overflow: hidden; border-radius: 12px; border: 1px solid rgba(157, 78, 221, 0.1); }
+        /* FIXED RESPONSIVE VIDEO CONFIG FOR MOBILE & LAPTOP */
+        .post-video-container { 
+            width: 100%; 
+            position: relative; 
+            background: #000; 
+            aspect-ratio: 16 / 9; 
+            cursor: pointer; 
+            overflow: hidden; 
+            border-radius: 12px; 
+            border: 1px solid rgba(157, 78, 221, 0.1); 
+        }
         .post video { width: 100%; height: 100%; object-fit: cover; display: block; }
         .video-status-toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(0, 0, 0, 0.75); color: #c77dff; padding: 15px; border-radius: 50%; font-size: 24px; opacity: 0; pointer-events: none; transition: all 0.2s ease; z-index: 50; }
         .video-status-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
@@ -158,7 +168,7 @@
         /* CLEAN MESSAGING CENTER EMBED MATRIX */
         #messagingViewTab { display: none; width: 100%; max-width: 450px; height: calc(100vh - 120px); flex-direction: column; justify-content: center; align-items: center; margin: 0 auto; padding: 0 15px; }
         .message-logo-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.2); border-radius: 24px; padding: 40px 20px; width: 100%; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        .message-icon-graphic { font-size: 64px; color: #c77dff; margin-bottom: 16px; animation: pulseGraphic Glow 2s infinite ease-in-out; }
+        .message-icon-graphic { font-size: 64px; color: #c77dff; margin-bottom: 16px; animation: pulseGraphicGlow 2s infinite ease-in-out; }
         .message-logo-wrapper h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
         .message-logo-wrapper p { font-size: 13px; color: #8a8d9b; max-width: 280px; line-height: 1.5; }
 
@@ -766,17 +776,29 @@
                     });
                 }
             });
+
             let followContainer = document.getElementById("followActionContainer");
             if(targetUser !== currentUsername) {
                 document.getElementById("profileActionBtn").style.display = "none";
-                db.collection("users").doc(currentUID).collection("following").doc(targetUser).get().then(doc => {
-                    followContainer.innerHTML = doc.exists ? 
-                        `<button class="profile-follow-btn following" onclick="toggleFollowUser('${targetUser}', true)">Following</button>` :
-                        `<button class="profile-follow-btn" onclick="toggleFollowUser('${targetUser}', false)">Follow</button>`;
-                });
-            } else { document.getElementById("profileActionBtn").style.display = "inline-block"; followContainer.innerHTML = ""; }
+                followContainer.innerHTML = `<button class="action-inline-btn" onclick="openChatWithUser('${targetUser}')">💬 Message</button>`;
+            } else { 
+                document.getElementById("profileActionBtn").style.display = "inline-block"; 
+                followContainer.innerHTML = ""; 
+            }
             switchProfileTab("posts");
             document.getElementById("profileView").style.display = "block";
+        }
+
+        function openChatWithUser(targetUser) {
+            let msg = prompt("Enter your personal message for @" + targetUser);
+            if(msg) {
+                db.collection("chats").add({
+                    from: currentUsername,
+                    to: targetUser,
+                    text: msg,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => alert("Message sent!"));
+            }
         }
 
         function toggleFollowUser(targetUser, isFollowing) {
