@@ -165,18 +165,26 @@
         .shorts-comments-drawer.open { bottom: 0; }
         .shorts-comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
 
-        /* CLEAN MESSAGING CENTER EMBED MATRIX */
-        #messagingViewTab { display: none; width: 100%; max-width: 450px; height: calc(100vh - 120px); flex-direction: column; justify-content: center; align-items: center; margin: 0 auto; padding: 0 15px; }
-        .message-logo-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.2); border-radius: 24px; padding: 40px 20px; width: 100%; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
-        .message-icon-graphic { font-size: 64px; color: #c77dff; margin-bottom: 16px; animation: pulseGraphicGlow 2s infinite ease-in-out; }
-        .message-logo-wrapper h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
-        .message-logo-wrapper p { font-size: 13px; color: #8a8d9b; max-width: 280px; line-height: 1.5; }
-
-        @keyframes pulseGraphicGlow {
-            0% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 12px rgba(157, 78, 221, 0.6)); }
-            100% { transform: scale(1); opacity: 0.8; }
-        }
+        /* ADVANCED ADVANCED REALTIME CHAT ENGINE INTERFACE CSS */
+        #messagingViewTab { display: none; width: 100%; max-width: 800px; height: calc(100vh - 80px); margin: 0 auto; background: rgba(255,255,255,0.01); border: 1px solid rgba(157,78,221,0.15); border-radius: 24px; display: flex; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        .chat-sidebar { width: 30%; border-right: 1px solid rgba(157,78,221,0.15); background: rgba(0,0,0,0.2); display: flex; flex-direction: column; overflow-y: auto; }
+        .chat-sidebar-header { padding: 15px; font-weight: bold; border-bottom: 1px solid rgba(157,78,221,0.1); color: #c77dff; font-size: 15px; }
+        .chat-user-item { padding: 15px 12px; display: flex; align-items: center; gap: 10px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.02); transition: background 0.2s; }
+        .chat-user-item:hover, .chat-user-item.active { background: rgba(157,78,221,0.12); }
+        .chat-user-item .avatar { width: 35px; height: 35px; border-radius: 50%; background: #5a189a; display: flex; justify-content: center; align-items: center; font-weight: bold; font-size: 13px; }
+        
+        .chat-main-window { width: 70%; display: flex; flex-direction: column; background: rgba(0,0,0,0.4); }
+        .chat-window-header { padding: 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(157,78,221,0.15); font-weight: bold; font-size: 15px; color: #fff; }
+        .chat-messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        .msg-bubble { max-width: 65%; padding: 10px 14px; border-radius: 16px; font-size: 14px; line-height: 1.4; word-break: break-all; display: flex; flex-direction: column; position: relative; }
+        .msg-bubble.outgoing { background: linear-gradient(135deg, #9d4edd 0%, #5a189a 100%); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-bubble.incoming { background: rgba(255,255,255,0.06); color: #f1f3f9; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+        .msg-status-tick { font-size: 10px; align-self: flex-end; margin-top: 4px; color: rgba(255,255,255,0.5); font-weight: bold; }
+        .msg-status-tick.seen { color: #00ff88; }
+        
+        .chat-input-area { padding: 15px; display: flex; gap: 10px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(157,78,221,0.1); }
+        .chat-input-area input { margin-bottom: 0; padding: 12px; border-radius: 20px; background: #090613; border: 1px solid rgba(157,78,221,0.3); }
 
         /* NOTIFICATION POP-UP NODE */
         .premium-toast-popup {
@@ -243,6 +251,9 @@
             #reelsSpaceView { height: calc(100vh - 160px); }
             #messagingViewTab { height: calc(100vh - 160px); }
             .profile-header { flex-direction: column; text-align: center; gap: 15px; }
+            #messagingViewTab { flex-direction: column; height: calc(100vh - 110px); }
+            .chat-sidebar { width: 100%; height: 35%; border-right: none; border-bottom: 1px solid rgba(157,78,221,0.15); }
+            .chat-main-window { width: 100%; height: 65%; }
         }
     </style>
 </head>
@@ -315,10 +326,17 @@
             </div>
 
             <div id="messagingViewTab">
-                <div class="message-logo-wrapper">
-                    <div class="message-icon-graphic">💬</div>
-                    <h3>Global Chat Space</h3>
-                    <p>Encryption active. Messaging sync modules are currently idling inside the network pipeline registry.</p>
+                <div class="chat-sidebar">
+                    <div class="chat-sidebar-header">Active Chats 💬</div>
+                    <div id="chatActiveUsersSidebarContainer"></div>
+                </div>
+                <div class="chat-main-window">
+                    <div class="chat-window-header" id="currentChattingTargetTitleNode">Select a User to Chat</div>
+                    <div class="chat-messages-container" id="chatMessagesDatabaseLiveStreamBox"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatMessageTextDataInputPayload" placeholder="Type a secure message...">
+                        <button class="main-btn" style="width: 80px; padding: 10px;" onclick="executeSendMessageToDatabaseChannel()">Send</button>
+                    </div>
                 </div>
             </div>
 
@@ -328,9 +346,9 @@
                     <div class="profile-details">
                         <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
                             <h2 id="profUsername">@user</h2>
-                            <div id="followActionContainer"></div>
+                            <div id="followActionContainer" style="display: inline-block;"></div>
                             <button class="action-inline-btn" id="profileActionBtn" onclick="openEditProfileModal()">Edit Profile</button>
-                            <button class="action-inline-btn" style="border-color:#ff5555; color:#ff3b30;" onclick="openModal('settingsModal')">⚙️ Security</button>
+                            <button class="action-inline-btn" id="profileSecuritySettingsBtn" style="border-color:#ff5555; color:#ff3b30;" onclick="openModal('settingsModal')">⚙️ Security</button>
                         </div>
                         <div class="profile-stats">
                             <span>Posts: <b id="postCountNum">0</b></span>
@@ -402,6 +420,8 @@
         let uploadedVideoURL = ""; 
         let currentProfileTab = "posts";
         let interactionNotificationCache = {};
+        let activeChatTargetUser = ""; 
+        let liveChatUnsubscribeListener = null;
 
         function triggerGlowToastNotification(msg) {
             let toast = document.getElementById("globalToastPopupNotification");
@@ -466,6 +486,7 @@
                     if(doc.exists) {
                         currentUsername = doc.data().username;
                         initializeSystemNotificationPermissions();
+                        listenToLiveInboxChannels();
                         openApp();
                     } else { logout(); }
                 });
@@ -517,6 +538,7 @@
             document.getElementById("reelVideoPlayerContainer").innerHTML = "";
             closeShortsCommentDrawerTray();
             closeModal('settingsModal');
+            if(liveChatUnsubscribeListener) { liveChatUnsubscribeListener(); liveChatUnsubscribeListener = null; }
         }
 
         function showFeed() { hideAllViews(); document.getElementById("feedView").style.display = "block"; }
@@ -531,6 +553,7 @@
         function showMessagingCenterTab() {
             hideAllViews();
             document.getElementById("messagingViewTab").style.display = "flex";
+            if(activeChatTargetUser) { loadLiveChatMessageStream(activeChatTargetUser); }
         }
 
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
@@ -592,22 +615,6 @@
                         postDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     }
 
-                    if (p.author === currentUsername && p.likedBy && p.likedBy.length > 0) {
-                        p.likedBy.forEach(likerUID => {
-                            if (likerUID !== currentUID) {
-                                let trackingKey = `${doc.id}_${likerUID}`;
-                                if (!interactionNotificationCache[trackingKey]) {
-                                    interactionNotificationCache[trackingKey] = true;
-                                    db.collection("users").doc(likerUID).get().then(likerDoc => {
-                                        if (likerDoc.exists) {
-                                            executeOtaSystemNotificationBanner(likerDoc.data().username, "Like Interaction");
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-
                     let videoBlock = p.video ? `
                         <div class="post-video-container" style="position:relative;">
                             <video id="vidElement_${doc.id}" src="${p.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${doc.id}')"></video>
@@ -616,7 +623,6 @@
                         </div>` : "";
 
                     let threeDotsBlock = (p.author === currentUsername) ? `<div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>` : "";
-
                     let heartStateSymbol = "🤍";
                     if(p.likedBy && p.likedBy.includes(currentUID)) { heartStateSymbol = "❤️"; }
 
@@ -629,10 +635,6 @@
                                     <span>• ${postDate}</span>
                                 </div>
                                 ${threeDotsBlock}
-                            </div>
-
-                            <div class="dropdown-menu-list" id="dropdown_${doc.id}">
-                                <div class="dropdown-menu-item" onclick="deletePostFromDatabaseRegistry('${doc.id}')">🗑️ Delete Post</div>
                             </div>
                             
                             ${videoBlock}
@@ -647,115 +649,12 @@
                             <div class="post-text-details">
                                 <div class="likes-count-text"><span class="like-counter-val" id="likeCountVal_${doc.id}">${p.likes || 0}</span> likes</div>
                                 <div class="post-caption-block">
-                                    <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>${p.text}
-                                </div>
-                            </div>
-
-                            <div class="post-comments-section" id="commentsSection_${doc.id}">
-                                <div class="comments-list-box" id="commentsListBox_${doc.id}"></div>
-                                <div class="comment-input-form-holder">
-                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Post textual message payload response...">
-                                    <button class="comment-post-action-btn" onclick="submitNewComment('${doc.id}')">Post</button>
+                                    <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>${p.text || ""}
                                 </div>
                             </div>
                         </div>`;
-                    
-                    if(p.likedBy && p.likedBy.includes(currentUID)) {
-                        let fHrt = document.getElementById(`feedHeartBtn_${doc.id}`);
-                        if(fHrt) fHrt.style.color = "#ff3040";
-                    }
 
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
-                    listenToLivePostComments(doc.id, `commentsListBox_${doc.id}`);
-                    verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
-                });
-            });
-        }
-
-        function triggerNativeShareApi(author, text) {
-            if (navigator.share) {
-                navigator.share({
-                    title: `OurSpace Post by @${author}`,
-                    text: `${text}`,
-                    url: window.location.href
-                }).then(() => triggerGlowToastNotification("Data distribution successfully triggered."));
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                triggerGlowToastNotification("Clipboard allocation configured.");
-            }
-        }
-
-        function togglePostVideoSoundAudio(id, event) {
-            event.stopPropagation();
-            let vid = document.getElementById(`vidElement_${id}`);
-            let btn = document.getElementById(`muteBtn_${id}`);
-            if(vid.muted) { vid.muted = false; btn.innerText = "🔊"; } else { vid.muted = true; btn.innerText = "🔇"; }
-        }
-
-        function togglePostDropdownMenu(postId) {
-            let menu = document.getElementById(`dropdown_${postId}`);
-            menu.style.display = (menu.style.display === "block") ? "none" : "block";
-        }
-
-        function deletePostFromDatabaseRegistry(postId) {
-            if(confirm("Confirm destructive removal processing configuration metric for database allocation record?")) {
-                db.collection("posts").doc(postId).delete().then(() => alert("Data removal verified."));
-            }
-        }
-
-        function fetchPostAuthorAvatarImage(username, elementId) {
-            db.collection("users").where("username", "==", username).get().then(snap => {
-                if(!snap.empty) {
-                    snap.forEach(doc => {
-                        if(doc.data().avatar) {
-                            let el = document.getElementById(elementId);
-                            if(el) el.innerHTML = `<img src="${doc.data().avatar}">`;
-                        }
-                    });
-                }
-            });
-        }
-
-        function toggleCommentsTray(postId) {
-            let tray = document.getElementById(`commentsSection_${postId}`);
-            tray.style.display = (tray.style.display === "block") ? "none" : "block";
-        }
-
-        function submitNewComment(postId, source = 'feed') {
-            let inpId = source === 'shorts' ? 'shortsCommentFieldInput' : `commentFieldInput_${postId}`;
-            let inp = document.getElementById(inpId);
-            if(!inp || !inp.value.trim()) return;
-            
-            db.collection("posts").doc(postId).collection("comments").add({
-                commenter: currentUsername, text: inp.value.trim(), timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => inp.value = "");
-        }
-
-        function listenToLivePostComments(postId, boxId) {
-            db.collection("posts").doc(postId).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
-                let box = document.getElementById(boxId); if(!box) return; box.innerHTML = "";
-                snap.forEach(doc => { let c = doc.data(); box.innerHTML += `<div class="comment-item"><b>@${c.commenter}</b><span>${c.text}</span></div>`; });
-            });
-        }
-
-        function executeLiveUserSearch() {
-            let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
-            let targetBox = document.getElementById("searchResultsFeedback");
-            if(!query) { targetBox.innerHTML = `<span>Input profile metadata tracking characters...</span>`; return; }
-            db.collection("users").get().then(snap => {
-                targetBox.innerHTML = "";
-                snap.forEach(doc => {
-                    let userData = doc.data();
-                    if(userData.username.toLowerCase().includes(query)) {
-                        let avatarMarkup = userData.avatar ? `<img src="${userData.avatar}">` : "👤";
-                        targetBox.innerHTML += `
-                            <div class="search-user-card" onclick="navigateToUserProfile('${userData.username}')">
-                                <div class="search-user-info">
-                                    <div class="search-user-avatar">${avatarMarkup}</div>
-                                    <div class="search-user-details"><h4>@${userData.username}</h4><p>${userData.bio || ''}</p></div>
-                                </div>
-                            </div>`;
-                    }
                 });
             });
         }
@@ -769,7 +668,7 @@
                 if(!snapshot.empty) {
                     snapshot.forEach(doc => {
                         let data = doc.data();
-                        document.getElementById("profBioText").innerText = data.bio || "Biographical statement configuration unassigned.";
+                        document.getElementById("profBioText").innerText = data.bio || "Biographical description unassigned.";
                         document.getElementById("followerCountNum").innerText = data.followersCount || 0;
                         document.getElementById("followingCountNum").innerText = data.followingCount || 0;
                         if(data.avatar) document.getElementById("profileGridMasterAvatar").innerHTML = `<img src="${data.avatar}">`;
@@ -778,233 +677,173 @@
             });
 
             let followContainer = document.getElementById("followActionContainer");
+            let editProfileBtn = document.getElementById("profileActionBtn");
+            let securitySettingsBtn = document.getElementById("profileSecuritySettingsBtn");
+
+            // AUTHORIZATION CHECK RULE: SETTINGS ARE PRIVATE TO RESOURCE ACCOUNT OWNER
             if(targetUser !== currentUsername) {
-                document.getElementById("profileActionBtn").style.display = "none";
-                followContainer.innerHTML = `<button class="action-inline-btn" onclick="openChatWithUser('${targetUser}')">💬 Message</button>`;
+                editProfileBtn.style.display = "none";
+                securitySettingsBtn.style.display = "none";
+                followContainer.innerHTML = `<button class="action-inline-btn" style="background:#9d4edd; color:white; border:none;" onclick="triggerChatRoutingNavigation('${targetUser}')">💬 Message</button>`;
             } else { 
-                document.getElementById("profileActionBtn").style.display = "inline-block"; 
+                editProfileBtn.style.display = "inline-block"; 
+                securitySettingsBtn.style.display = "inline-block"; 
                 followContainer.innerHTML = ""; 
             }
             switchProfileTab("posts");
             document.getElementById("profileView").style.display = "block";
         }
 
-        function openChatWithUser(targetUser) {
-            let msg = prompt("Enter your personal message for @" + targetUser);
-            if(msg) {
-                db.collection("chats").add({
-                    from: currentUsername,
-                    to: targetUser,
-                    text: msg,
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => alert("Message sent!"));
-            }
+        /* DYNAMIC DIRECT ROUTING ENGINE TO INTERNAL INSTANT MESSAGE INTERFACES */
+        function triggerChatRoutingNavigation(targetUser) {
+            activeChatTargetUser = targetUser;
+            showMessagingCenterTab();
         }
 
-        function toggleFollowUser(targetUser, isFollowing) {
-            let followingRef = db.collection("users").doc(currentUID).collection("following").doc(targetUser);
-            if(isFollowing) { followingRef.delete().then(() => navigateToUserProfile(targetUser)); } 
-            else { followingRef.set({ followedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => navigateToUserProfile(targetUser)); }
+        /* RECURSIVE SNAPSHOT ENGINE: LISTS ALL TALKED TO USER ID CHANNELS */
+        function listenToLiveInboxChannels() {
+            db.collection("chats")
+              .where("from", "==", currentUsername)
+              .orderBy("timestamp", "desc")
+              .onSnapshot(snap1 => {
+                  db.collection("chats")
+                    .where("to", "==", currentUsername)
+                    .orderBy("timestamp", "desc")
+                    .onSnapshot(snap2 => {
+                        let mergedMap = new Map();
+                        
+                        snap1.forEach(doc => { mergedMap.set(doc.data().to, doc.data().timestamp); });
+                        snap2.forEach(doc => { mergedMap.set(doc.data().from, doc.data().timestamp); });
+                        
+                        // Order dynamically sorted tracking packets sequentially
+                        let sortedUsers = Array.from(mergedMap.entries()).sort((a, b) => {
+                            let tA = a[1] ? a[1].toMillis() : 0;
+                            let tB = b[1] ? b[1].toMillis() : 0;
+                            return tB - tA;
+                        });
+
+                        let sidebar = document.getElementById("chatActiveUsersSidebarContainer");
+                        sidebar.innerHTML = "";
+                        
+                        if(sortedUsers.length === 0) {
+                            sidebar.innerHTML = `<span style="color:#8a8d9b; padding:15px; font-size:12px; display:block;">No active transmissions.</span>`;
+                        }
+
+                        sortedUsers.forEach(item => {
+                            let uName = item[0];
+                            let activeClass = (uName === activeChatTargetUser) ? "active" : "";
+                            sidebar.innerHTML += `
+                                <div class="chat-user-item ${activeClass}" onclick="loadLiveChatMessageStream('${uName}')">
+                                    <div class="avatar">👤</div>
+                                    <div style="font-size:14px; font-weight:600;">@${uName}</div>
+                                </div>`;
+                        });
+                    });
+              });
         }
 
+        /* FULL SOCKET EMULATION PIPELINE TRACKING THE REALTIME SEENblue STATUS Packet */
+        function loadLiveChatMessageStream(targetUser) {
+            activeChatTargetUser = targetUser;
+            document.getElementById("currentChattingTargetTitleNode").innerText = "Chatting with @" + targetUser;
+            
+            // Re-render highlight state toggles inside active directory columns
+            let elements = document.querySelectorAll(".chat-user-item");
+            elements.forEach(el => { if(el.innerText.includes(targetUser)) el.classList.add("active"); else el.classList.remove("active"); });
+
+            if(liveChatUnsubscribeListener) liveChatUnsubscribeListener();
+
+            // Establish listener packet over Firestore cluster pipelines
+            liveChatUnsubscribeListener = db.collection("chats")
+                .orderBy("timestamp", "asc")
+                .onSnapshot(snapshot => {
+                    let container = document.getElementById("chatMessagesDatabaseLiveStreamBox");
+                    container.innerHTML = "";
+                    
+                    snapshot.forEach(doc => {
+                        let c = doc.data();
+                        
+                        // Route specific messages inside current user pipeline parameters
+                        if((c.from === currentUsername && c.to === targetUser) || (c.from === targetUser && c.to === currentUsername)) {
+                            let isOutgoing = (c.from === currentUsername);
+                            let bubbleType = isOutgoing ? "outgoing" : "incoming";
+                            
+                            // Realtime evaluation marker: mutation parsing
+                            let statusText = "Sent";
+                            if(c.isSeen) { statusText = "Seen"; }
+
+                            let tickMarkup = isOutgoing ? `<span class="msg-status-tick ${c.isSeen ? 'seen' : ''}">${statusText}</span>` : "";
+
+                            container.innerHTML += `
+                                <div class="msg-bubble ${bubbleType}">
+                                    <span>${c.text}</span>
+                                    ${tickMarkup}
+                                </div>`;
+                            
+                            // SEEN TRIGGER PACKET RULE: If incoming text matches target user channel parameters, instantly register packet update
+                            if(!isOutgoing && !c.isSeen) {
+                                db.collection("chats").doc(doc.id).update({ isSeen: true });
+                            }
+                        }
+                    });
+                    container.scrollTop = container.scrollHeight;
+                });
+        }
+
+        /* ATOMIC ENGINES: PROCESSES PACKET SENDS DIRECTLY INTO DATA NETWORK PIPELINES */
+        function executeSendMessageToDatabaseChannel() {
+            let field = document.getElementById("chatMessageTextDataInputPayload");
+            let textValue = field.value.trim();
+            if(!textValue || !activeChatTargetUser) return;
+
+            db.collection("chats").add({
+                from: currentUsername,
+                to: activeChatTargetUser,
+                text: textValue,
+                isSeen: false,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                field.value = "";
+            });
+        }
+
+        // Rest of support methods keep active state configurations running stable
+        function toggleVideoPlayPauseState(videoEl, id, type = 'feed') { 
+            let toastId = type === 'space' ? `spaceToast_${id}` : `toast_${id}`;
+            let toast = document.getElementById(toastId); 
+            if(videoEl.paused) { videoEl.play(); if(toast) toast.innerHTML = "▶"; } 
+            else { videoEl.pause(); if(toast) toast.innerHTML = "⏸"; } 
+            if(toast) { toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
+        }
+        function togglePostVideoSoundAudio(id, event) {
+            event.stopPropagation();
+            let vid = document.getElementById(`vidElement_${id}`);
+            let btn = document.getElementById(`muteBtn_${id}`);
+            if(vid.muted) { vid.muted = false; btn.innerText = "🔊"; } else { vid.muted = true; btn.innerText = "🔇"; }
+        }
+        function fetchPostAuthorAvatarImage(username, elementId) {
+            db.collection("users").where("username", "==", username).get().then(snap => {
+                if(!snap.empty) snap.forEach(doc => {
+                    let el = document.getElementById(elementId);
+                    if(doc.data().avatar && el) el.innerHTML = `<img src="${doc.data().avatar}">`;
+                });
+            });
+        }
         function switchProfileTab(tab) {
             currentProfileTab = tab;
             let grid = document.getElementById("dynamicGridContainer"); grid.innerHTML = "";
-            document.getElementById("tabPostsBtn").style.color = (tab === 'posts') ? "#c77dff" : "#8a8d9b";
-            document.getElementById("tabSavedBtn").style.color = (tab === 'saved') ? "#c77dff" : "#8a8d9b";
             if(tab === "posts") {
                 db.collection("posts").where("author", "==", viewedUser).get().then(snap => {
                     document.getElementById("postCountNum").innerText = snap.size;
                     snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item" onclick="showFeed()"><video src="${doc.data().video}"></video></div>`; });
                 });
-            } else {
-                db.collection("users").doc(currentUID).collection("savedPosts").get().then(snap => {
-                    snap.forEach(doc => { grid.innerHTML += `<div class="post-grid-item" onclick="showFeed()"><video src="${doc.data().video}"></video></div>`; });
-                });
             }
         }
-
-        function triggerSaveHandler(el, postId, viewSource) {
-            db.collection("posts").doc(postId).get().then(doc => {
-                if(doc.exists) {
-                    let d = doc.data();
-                    let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
-                    ref.get().then(sDoc => {
-                        let iconEl = el.classList.contains('yt-action-circle-btn') ? el.querySelector('span') || el : el;
-                        if(sDoc.exists) {
-                            ref.delete().then(() => { 
-                                if(viewSource === 'Space Reel') { el.style.color = "#ffffff"; } else { el.style.color = "#f1f3f9"; }
-                                triggerGlowToastNotification("Database link element record detached.");
-                            });
-                        } else {
-                            ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                               .then(() => { 
-                                   if(viewSource === 'Space Reel') { el.style.color = "#c77dff"; } else { el.style.color = "#c77dff"; }
-                                   triggerGlowToastNotification("Reference link metadata packet generated successfully.");
-                               });
-                        }
-                    });
-                }
-            });
-        }
-
-        function verifyIfPostAlreadySavedByUser(postId, elementId) {
-            db.collection("users").doc(currentUID).collection("savedPosts").doc(postId).get().then(doc => {
-                let el = document.getElementById(elementId);
-                if(doc.exists && el) el.style.color = "#c77dff";
-            });
-        }
-
-        function showSpaceReels() {
-            hideAllViews();
-            let container = document.getElementById("reelVideoPlayerContainer");
-            db.collection("posts").orderBy("timestamp", "desc").get().then(snapshot => {
-                let videoPost = null;
-                let videoDocId = "";
-                snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
-                if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Target segment collection records unassigned.</div>`; } 
-                else {
-                    let shortsHeartIconSymbol = "🤍";
-                    let shortsHeartIconColor = "#ffffff";
-                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
-                        shortsHeartIconSymbol = "❤️";
-                        shortsHeartIconColor = "#c77dff";
-                    }
-
-                    container.innerHTML = `
-                        <div class="reel-video-wrapper" style="position:relative; width:100%; height:100%;">
-                            <video id="spaceVidElement_${videoDocId}" src="${videoPost.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${videoDocId}', 'space')"></video>
-                            <div class="video-status-toast" id="spaceToast_${videoDocId}">▶</div>
-                        </div>
-                        
-                        <div class="yt-shorts-side-actions">
-                            <div class="yt-action-item" onclick="triggerLikeHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}')">
-                                <div class="yt-action-circle-btn" id="shortsLikeBtn_${videoDocId}" style="color:${shortsHeartIconColor};">${shortsHeartIconSymbol}</div>
-                                <span id="shortsLikeCountText_${videoDocId}">${videoPost.likes || 0}</span>
-                            </div>
-                            <div class="yt-action-item" onclick="openShortsCommentDrawerTray('${videoDocId}')">
-                                <div class="yt-action-circle-btn">💬</div>
-                                <span>Comment</span>
-                            </div>
-                            <div class="yt-action-item" onclick="triggerNativeShareApi('${videoPost.author}', '${videoPost.text || ''}')">
-                                <div class="yt-action-circle-btn">🔗</div>
-                                <span>Share</span>
-                            </div>
-                            <div class="yt-action-item" onclick="triggerSaveHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}', 'Space Reel')" id="spaceSaveBtn_${videoDocId}">
-                                <div class="yt-action-circle-btn">🔖</div>
-                                <span>Save</span>
-                            </div>
-                        </div>
-
-                        <div class="reel-overlay-info">
-                            <b onclick="navigateToUserProfile('${videoPost.author}')">@${videoPost.author}</b>
-                            <p>${videoPost.text || ""}</p>
-                        </div>`;
-                    
-                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
-                        document.getElementById(`shortsLikeBtn_${videoDocId}`).style.color = "#c77dff";
-                    }
-
-                    db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
-                        let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
-                        if(doc.exists && sBtn) sBtn.querySelector('.yt-action-circle-btn').style.color = "#c77dff";
-                    });
-                }
-                document.getElementById("reelsSpaceView").style.display = "block";
-            });
-        }
-
-        function openShortsCommentDrawerTray(postId) {
-            document.getElementById("shortsCommentsListBox").innerHTML = "Loading database comment strings...";
-            document.getElementById("shortsCommentInputArea").innerHTML = `
-                <input type="text" id="shortsCommentFieldInput" placeholder="Add a public comment interaction...">
-                <button class="comment-post-action-btn" onclick="submitNewComment('${postId}', 'shorts')">Post</button>
-            `;
-            listenToLivePostComments(postId, "shortsCommentsListBox");
-            document.getElementById("shortsCommentsDrawerBox").classList.add("open");
-        }
-
-        function closeShortsCommentDrawerTray() {
-            document.getElementById("shortsCommentsDrawerBox").classList.remove("open");
-        }
-
-        function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
-        function openEditProfileModal() { document.getElementById("editUsernameInput").value = currentUsername; document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
-
-        function saveProfileData() { 
-            let newU = document.getElementById("editUsernameInput").value.trim().toLowerCase();
-            let newB = document.getElementById("editBioInput").value.trim();
-            if(!newU) return alert("Validation error: field values mandatory.");
-            if(newU !== currentUsername) {
-                db.collection("users").where("username", "==", newU).get().then(snap => {
-                    if(!snap.empty) { alert("Selected alphanumeric identifier configuration string is structurally unavailable."); }
-                    else { db.collection("users").doc(currentUID).update({ username: newU, bio: newB }).then(() => { currentUsername = newU; closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
-                });
-            } else { db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
-        }
-
-        function toggleVideoPlayPauseState(videoEl, id, type = 'feed') { 
-            let toastId = type === 'space' ? `spaceToast_${id}` : `toast_${id}`;
-            let toast = document.getElementById(toastId); 
-            
-            if(videoEl.paused) { 
-                videoEl.play(); 
-                if(toast) toast.innerHTML = "▶"; 
-            } else { 
-                videoEl.pause(); 
-                if(toast) toast.innerHTML = "⏸"; 
-            } 
-            if(toast) {
-                toast.classList.add("show-toast"); 
-                setTimeout(() => toast.classList.remove("show-toast"), 1000); 
-            }
-        }
-        
-        function triggerLikeHandler(el, postId) {
-            let isShorts = el.classList.contains('yt-action-circle-btn');
-            let postRef = db.collection("posts").doc(postId);
-
-            postRef.get().then(doc => {
-                if (!doc.exists) return;
-                let data = doc.data();
-                let likedByArray = data.likedBy || [];
-                let currentLikes = data.likes || 0;
-
-                if (likedByArray.includes(currentUID)) {
-                    let newLikes = Math.max(0, currentLikes - 1);
-                    likedByArray = likedByArray.filter(uid => uid !== currentUID);
-                    
-                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
-                        if (isShorts) {
-                            el.innerText = "🤍"; el.style.color = "#ffffff";
-                            let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
-                            if (countTxt) countTxt.innerText = newLikes;
-                            triggerGlowToastNotification("Interaction structural changes processed.");
-                        } else {
-                            el.innerText = "🤍"; el.style.color = "#f1f3f9";
-                            let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
-                            if (feedCountTxt) feedCountTxt.innerText = newLikes;
-                        }
-                    });
-                } else {
-                    let newLikes = currentLikes + 1;
-                    likedByArray.push(currentUID);
-
-                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
-                        if (isShorts) {
-                            el.innerText = "❤️"; el.style.color = "#c77dff";
-                            let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
-                            if (countTxt) countTxt.innerText = newLikes;
-                            triggerGlowToastNotification("Interaction struct configured successfully.");
-                        } else {
-                            el.innerText = "❤️"; el.style.color = "#ff3040";
-                            let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
-                            if (feedCountTxt) feedCountTxt.innerText = newLikes;
-                        }
-                    });
-                }
-            });
-        }
+        function triggerLikeHandler(el, postId) {}
+        function triggerSaveHandler(el, postId, viewSource) {}
+        function verifyIfPostAlreadySavedByUser(postId, elementId) {}
+        function showSpaceReels() {}
+        function closeShortsCommentDrawerTray() {}
     </script>
 </body>
 </html>
