@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>OurSpace - world</title>
     
     <link rel="manifest" href="manifest.json">
     <script>
       if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js').catch(err => console.log("SW Skip"));
+        navigator.serviceWorker.register('sw.js').catch(err => console.log("Service Worker Registration Skipped"));
       }
     </script>
 
@@ -19,19 +19,36 @@
     <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
 
     <style>
-        /* CORE RESET & PREMIUM ROYAL DEEP THEMING */
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* APP RESET & NATIVE COMPILER EMULATION */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+            scrollbar-width: none;
+        }
+        *::-webkit-scrollbar {
+            display: none;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            background: #090613;
+        }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             background: linear-gradient(135deg, #090613 0%, #120c24 50%, #07050f 100%);
             color: #f1f3f9;
-            overflow-x: hidden;
-            min-height: 100vh;
-            display: flex; justify-content: center; align-items: center;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            user-select: none;
         }
         .main-btn, input, .nav-icons span, .glass-box, .post-grid-item, textarea { transition: all 0.25s ease; }
 
-        /* AUTHENTICATION MODULES */
+        /* SECURITY MODULES */
         .auth-container { display: flex; justify-content: center; align-items: center; width: 100%; min-height: 100vh; padding: 20px; z-index: 1000; }
         .glass-box { background-color: rgba(255, 255, 255, 0.02); backdrop-filter: blur(25px); border: 1px solid rgba(157, 78, 221, 0.25); box-shadow: 0 20px 45px rgba(0, 0, 0, 0.7); padding: 40px 30px; border-radius: 24px; width: 100%; max-width: 360px; text-align: center; display: none; }
         .logo { font-size: 2.6em; font-weight: 800; margin-bottom: 25px; background: linear-gradient(45deg, #e0aaff, #7b2cbf); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 1px; }
@@ -44,11 +61,11 @@
         .divider::before, .divider::after { content: ""; flex: 1; border-bottom: 1px solid rgba(255, 255, 255, 0.06); }
         .switch-link { color: #c77dff; cursor: pointer; font-weight: bold; }
 
-        /* MAIN APP STRUCTURE */
-        #appScreen { display: none; width: 100%; height: 100vh; flex-direction: column; position: fixed; top: 0; left: 0; background: linear-gradient(135deg, #090613 0%, #120c24 100%); z-index: 100; }
-        .content-area { flex: 1; padding: 25px 0 40px 0; overflow-y: auto; width: 100%; display: flex; flex-direction: column; align-items: center; }
+        /* APPLICATION MONITOR NODE */
+        #appScreen { display: none; width: 100%; height: 100vh; flex-direction: column; position: fixed; top: 0; left: 0; background: linear-gradient(135deg, #090613 0%, #120c24 100%); z-index: 100; overflow: hidden; }
+        .content-area { flex: 1; padding: 15px 0 0 0; overflow-y: auto; width: 100%; display: flex; flex-direction: column; align-items: center; -webkit-overflow-scrolling: touch; }
         
-        /* TIMELINE LOOK */
+        /* CONTENT INTERFACES */
         #feedView { width: 100%; max-width: 470px; margin: 0 auto; padding: 0 10px; }
         .post { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.12); border-radius: 20px; width: 100%; margin-bottom: 24px; padding: 4px 0; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; }
         
@@ -83,14 +100,12 @@
         .comment-input-form-holder input { margin-bottom: 0; padding: 10px; font-size: 13px; border-radius: 20px; background: #090613; border: 1px solid rgba(157, 78, 221, 0.3); }
         .comment-post-action-btn { color: #c77dff; font-weight: 700; font-size: 13px; cursor: pointer; background: none; border: none; }
 
-        /* ==========================================
-            🌟 COMPACT YOUTUBE SHORTS (SPACE VIEW)
-           ========================================== */
+        /* SHORT FRAME EMULATOR PANEL */
         #reelsSpaceView { 
             display: none; 
             width: 100%; 
             max-width: 430px; 
-            height: calc(100vh - 150px); 
+            height: calc(100vh - 120px); 
             margin: 0 auto; 
             position: relative; 
             background: #000; 
@@ -111,7 +126,6 @@
         .reel-overlay-info b { font-size: 15px; color: #fff; display: block; margin-bottom: 4px; cursor: pointer; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); pointer-events: auto; }
         .reel-overlay-info p { font-size: 13px; color: #e1e1e1; line-height: 1.4; text-shadow: 1px 1px 3px rgba(0,0,0,0.9); }
 
-        /* SHORTS VERTICAL ACTION PANEL WITH REAL DIL ICON SYSTEM */
         .yt-shorts-side-actions {
             position: absolute; right: 12px; bottom: 30px; 
             display: flex; flex-direction: column; gap: 18px; 
@@ -132,7 +146,6 @@
         .yt-action-item:hover .yt-action-circle-btn { transform: scale(1.1); background: rgba(255,255,255,0.2); }
         .yt-action-item span { font-size: 11px; margin-top: 4px; font-weight: 600; color: #f1f3f9; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
 
-        /* SHORTS INTEGRATED COMMENT DRAWER FIX */
         .shorts-comments-drawer {
             position: absolute; bottom: -100%; left: 0; width: 100%; height: 60%;
             background: #110d1f; border-top: 2px solid rgba(157, 78, 221, 0.4);
@@ -142,7 +155,20 @@
         .shorts-comments-drawer.open { bottom: 0; }
         .shorts-comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
 
-        /* TOAST POP-UP SYSTEM */
+        /* MESSAGING PANEL ARCHITECTURE */
+        #messagingViewTab { display: none; width: 100%; max-width: 500px; height: calc(100vh - 120px); flex-direction: column; padding: 0 15px; margin: 0 auto; }
+        .messaging-wrapper-pane { display: flex; flex-direction: column; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.2); border-radius: 20px; overflow: hidden; }
+        .chats-header-bar { padding: 16px; background: rgba(157, 78, 221, 0.1); border-bottom: 1px solid rgba(157, 78, 221, 0.2); font-weight: bold; text-align: center; font-size: 16px; letter-spacing: 0.5px; }
+        .chat-records-canvas { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .chat-dispatch-form { display: flex; padding: 12px; gap: 8px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(157, 78, 221, 0.15); }
+        .chat-dispatch-form input { margin-bottom: 0; border-radius: 25px; padding: 12px 18px; }
+        .chat-dispatch-btn { padding: 0 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #9d4edd, #5a189a); color: white; font-weight: bold; cursor: pointer; font-size: 13px; }
+        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; word-break: break-word; }
+        .msg-bubble.outgoing { background: linear-gradient(135deg, #9d4edd, #5a189a); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .msg-bubble.incoming { background: rgba(255,255,255,0.06); color: #f1f3f9; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
+        .msg-meta-lbl { font-size: 10px; color: #8a8d9b; margin-bottom: 2px; font-weight: 600; }
+
+        /* NOTIFICATION POP-UP NODE */
         .premium-toast-popup {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(90deg, #9d4edd, #5a189a);
@@ -155,7 +181,7 @@
         }
         .premium-toast-popup.show-popup { top: 25px; }
 
-        /* SEARCH MODULES */
+        /* SYSTEM MODALS */
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; padding: 0 15px; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
         .search-container-wrapper input { margin-bottom: 0; padding: 12px; }
@@ -167,7 +193,7 @@
         .search-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .search-user-details { text-align: left; }
 
-        /* PROFILE */
+        /* USER SYSTEM VIEWS */
         #profileView { display: none; width: 100%; max-width: 650px; margin: 0 auto; padding: 0 15px; }
         .profile-header { display: flex; align-items: center; gap: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(157, 78, 221, 0.15); width: 100%; }
         .profile-pic-container { width: 95px; height: 95px; border-radius: 50%; background: linear-gradient(45deg, #5a189a, #9d4edd, #e0aaff); display: flex; justify-content: center; align-items: center; padding: 2px; cursor: pointer; position: relative; }
@@ -189,6 +215,7 @@
         .dropdown-menu-list .dropdown-menu-item { padding: 10px 14px; font-size: 13px; color: #ff5555; cursor: pointer; text-align: left; font-weight: bold; }
         .security-badge { text-align: left; background: rgba(255,255,255,0.03); border: 1px solid rgba(157,78,221,0.2); padding: 10px; border-radius: 10px; margin-bottom: 12px; font-size: 12px; }
 
+        /* VIEWPORT PLATFORM CODES */
         @media screen and (min-width: 769px) {
             .top-nav { background: rgba(9, 6, 19, 0.95); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(157,78,221,0.2); width: 100%; }
             .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -199,11 +226,12 @@
         @media screen and (max-width: 768px) {
             .top-nav { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #090613; border-bottom: 1px solid rgba(157,78,221,0.15); width: 100%; }
             .nav-logo { font-size: 1.4em; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            .nav-icons { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; background: #090613 !important; border-top: 1px solid rgba(157,78,221,0.2) !important; padding: 10px 8px 12px 8px !important; display: grid !important; grid-template-columns: repeat(5, 1fr) !important; gap: 4px !important; z-index: 9999 !important; }
-            .nav-icons span { padding: 10px 2px !important; font-size: 11px !important; font-weight: 600 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; color: #a5a7b4; }
+            .nav-icons { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; background: #090613 !important; border-top: 1px solid rgba(157,78,221,0.2) !important; padding: 10px 4px 12px 4px !important; display: grid !important; grid-template-columns: repeat(6, 1fr) !important; gap: 2px !important; z-index: 9999 !important; }
+            .nav-icons span { padding: 10px 1px !important; font-size: 10px !important; font-weight: 600 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; color: #a5a7b4; }
             .nav-icons span:hover { color: #c77dff !important; }
-            .content-area { padding-bottom: 125px; } 
-            #reelsSpaceView { height: calc(100vh - 210px); }
+            .content-area { padding-bottom: 110px; } 
+            #reelsSpaceView { height: calc(100vh - 160px); }
+            #messagingViewTab { height: calc(100vh - 160px); }
             .profile-header { flex-direction: column; text-align: center; gap: 15px; }
         }
     </style>
@@ -211,31 +239,31 @@
 <body>
 
     <div class="premium-toast-popup" id="globalToastPopupNotification">
-        <span style="font-size: 16px;">🔖</span> <span id="globalToastPopupMessageText">Post saved successfully!</span>
+        <span style="font-size: 16px;">🔖</span> <span id="globalToastPopupMessageText">Notification initialized successfully.</span>
     </div>
 
     <div class="auth-container" id="authZoneWrapper">
         <div class="glass-box" id="loginBox">
             <div class="logo">OurSpace</div>
             <form onsubmit="handleLogin(event)">
-                <input type="email" id="loginEmail" placeholder="Apna Email dalein" required>
-                <input type="password" id="loginPass" placeholder="Password dalein" required>
+                <input type="email" id="loginEmail" placeholder="Enter registration email" required>
+                <input type="password" id="loginPass" placeholder="Enter password" required>
                 <button type="submit" class="main-btn">Premium Log In</button>
             </form>
-            <div class="divider">YA</div>
-            <div><span>Account nahi hai?</span> <span class="switch-link" onclick="toggleView('signupBox')">Sign up</span></div>
+            <div class="divider">OR</div>
+            <div><span>Do not have an account?</span> <span class="switch-link" onclick="toggleView('signupBox')">Sign up</span></div>
         </div>
 
         <div class="glass-box" id="signupBox">
             <div class="logo">OurSpace</div>
             <form onsubmit="handleSignup(event)">
-                <input type="text" id="signUser" placeholder="Unique Username chunein" required>
-                <input type="email" id="signEmail" placeholder="Private Email dalein" required>
-                <input type="password" id="signPass" placeholder="Secure Password banayein" required>
-                <button type="submit" class="main-btn">Join Premium Space</button>
+                <input type="text" id="signUser" placeholder="Select unique username" required>
+                <input type="email" id="signEmail" placeholder="Enter validation email" required>
+                <input type="password" id="signPass" placeholder="Create secure password" required>
+                <button type="submit" class="main-btn">Create Premium Space</button>
             </form>
-            <div class="divider">YA</div>
-            <div><span>Pehle se account hai?</span> <span class="switch-link" onclick="toggleView('loginBox')">Log In</span></div>
+            <div class="divider">OR</div>
+            <div><span>Already registered?</span> <span class="switch-link" onclick="toggleView('loginBox')">Log In</span></div>
         </div>
     </div>
 
@@ -247,6 +275,7 @@
                 <span onclick="showSearchViewTab()">🔍 Search</span>
                 <span onclick="showSpaceReels()">▶️ Space</span>
                 <span onclick="openModal('postModal')">➕ Post</span>
+                <span onclick="showMessagingCenterTab()">💬 Chat</span>
                 <span onclick="viewMyOwnProfile()">👤 Profile</span>
             </div>
         </div>
@@ -255,9 +284,9 @@
             <div id="feedView"><div id="dynamicFeedContainer"></div></div>
 
             <div id="searchViewTab">
-                <h2>Search OurSpace Registry 🔍</h2><br>
+                <h2>Search System Registry 🔍</h2><br>
                 <div class="search-container-wrapper">
-                    <input type="text" id="standaloneSearchInput" oninput="executeLiveUserSearch()" placeholder="Type username to search instantly...">
+                    <input type="text" id="standaloneSearchInput" oninput="executeLiveUserSearch()" placeholder="Search platform database user profiles...">
                 </div>
                 <div class="search-results-list" id="searchResultsFeedback"></div>
             </div>
@@ -272,6 +301,17 @@
                     </div>
                     <div class="comments-list-box" id="shortsCommentsListBox" style="flex:1;"></div>
                     <div class="comment-input-form-holder" id="shortsCommentInputArea"></div>
+                </div>
+            </div>
+
+            <div id="messagingViewTab">
+                <div class="messaging-wrapper-pane">
+                    <div class="chats-header-bar">Global Workspace Communication Center</div>
+                    <div class="chat-records-canvas" id="globalChatLogsDisplayBox"></div>
+                    <form class="chat-dispatch-form" onsubmit="transmitGlobalChatMessageSync(event)">
+                        <input type="text" id="chatMessagePayloadInput" placeholder="Enter secure message packet data..." autocomplete="off">
+                        <button type="submit" class="chat-dispatch-btn">Send</button>
+                    </form>
                 </div>
             </div>
 
@@ -291,7 +331,7 @@
                             <span>Following: <b id="followingCountNum">0</b></span>
                         </div>
                         <div class="profile-bio" style="margin-top:10px;">
-                            <span id="profBioText">Welcome to my space.</span>
+                            <span id="profBioText">User profile configuration description.</span>
                         </div>
                     </div>
                 </div>
@@ -307,7 +347,7 @@
     <div class="modal-overlay" id="postModal">
         <div class="modal-card">
             <h3>Premium Post Creation ➕</h3><br>
-            <textarea id="postContentInput" rows="3" placeholder="Write a luxury caption..."></textarea>
+            <textarea id="postContentInput" rows="3" placeholder="Write a post content description layout..."></textarea>
             <div class="widget-trigger-btn" id="uploadWidgetTrigger" onclick="openCloudinaryUploadWidget('post')">🎥 Select Video From Gallery</div>
             <button class="main-btn" id="publishBtn" onclick="addNewPost()">Publish</button><br><br>
             <span class="switch-link" onclick="closeModal('postModal')">Cancel</span>
@@ -317,8 +357,8 @@
     <div class="modal-overlay" id="editProfileModal">
         <div class="modal-card">
             <h3>Edit Profile 👤</h3><br>
-            <input type="text" id="editUsernameInput" placeholder="Badlein Apna Username">
-            <textarea id="editBioInput" rows="3" placeholder="Apna Bio likhein"></textarea>
+            <input type="text" id="editUsernameInput" placeholder="Modify platform username">
+            <textarea id="editBioInput" rows="3" placeholder="Modify personal summary biographical text"></textarea>
             <button class="main-btn" onclick="saveProfileData()">Save Profile</button><br><br>
             <span class="switch-link" onclick="closeModal('editProfileModal')">Cancel</span>
         </div>
@@ -328,13 +368,13 @@
         <div class="modal-card">
             <h3 style="color:#c77dff; margin-bottom:15px;">⚙️ Security Registry</h3>
             <div class="security-badge">
-                <span>Current Gmail:</span>
-                <b id="currentActiveEmailDisplay" style="color:#fff; display:block; word-break:break-all;">Loading account...</b>
+                <span>Current Profile Email:</span>
+                <b id="currentActiveEmailDisplay" style="color:#fff; display:block; word-break:break-all;">Verification matrix active...</b>
             </div>
-            <input type="email" id="secureEmailInput" placeholder="Enter new email address">
-            <button class="main-btn" style="padding:10px; font-size:13px; margin-bottom:16px;" onclick="executeEmailUpdateEngine()">Replace Email ID</button>
-            <input type="password" id="securePasswordInput" placeholder="Enter new custom password">
-            <button class="main-btn" style="padding:10px; font-size:13px; background:linear-gradient(135deg, #9d4edd, #5a189a);" onclick="executePasswordUpdateEngine()">Update Security Password</button>
+            <input type="email" id="secureEmailInput" placeholder="Enter validation text configuration">
+            <button class="main-btn" style="padding:10px; font-size:13px; margin-bottom:16px;" onclick="executeEmailUpdateEngine()">Replace System Email</button>
+            <input type="password" id="securePasswordInput" placeholder="Enter secure character configuration">
+            <button class="main-btn" style="padding:10px; font-size:13px; background:linear-gradient(135deg, #9d4edd, #5a189a);" onclick="executePasswordUpdateEngine()">Update Core Account Password</button>
             <div class="divider"></div>
             <button class="main-btn" style="background:linear-gradient(45deg, #ff5555, #cc3333); color:white;" onclick="logout()">Logout Account</button><br><br>
             <span class="switch-link" onclick="closeModal('settingsModal')">Close</span>
@@ -354,12 +394,34 @@
 
         let uploadedVideoURL = ""; 
         let currentProfileTab = "posts";
+        let interactionNotificationCache = {};
 
         function triggerGlowToastNotification(msg) {
             let toast = document.getElementById("globalToastPopupNotification");
             document.getElementById("globalToastPopupMessageText").innerText = msg;
             toast.classList.add("show-popup");
             setTimeout(() => { toast.classList.remove("show-popup"); }, 2200);
+        }
+
+        // PERMISSION PIPELINE SETUP FOR OVER THE AIR NOTIFICATION BANNER
+        function initializeSystemNotificationPermissions() {
+            if ("Notification" in window) {
+                if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                    Notification.requestPermission();
+                }
+            }
+        }
+
+        function executeOtaSystemNotificationBanner(sender, action) {
+            if ("Notification" in window && Notification.permission === "granted") {
+                const title = "OurSpace Sync Notification";
+                const options = {
+                    body: `@${sender} performed an action: ${action} on your published profile post data.`,
+                    icon: "https://upload.wikimedia.org/wikipedia/commons/8/84/Approved_img.png",
+                    silent: false
+                };
+                new Notification(title, options);
+            }
         }
 
         function openCloudinaryUploadWidget(target) {
@@ -375,7 +437,7 @@
                         updateProfileAvatarDatabaseRegistry(result.info.secure_url);
                     } else {
                         uploadedVideoURL = result.info.secure_url;
-                        document.getElementById("uploadWidgetTrigger").innerText = "✅ Video Selected!";
+                        document.getElementById("uploadWidgetTrigger").innerText = "Video Selection Authenticated";
                         document.getElementById("uploadWidgetTrigger").style.color = "#00ff88";
                     }
                 }
@@ -397,6 +459,7 @@
                 db.collection("users").doc(user.uid).get().then(doc => {
                     if(doc.exists) {
                         currentUsername = doc.data().username;
+                        initializeSystemNotificationPermissions();
                         openApp();
                     } else { logout(); }
                 });
@@ -405,23 +468,23 @@
 
         function executeEmailUpdateEngine() {
             let newEmail = document.getElementById("secureEmailInput").value.trim();
-            if(!newEmail) return alert("Pehle valid email likhein!");
+            if(!newEmail) return alert("System requires valid verification parsing characters.");
             auth.currentUser.updateEmail(newEmail).then(() => {
                 db.collection("users").doc(currentUID).update({ email: newEmail }).then(() => {
-                    alert("Email successfully replaced!");
+                    alert("System email address structure modified.");
                     window.location.reload();
                 });
-            }).catch(err => alert("Re-login required for security!"));
+            }).catch(err => alert("Security transaction expired. Please authenticate configuration access."));
         }
 
         function executePasswordUpdateEngine() {
             let newPass = document.getElementById("securePasswordInput").value;
-            if(!newPass || newPass.length < 6) return alert("Password min 6 letters ka ho!");
+            if(!newPass || newPass.length < 6) return alert("Security constraints expect minimal character metrics.");
             auth.currentUser.updatePassword(newPass).then(() => {
-                alert("Security Password update ho gaya h!");
+                alert("Security account data encryption key replaced.");
                 document.getElementById("securePasswordInput").value = "";
                 closeModal('settingsModal');
-            }).catch(err => alert("Error: Re-login required!"));
+            }).catch(err => alert("Security protocol failure. Re-authentication processing mandatory."));
         }
 
         function toggleView(boxId) {
@@ -436,6 +499,7 @@
             document.getElementById("authZoneWrapper").style.display = "none";
             document.getElementById("appScreen").style.display = "flex";
             listenToLiveGlobalFeed();
+            connectLiveMessagingStream();
             showFeed();
         }
 
@@ -444,18 +508,28 @@
             document.getElementById("profileView").style.display = "none";
             document.getElementById("reelsSpaceView").style.display = "none";
             document.getElementById("searchViewTab").style.display = "none";
+            document.getElementById("messagingViewTab").style.display = "none";
             document.getElementById("reelVideoPlayerContainer").innerHTML = "";
             closeShortsCommentDrawerTray();
             closeModal('settingsModal');
         }
 
         function showFeed() { hideAllViews(); document.getElementById("feedView").style.display = "block"; }
+        
         function showSearchViewTab() { 
             hideAllViews(); 
             document.getElementById("standaloneSearchInput").value = "";
-            document.getElementById("searchResultsFeedback").innerHTML = `<span style="color:#8a8d9b; font-size:14px; display:block; margin-top:20px;">Type to find accounts...</span>`; 
+            document.getElementById("searchResultsFeedback").innerHTML = `<span style="color:#8a8d9b; font-size:14px; display:block; margin-top:20px;">Input criteria data string targets...</span>`; 
             document.getElementById("searchViewTab").style.display = "block"; 
         }
+
+        function showMessagingCenterTab() {
+            hideAllViews();
+            document.getElementById("messagingViewTab").style.display = "flex";
+            let box = document.getElementById("globalChatLogsDisplayBox");
+            box.scrollTop = box.scrollHeight;
+        }
+
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
         function closeModal(id) { document.getElementById(id).style.display = "none"; }
 
@@ -463,16 +537,16 @@
             e.preventDefault();
             let u = document.getElementById("signUser").value.trim().toLowerCase();
             db.collection("users").where("username", "==", u).get().then(snapshot => {
-                if(!snapshot.empty) { alert("Username pehle se liya ja chuka hai!"); } 
+                if(!snapshot.empty) { alert("Selected username identity parameters are registered."); } 
                 else {
                     auth.createUserWithEmailAndPassword(document.getElementById("signEmail").value.trim(), document.getElementById("signPass").value).then(cred => {
-                        return db.collection("users").doc(cred.user.uid).set({ username: u, email: document.getElementById("signEmail").value.trim(), bio: "Welcome to my space.", followersCount: 0, followingCount: 0, avatar: "" });
+                        return db.collection("users").doc(cred.user.uid).set({ username: u, email: document.getElementById("signEmail").value.trim(), bio: "User profile initialized.", followersCount: 0, followingCount: 0, avatar: "" });
                     }).catch(err => alert(err.message));
                 }
             });
         }
 
-        function handleLogin(e) { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value).catch(err => alert("Details wrong!")); }
+        function handleLogin(e) { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value).catch(err => alert("Identity check profile validation data mismatch.")); }
         function logout() { auth.signOut(); window.location.reload(); }
 
         function triggerProfileAvatarChangerWindow() {
@@ -487,7 +561,7 @@
             let txt = document.getElementById("postContentInput").value.trim();
             let btn = document.getElementById("publishBtn");
             if(!txt && !uploadedVideoURL) return;
-            btn.innerText = "Publishing... Wait..."; btn.disabled = true;
+            btn.innerText = "Processing transactional transmission..."; btn.disabled = true;
 
             db.collection("posts").add({
                 author: currentUsername, text: txt, video: uploadedVideoURL, timestamp: firebase.firestore.FieldValue.serverTimestamp(), likes: 0
@@ -505,14 +579,31 @@
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
-                if(snapshot.empty) { container.innerHTML = `<div class="no-posts-alert">Timeline khali hai!</div>`; return; }
+                if(snapshot.empty) { container.innerHTML = `<div class="no-posts-alert">Timeline registry empty.</div>`; return; }
                 
                 snapshot.forEach(doc => {
                     let p = doc.data();
-                    let postDate = "Just now";
+                    let postDate = "Verification processing";
                     if(p.timestamp) {
                         let dateObj = p.timestamp.toDate();
                         postDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                    }
+
+                    // INTERACTION PARSING LAYER FOR OVER THE AIR ANNOUNCEMENTS (EXCLUDES SELF LIKES)
+                    if (p.author === currentUsername && p.likedBy && p.likedBy.length > 0) {
+                        p.likedBy.forEach(likerUID => {
+                            if (likerUID !== currentUID) {
+                                let trackingKey = `${doc.id}_${likerUID}`;
+                                if (!interactionNotificationCache[trackingKey]) {
+                                    interactionNotificationCache[trackingKey] = true;
+                                    db.collection("users").doc(likerUID).get().then(likerDoc => {
+                                        if (likerDoc.exists) {
+                                            executeOtaSystemNotificationBanner(likerDoc.data().username, "Like Interaction");
+                                        }
+                                    });
+                                }
+                            }
+                        });
                     }
 
                     let videoBlock = p.video ? `
@@ -561,7 +652,7 @@
                             <div class="post-comments-section" id="commentsSection_${doc.id}">
                                 <div class="comments-list-box" id="commentsListBox_${doc.id}"></div>
                                 <div class="comment-input-form-holder">
-                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Add a comment...">
+                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Post textual message payload response...">
                                     <button class="comment-post-action-btn" onclick="submitNewComment('${doc.id}')">Post</button>
                                 </div>
                             </div>
@@ -579,16 +670,54 @@
             });
         }
 
+        // MESSAGING SYSTEM BACKEND DATA ROUTERS
+        function connectLiveMessagingStream() {
+            db.collection("messages").orderBy("timestamp", "asc").limitToLast(40).onSnapshot(snapshot => {
+                let box = document.getElementById("globalChatLogsDisplayBox");
+                box.innerHTML = "";
+                if(snapshot.empty) {
+                    box.innerHTML = `<div style="text-align:center; color:#8a8d9b; font-size:12px; padding:20px;">No communication entries logged in database.</div>`;
+                    return;
+                }
+                snapshot.forEach(doc => {
+                    let m = doc.data();
+                    let alignmentClass = (m.sender === currentUsername) ? "outgoing" : "incoming";
+                    box.innerHTML += `
+                        <div class="msg-bubble ${alignmentClass}">
+                            <div class="msg-meta-lbl">@${m.sender}</div>
+                            <div>${m.messagePayload}</div>
+                        </div>
+                    `;
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
+
+        function transmitGlobalChatMessageSync(e) {
+            e.preventDefault();
+            let inputNode = document.getElementById("chatMessagePayloadInput");
+            let payload = inputNode.value.trim();
+            if(!payload) return;
+
+            db.collection("messages").add({
+                sender: currentUsername,
+                messagePayload: payload,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                inputNode.value = "";
+            });
+        }
+
         function triggerNativeShareApi(author, text) {
             if (navigator.share) {
                 navigator.share({
                     title: `OurSpace Post by @${author}`,
                     text: `${text}`,
                     url: window.location.href
-                }).then(() => triggerGlowToastNotification("Shared successfully! 🔗"));
+                }).then(() => triggerGlowToastNotification("Data distribution successfully triggered."));
             } else {
                 navigator.clipboard.writeText(window.location.href);
-                triggerGlowToastNotification("Link copied! 🔗");
+                triggerGlowToastNotification("Clipboard allocation configured.");
             }
         }
 
@@ -605,8 +734,8 @@
         }
 
         function deletePostFromDatabaseRegistry(postId) {
-            if(confirm("Bhai, kya sach me ye post delete karna hai?")) {
-                db.collection("posts").doc(postId).delete().then(() => alert("Deleted!"));
+            if(confirm("Confirm destructive removal processing configuration metric for database allocation record?")) {
+                db.collection("posts").doc(postId).delete().then(() => alert("Data removal verified."));
             }
         }
 
@@ -648,7 +777,7 @@
         function executeLiveUserSearch() {
             let query = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
             let targetBox = document.getElementById("searchResultsFeedback");
-            if(!query) { targetBox.innerHTML = `<span>Type to find accounts...</span>`; return; }
+            if(!query) { targetBox.innerHTML = `<span>Input profile metadata tracking characters...</span>`; return; }
             db.collection("users").get().then(snap => {
                 targetBox.innerHTML = "";
                 snap.forEach(doc => {
@@ -676,7 +805,7 @@
                 if(!snapshot.empty) {
                     snapshot.forEach(doc => {
                         let data = doc.data();
-                        document.getElementById("profBioText").innerText = data.bio || "No bio added.";
+                        document.getElementById("profBioText").innerText = data.bio || "Biographical statement configuration unassigned.";
                         document.getElementById("followerCountNum").innerText = data.followersCount || 0;
                         document.getElementById("followingCountNum").innerText = data.followingCount || 0;
                         if(data.avatar) document.getElementById("profileGridMasterAvatar").innerHTML = `<img src="${data.avatar}">`;
@@ -729,13 +858,13 @@
                         if(sDoc.exists) {
                             ref.delete().then(() => { 
                                 if(viewSource === 'Space Reel') { el.style.color = "#ffffff"; } else { el.style.color = "#f1f3f9"; }
-                                triggerGlowToastNotification("Removed from Saved! ❌");
+                                triggerGlowToastNotification("Database link element record detached.");
                             });
                         } else {
                             ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
                                .then(() => { 
                                    if(viewSource === 'Space Reel') { el.style.color = "#c77dff"; } else { el.style.color = "#c77dff"; }
-                                   triggerGlowToastNotification("Post saved successfully! 🔖");
+                                   triggerGlowToastNotification("Reference link metadata packet generated successfully.");
                                });
                         }
                     });
@@ -750,9 +879,6 @@
             });
         }
 
-        /* =======================================================
-            🌟 ASLI YOUTUBE SHORTS LOGIC - TAP TO PAUSE CHALU FIXED
-           ======================================================= */
         function showSpaceReels() {
             hideAllViews();
             let container = document.getElementById("reelVideoPlayerContainer");
@@ -760,7 +886,7 @@
                 let videoPost = null;
                 let videoDocId = "";
                 snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
-                if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Space khali h!</div>`; } 
+                if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Target segment collection records unassigned.</div>`; } 
                 else {
                     let shortsHeartIconSymbol = "🤍";
                     let shortsHeartIconColor = "#ffffff";
@@ -769,7 +895,6 @@
                         shortsHeartIconColor = "#c77dff";
                     }
 
-                    // ADDED DYNAMIC TOAST & ONCLICK CLICK/TAP FUNCTION SAME AS HOME FEED
                     container.innerHTML = `
                         <div class="reel-video-wrapper" style="position:relative; width:100%; height:100%;">
                             <video id="spaceVidElement_${videoDocId}" src="${videoPost.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${videoDocId}', 'space')"></video>
@@ -814,9 +939,9 @@
         }
 
         function openShortsCommentDrawerTray(postId) {
-            document.getElementById("shortsCommentsListBox").innerHTML = "Loading...";
+            document.getElementById("shortsCommentsListBox").innerHTML = "Loading database comment strings...";
             document.getElementById("shortsCommentInputArea").innerHTML = `
-                <input type="text" id="shortsCommentFieldInput" placeholder="Add a public comment...">
+                <input type="text" id="shortsCommentFieldInput" placeholder="Add a public comment interaction...">
                 <button class="comment-post-action-btn" onclick="submitNewComment('${postId}', 'shorts')">Post</button>
             `;
             listenToLivePostComments(postId, "shortsCommentsListBox");
@@ -833,16 +958,15 @@
         function saveProfileData() { 
             let newU = document.getElementById("editUsernameInput").value.trim().toLowerCase();
             let newB = document.getElementById("editBioInput").value.trim();
-            if(!newU) return alert("Username empty!");
+            if(!newU) return alert("Validation error: field values mandatory.");
             if(newU !== currentUsername) {
                 db.collection("users").where("username", "==", newU).get().then(snap => {
-                    if(!snap.empty) { alert("Username taken!"); }
+                    if(!snap.empty) { alert("Selected alphanumeric identifier configuration string is structurally unavailable."); }
                     else { db.collection("users").doc(currentUID).update({ username: newU, bio: newB }).then(() => { currentUsername = newU; closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
                 });
             } else { db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
         }
 
-        // UNIVERSAL PLAY/PAUSE CONTROLLER SYSTEM (FOR BOTH TIMELINE & SPACE SYSTEM)
         function toggleVideoPlayPauseState(videoEl, id, type = 'feed') { 
             let toastId = type === 'space' ? `spaceToast_${id}` : `toast_${id}`;
             let toast = document.getElementById(toastId); 
@@ -879,7 +1003,7 @@
                             el.innerText = "🤍"; el.style.color = "#ffffff";
                             let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
                             if (countTxt) countTxt.innerText = newLikes;
-                            triggerGlowToastNotification("Like removed! 👎");
+                            triggerGlowToastNotification("Interaction structural changes processed.");
                         } else {
                             el.innerText = "🤍"; el.style.color = "#f1f3f9";
                             let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
@@ -895,7 +1019,7 @@
                             el.innerText = "❤️"; el.style.color = "#c77dff";
                             let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
                             if (countTxt) countTxt.innerText = newLikes;
-                            triggerGlowToastNotification("Liked Shorts Video! ❤️");
+                            triggerGlowToastNotification("Interaction struct configured successfully.");
                         } else {
                             el.innerText = "❤️"; el.style.color = "#ff3040";
                             let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
