@@ -155,18 +155,18 @@
         .shorts-comments-drawer.open { bottom: 0; }
         .shorts-comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
 
-        /* MESSAGING PANEL ARCHITECTURE */
-        #messagingViewTab { display: none; width: 100%; max-width: 500px; height: calc(100vh - 120px); flex-direction: column; padding: 0 15px; margin: 0 auto; }
-        .messaging-wrapper-pane { display: flex; flex-direction: column; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.2); border-radius: 20px; overflow: hidden; }
-        .chats-header-bar { padding: 16px; background: rgba(157, 78, 221, 0.1); border-bottom: 1px solid rgba(157, 78, 221, 0.2); font-weight: bold; text-align: center; font-size: 16px; letter-spacing: 0.5px; }
-        .chat-records-canvas { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-dispatch-form { display: flex; padding: 12px; gap: 8px; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(157, 78, 221, 0.15); }
-        .chat-dispatch-form input { margin-bottom: 0; border-radius: 25px; padding: 12px 18px; }
-        .chat-dispatch-btn { padding: 0 20px; border-radius: 25px; border: none; background: linear-gradient(135deg, #9d4edd, #5a189a); color: white; font-weight: bold; cursor: pointer; font-size: 13px; }
-        .msg-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 13.5px; line-height: 1.4; word-break: break-word; }
-        .msg-bubble.outgoing { background: linear-gradient(135deg, #9d4edd, #5a189a); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
-        .msg-bubble.incoming { background: rgba(255,255,255,0.06); color: #f1f3f9; align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid rgba(255,255,255,0.05); }
-        .msg-meta-lbl { font-size: 10px; color: #8a8d9b; margin-bottom: 2px; font-weight: 600; }
+        /* CLEAN MESSAGING CENTER EMBED MATRIX */
+        #messagingViewTab { display: none; width: 100%; max-width: 450px; height: calc(100vh - 120px); flex-direction: column; justify-content: center; align-items: center; margin: 0 auto; padding: 0 15px; }
+        .message-logo-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.2); border-radius: 24px; padding: 40px 20px; width: 100%; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
+        .message-icon-graphic { font-size: 64px; color: #c77dff; margin-bottom: 16px; animation: pulseGraphic Glow 2s infinite ease-in-out; }
+        .message-logo-wrapper h3 { font-size: 18px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+        .message-logo-wrapper p { font-size: 13px; color: #8a8d9b; max-width: 280px; line-height: 1.5; }
+
+        @keyframes pulseGraphicGlow {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 12px rgba(157, 78, 221, 0.6)); }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
 
         /* NOTIFICATION POP-UP NODE */
         .premium-toast-popup {
@@ -305,13 +305,10 @@
             </div>
 
             <div id="messagingViewTab">
-                <div class="messaging-wrapper-pane">
-                    <div class="chats-header-bar">Global Workspace Communication Center</div>
-                    <div class="chat-records-canvas" id="globalChatLogsDisplayBox"></div>
-                    <form class="chat-dispatch-form" onsubmit="transmitGlobalChatMessageSync(event)">
-                        <input type="text" id="chatMessagePayloadInput" placeholder="Enter secure message packet data..." autocomplete="off">
-                        <button type="submit" class="chat-dispatch-btn">Send</button>
-                    </form>
+                <div class="message-logo-wrapper">
+                    <div class="message-icon-graphic">💬</div>
+                    <h3>Global Chat Space</h3>
+                    <p>Encryption active. Messaging sync modules are currently idling inside the network pipeline registry.</p>
                 </div>
             </div>
 
@@ -403,7 +400,6 @@
             setTimeout(() => { toast.classList.remove("show-popup"); }, 2200);
         }
 
-        // PERMISSION PIPELINE SETUP FOR OVER THE AIR NOTIFICATION BANNER
         function initializeSystemNotificationPermissions() {
             if ("Notification" in window) {
                 if (Notification.permission !== "granted" && Notification.permission !== "denied") {
@@ -499,7 +495,6 @@
             document.getElementById("authZoneWrapper").style.display = "none";
             document.getElementById("appScreen").style.display = "flex";
             listenToLiveGlobalFeed();
-            connectLiveMessagingStream();
             showFeed();
         }
 
@@ -526,8 +521,6 @@
         function showMessagingCenterTab() {
             hideAllViews();
             document.getElementById("messagingViewTab").style.display = "flex";
-            let box = document.getElementById("globalChatLogsDisplayBox");
-            box.scrollTop = box.scrollHeight;
         }
 
         function openModal(id) { document.getElementById(id).style.display = "flex"; }
@@ -589,7 +582,6 @@
                         postDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     }
 
-                    // INTERACTION PARSING LAYER FOR OVER THE AIR ANNOUNCEMENTS (EXCLUDES SELF LIKES)
                     if (p.author === currentUsername && p.likedBy && p.likedBy.length > 0) {
                         p.likedBy.forEach(likerUID => {
                             if (likerUID !== currentUID) {
@@ -667,44 +659,6 @@
                     listenToLivePostComments(doc.id, `commentsListBox_${doc.id}`);
                     verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
                 });
-            });
-        }
-
-        // MESSAGING SYSTEM BACKEND DATA ROUTERS
-        function connectLiveMessagingStream() {
-            db.collection("messages").orderBy("timestamp", "asc").limitToLast(40).onSnapshot(snapshot => {
-                let box = document.getElementById("globalChatLogsDisplayBox");
-                box.innerHTML = "";
-                if(snapshot.empty) {
-                    box.innerHTML = `<div style="text-align:center; color:#8a8d9b; font-size:12px; padding:20px;">No communication entries logged in database.</div>`;
-                    return;
-                }
-                snapshot.forEach(doc => {
-                    let m = doc.data();
-                    let alignmentClass = (m.sender === currentUsername) ? "outgoing" : "incoming";
-                    box.innerHTML += `
-                        <div class="msg-bubble ${alignmentClass}">
-                            <div class="msg-meta-lbl">@${m.sender}</div>
-                            <div>${m.messagePayload}</div>
-                        </div>
-                    `;
-                });
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        function transmitGlobalChatMessageSync(e) {
-            e.preventDefault();
-            let inputNode = document.getElementById("chatMessagePayloadInput");
-            let payload = inputNode.value.trim();
-            if(!payload) return;
-
-            db.collection("messages").add({
-                sender: currentUsername,
-                messagePayload: payload,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                inputNode.value = "";
             });
         }
 
