@@ -77,7 +77,7 @@
         .post-header-left span { font-size: 12px; color: #8a8d9b; }
         .post-header-right { color: #c77dff; cursor: pointer; font-size: 18px; padding: 0 5px; }
 
-        /* FIXED RESPONSIVE VIDEO CONFIG FOR MOBILE & LAPTOP */
+        /* RESPONSIVE LAYOUT ENGINE FOR VIDEO WRAPPERS */
         .post-video-container { 
             width: 100%; 
             position: relative; 
@@ -769,7 +769,7 @@
                 if(!snapshot.empty) {
                     snapshot.forEach(doc => {
                         let data = doc.data();
-                        document.getElementById("profBioText").innerText = data.bio || "Biographical statement configuration unassigned.";
+                        document.getElementById("profBioText").innerText = data.bio || "Biographical summary description.";
                         document.getElementById("followerCountNum").innerText = data.followersCount || 0;
                         document.getElementById("followingCountNum").innerText = data.followingCount || 0;
                         if(data.avatar) document.getElementById("profileGridMasterAvatar").innerHTML = `<img src="${data.avatar}">`;
@@ -781,6 +781,7 @@
             let editProfileBtn = document.getElementById("profileActionBtn");
             let securitySettingsBtn = document.getElementById("profileSecurityBtn");
 
+            // CRITICAL AUTH LOGIC MODULE: HIDDING INTERFACES ACCORDING TO ACCESS PATHS
             if(targetUser !== currentUsername) {
                 editProfileBtn.style.display = "none";
                 securitySettingsBtn.style.display = "none";
@@ -817,11 +818,56 @@
 
         function toggleFollowUser(targetUser, isFollowing) {
             let followingRef = db.collection("users").doc(currentUID).collection("following").doc(targetUser);
+            
+            // Core logic counters modification pipeline mapping metrics
             if(isFollowing) { 
-                followingRef.delete().then(() => navigateToUserProfile(targetUser)); 
+                followingRef.delete().then(() => {
+                    updateDatabaseFollowCounters(targetUser, -1);
+                }); 
             } else { 
-                followingRef.set({ followedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => navigateToUserProfile(targetUser)); 
+                followingRef.set({ followedAt: firebase.firestore.FieldValue.serverTimestamp() }).then(() => {
+                    updateDatabaseFollowCounters(targetUser, 1);
+                }); 
             }
+        }
+
+        function updateDatabaseFollowCounters(targetUser, incrementVal) {
+            let sfDocRef = db.collection("users").doc(currentUID);
+            db.runTransaction(transaction => {
+                return transaction.get(sfDocRef).then(sfDoc => {
+                    let newFollowing = (sfDoc.data().followingCount || 0) + incrementVal;
+                    transaction.update(sfDocRef, { followingCount: Math.max(0, newFollowing) });
+                });
+            }).then(() => {
+                db.collection("users").where("username", "==", targetUser).get().then(snap => {
+                    if(!snap.empty) {
+                        snap.forEach(doc => {
+                            let tRef = db.collection("users").doc(doc.id);
+                            db.runTransaction(tX => {
+                                return tX.get(tRef).then(tDoc => {
+                                    let newFollowers = (tDoc.data().followersCount || 0) + incrementVal;
+                                    tX.update(tRef, { followersCount: Math.max(0, newFollowers) });
+                                });
+                            }).then(() => navigateToUserProfile(targetUser));
+                        });
+                    }
+                });
+            });
+        }
+
+        function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
+        function openEditProfileModal() { document.getElementById("editUsernameInput").value = currentUsername; document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
+
+        function saveProfileData() { 
+            let newU = document.getElementById("editUsernameInput").value.trim().toLowerCase();
+            let newB = document.getElementById("editBioInput").value.trim();
+            if(!newU) return alert("Validation error: field values mandatory.");
+            if(newU !== currentUsername) {
+                db.collection("users").where("username", "==", newU).get().then(snap => {
+                    if(!snap.empty) { alert("Selected username identity parameters are registered."); }
+                    else { db.collection("users").doc(currentUID).update({ username: newU, bio: newB }).then(() => { currentUsername = newU; closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
+                });
+            } else { db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); }); }
         }
 
         function switchProfileTab(tab) {
@@ -841,23 +887,84 @@
             }
         }
 
+        function toggleVideoPlayPauseState(videoEl, id, type = 'feed') { 
+            let toastId = type === 'space' ? `spaceToast_${id}` : `toast_${id}`;
+            let toast = document.getElementById(toastId); 
+            
+            if(videoEl.paused) { 
+                videoEl.play(); 
+                if(toast) toast.innerHTML = "▶"; 
+            } else { 
+                videoEl.pause(); 
+                if(toast) toast.innerHTML = "⏸"; 
+            } 
+            if(toast) {
+                toast.classList.add("show-toast"); 
+                setTimeout(() => toast.classList.remove("show-toast"), 1000); 
+            }
+        }
+        
+        function triggerLikeHandler(el, postId) {
+            let isShorts = el.classList.contains('yt-action-circle-btn');
+            let postRef = db.collection("posts").doc(postId);
+
+            postRef.get().then(doc => {
+                if (!doc.exists) return;
+                let data = doc.data();
+                let likedByArray = data.likedBy || [];
+                let currentLikes = data.likes || 0;
+
+                if (likedByArray.includes(currentUID)) {
+                    let newLikes = Math.max(0, currentLikes - 1);
+                    likedByArray = likedByArray.filter(uid => uid !== currentUID);
+                    
+                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
+                        if (isShorts) {
+                            el.innerText = "🤍"; el.style.color = "#ffffff";
+                            let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
+                            if (countTxt) countTxt.innerText = newLikes;
+                        } else {
+                            el.innerText = "🤍"; el.style.color = "#f1f3f9";
+                            let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
+                            if (feedCountTxt) feedCountTxt.innerText = newLikes;
+                        }
+                    });
+                } else {
+                    let newLikes = currentLikes + 1;
+                    likedByArray.push(currentUID);
+
+                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
+                        if (isShorts) {
+                            el.innerText = "❤️"; el.style.color = "#c77dff";
+                            let countTxt = document.getElementById(`shortsLikeCountText_${postId}`);
+                            if (countTxt) countTxt.innerText = newLikes;
+                            triggerGlowToastNotification("Like transaction saved successfully.");
+                        } else {
+                            el.innerText = "❤️"; el.style.color = "#ff3040";
+                            let feedCountTxt = document.getElementById(`likeCountVal_${postId}`);
+                            if (feedCountTxt) feedCountTxt.innerText = newLikes;
+                        }
+                    });
+                }
+            });
+        }
+
         function triggerSaveHandler(el, postId, viewSource) {
             db.collection("posts").doc(postId).get().then(doc => {
                 if(doc.exists) {
                     let d = doc.data();
                     let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
                     ref.get().then(sDoc => {
-                        let iconEl = el.classList.contains('yt-action-circle-btn') ? el.querySelector('span') || el : el;
                         if(sDoc.exists) {
                             ref.delete().then(() => { 
-                                if(viewSource === 'Space Reel') { el.style.color = "#ffffff"; } else { el.style.color = "#f1f3f9"; }
-                                triggerGlowToastNotification("Database link element record detached.");
+                                el.style.color = (viewSource === 'Space Reel') ? "#ffffff" : "#f1f3f9";
+                                triggerGlowToastNotification("Database link detached.");
                             });
                         } else {
                             ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
                                .then(() => { 
-                                   if(viewSource === 'Space Reel') { el.style.color = "#c77dff"; } else { el.style.color = "#c77dff"; }
-                                   triggerGlowToastNotification("Reference link metadata packet generated successfully.");
+                                   el.style.color = "#c77dff";
+                                   triggerGlowToastNotification("Reference saved successfully.");
                                });
                         }
                     });
@@ -879,7 +986,7 @@
                 let videoPost = null;
                 let videoDocId = "";
                 snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
-                if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Target segment collection records unassigned.</div>`; } 
+                if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Timeline empty.</div>`; } 
                 else {
                     let shortsHeartIconSymbol = "🤍";
                     let shortsHeartIconColor = "#ffffff";
@@ -932,18 +1039,16 @@
         }
 
         function openShortsCommentDrawerTray(postId) {
-            document.getElementById("shortsCommentsListBox").innerHTML = "Loading database comment strings...";
+            document.getElementById("shortsCommentsListBox").innerHTML = "Loading...";
             document.getElementById("shortsCommentInputArea").innerHTML = `
-                <input type="text" id="shortsCommentFieldInput" placeholder="Add a public comment interaction...">
+                <input type="text" id="shortsCommentFieldInput" placeholder="Add a comment...">
                 <button class="comment-post-action-btn" onclick="submitNewComment('${postId}', 'shorts')">Post</button>
             `;
             listenToLivePostComments(postId, "shortsCommentsListBox");
             document.getElementById("shortsCommentsDrawerBox").classList.add("open");
         }
 
-        function closeShortsCommentDrawerTray() {
-            document.getElementById("shortsCommentsDrawerBox").classList.remove("open");
-        }
+        function closeShortsCommentDrawerTray() { document.getElementById("shortsCommentsDrawerBox").classList.remove("open"); }
     </script>
 </body>
 </html>
