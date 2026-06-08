@@ -581,16 +581,29 @@
             document.getElementById("messagingViewTab").style.display = "flex";
         }
 
-        /* OVERHAULED MODAL OPEN FUNCTION INTEGRATING CUBIC TRANSITION MARKS */
+        function showSpaceReels() {
+            hideAllViews();
+            document.getElementById("reelsSpaceView").style.display = "block";
+            // Mock content injection for Space/Reels tab to restore functionality
+            document.getElementById("reelVideoPlayerContainer").innerHTML = `
+                <div style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; background:#000; color:#c77dff;">
+                    <p style="font-size:14px; font-weight:bold;">Space Reels Pipeline Active 🚀</p>
+                </div>`;
+        }
+
         function openModal(id) { 
             let el = document.getElementById(id);
-            el.style.display = "flex"; 
-            setTimeout(() => el.classList.add("show-modal"), 10);
+            if(el) {
+                el.style.display = "flex"; 
+                setTimeout(() => el.classList.add("show-modal"), 10);
+            }
         }
         function closeModal(id) { 
             let el = document.getElementById(id);
-            el.classList.remove("show-modal");
-            setTimeout(() => el.style.display = "none", 300);
+            if(el) {
+                el.classList.remove("show-modal");
+                setTimeout(() => el.style.display = "none", 300);
+            }
         }
 
         function handleSignup(e) {
@@ -639,7 +652,7 @@
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
-                if(snapshot.empty) { container.innerHTML = `<div class="no-posts-alert">Timeline registry empty.</div>`; return; }
+                if(snapshot.empty) { container.innerHTML = `<div class="no-posts-alert" style="color:#8a8d9b; text-align:center; padding:40px 0;">Timeline registry empty.</div>`; return; }
                 
                 snapshot.forEach(doc => {
                     let p = doc.data();
@@ -651,7 +664,7 @@
 
                     let videoBlock = p.video ? `
                         <div class="post-video-container" style="position:relative;">
-                            <video id="vidElement_${doc.id}" src="${p.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${doc.id}')"></video>
+                            <video id="vidElement_${doc.id}" src="${p.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${doc.id}', 'feed')"></video>
                             <div class="video-status-toast" id="toast_${doc.id}">▶</div>
                             <div class="mute-btn-overlay" onclick="togglePostVideoSoundAudio('${doc.id}', event)" id="muteBtn_${doc.id}">🔊</div>
                         </div>` : "";
@@ -688,7 +701,7 @@
                             <div class="post-text-details">
                                 <div class="likes-count-text"><span class="like-counter-val" id="likeCountVal_${doc.id}">${p.likes || 0}</span> likes</div>
                                 <div class="post-caption-block">
-                                    <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>${p.text || ""}
+                                    <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b> ${p.text || ""}
                                 </div>
                             </div>
 
@@ -708,9 +721,96 @@
 
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
                     listenToLivePostComments(doc.id, `commentsListBox_${doc.id}`);
-                    verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
                 });
             });
+        }
+
+        function togglePostDropdownMenu(id) {
+            let el = document.getElementById(`dropdown_${id}`);
+            if(el) el.style.display = el.style.display === "block" ? "none" : "block";
+        }
+
+        function deletePostFromDatabaseRegistry(id) {
+            if(confirm("Confirm action: delete permanently?")) {
+                db.collection("posts").doc(id).delete().then(() => alert("Post purged from cloud."));
+            }
+        }
+
+        function toggleCommentsTray(id) {
+            let el = document.getElementById(`commentsSection_${id}`);
+            if(el) el.style.display = el.style.display === "block" ? "none" : "block";
+        }
+
+        function listenToLivePostComments(postId, boxId) {
+            db.collection("posts").doc(postId).collection("comments").orderBy("timestamp", "asc").onSnapshot(snap => {
+                let box = document.getElementById(boxId);
+                if(box) {
+                    box.innerHTML = "";
+                    snap.forEach(doc => {
+                        let c = doc.data();
+                        box.innerHTML += `<div class="comment-item"><b>${c.author}:</b>${c.text}</div>`;
+                    });
+                }
+            });
+        }
+
+        function submitNewComment(postId) {
+            let inp = document.getElementById(`commentFieldInput_${postId}`);
+            if(!inp || !inp.value.trim()) return;
+            db.collection("posts").doc(postId).collection("comments").add({
+                author: currentUsername, text: inp.value.trim(), timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => { inp.value = ""; });
+        }
+
+        function fetchPostAuthorAvatarImage(username, elementId) {
+            db.collection("users").where("username", "==", username).get().then(snap => {
+                if(!snap.empty) {
+                    snap.forEach(doc => {
+                        let data = doc.data();
+                        let target = document.getElementById(elementId);
+                        if(target && data.avatar) target.innerHTML = `<img src="${data.avatar}">`;
+                    });
+                }
+            });
+        }
+
+        function triggerNativeShareApi(author, text) {
+            if (navigator.share) {
+                navigator.share({ title: 'OurSpace Post', text: `@${author}: ${text}`, url: window.location.href });
+            } else {
+                alert(`Link shared: @${author} - ${text}`);
+            }
+        }
+
+        function executeLiveUserSearch() {
+            let val = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
+            let feedback = document.getElementById("searchResultsFeedback");
+            if(!val) { feedback.innerHTML = ""; return; }
+            
+            db.collection("users").where("username", ">=", val).where("username", "<=", val + '\uf8ff').get().then(snap => {
+                feedback.innerHTML = "";
+                if(snap.empty) { feedback.innerHTML = `<span style="color:#8a8d9b; font-size:14px;">No match found.</span>`; return; }
+                snap.forEach(doc => {
+                    let u = doc.data();
+                    let avatarUi = u.avatar ? `<img src="${u.avatar}">` : "👤";
+                    feedback.innerHTML += `
+                        <div class="search-user-card" onclick="navigateToUserProfile('${u.username}')">
+                            <div class="search-user-info">
+                                <div class="search-user-avatar">${avatarUi}</div>
+                                <div class="search-user-details">
+                                    <b style="color:#fff;">${u.username}</b>
+                                    <p style="color:#8a8d9b; font-size:12px;">${u.bio || ""}</p>
+                                </div>
+                            </div>
+                            <span style="color:#c77dff; font-size:14px;">➔</span>
+                        </div>`;
+                });
+            });
+        }
+
+        function closeShortsCommentDrawerTray() {
+            let dr = document.getElementById("shortsCommentsDrawerBox");
+            if(dr) dr.classList.remove("open");
         }
 
         function navigateToUserProfile(targetUser) {
@@ -734,7 +834,6 @@
             let editProfileBtn = document.getElementById("profileActionBtn");
             let securitySettingsBtn = document.getElementById("profileSecurityBtn");
 
-            // CONDITIONAL BLOCK CHECK ENGINE: LOCKS REGS PARAMS TO MATCH PRIVACY BOUNDS
             if(targetUser !== currentUsername) {
                 editProfileBtn.style.display = "none";
                 securitySettingsBtn.style.display = "none";
@@ -743,7 +842,7 @@
                     let isFollowing = doc.exists;
                     followContainer.innerHTML = `
                         <button class="action-inline-btn" style="background:#9d4edd; color:white; border:none; margin:0;" onclick="openChatWithUser('${targetUser}')">💬 Message</button>
-                        <button class="profile-follow-btn ${isFollowing ? 'following' : ''}" style="padding:6px 18px; font-weight:bold; border-radius:8px; font-size:13px; cursor:pointer; ${isFollowing ? 'background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2);' : 'background:linear-gradient(45deg, #9d4edd, #5a189a); color:#fff; border:none;'}" onclick="toggleFollowUser('${targetUser}', ${isFollowing})">
+                        <button class="profile-follow-btn ${isFollowing ? 'following' : ''}" style="padding:6px 18px; font-weight:bold; border-radius:8px; font-size:13px; cursor:pointer;" onclick="toggleFollowUser('${targetUser}', ${isFollowing})">
                             ${isFollowing ? 'Following' : 'Follow'}
                         </button>
                     `;
@@ -757,7 +856,7 @@
             document.getElementById("profileView").style.display = "block";
         }
 
-        /* 🚀 NEW ENGINE MOD: FETCHES & OVERLAYS CONNECTIONS DATA LIST INSIDE MODALS */
+        /* 🚀 CONNECTIONS POPUP ENGINE: FETCHES AND OVERLAYS REALTIME USERS WITH STAGGERED MOTION */
         function triggerFollowersListModalFetch(mode) {
             let titleEl = document.getElementById("followConnectionsModalTitleNode");
             let listEl = document.getElementById("followConnectionsDataPayloadList");
@@ -768,7 +867,6 @@
             openModal("followConnectionsDisplayModal");
 
             if(mode === "following") {
-                // Fetch profiles you follow from subcollections
                 db.collection("users").where("username", "==", viewedUser).get().then(snap => {
                     if(!snap.empty) snap.forEach(uDoc => {
                         db.collection("users").doc(uDoc.id).collection("following").get().then(subSnap => {
@@ -778,7 +876,6 @@
                             let index = 0;
                             subSnap.forEach(fDoc => {
                                 let name = fDoc.id;
-                                // Animation staggered mapping delay
                                 listEl.innerHTML += `
                                     <div class="follow-list-user-card" style="animation-delay: ${index * 0.05}s" onclick="closeModal('followConnectionsDisplayModal'); navigateToUserProfile('${name}')">
                                         <div class="mini-avatar">👤</div>
@@ -790,7 +887,6 @@
                     });
                 });
             } else {
-                // Fetch users who followed this profile channel
                 db.collectionGroup("following").get().then(globalSnap => {
                     listEl.innerHTML = "";
                     let index = 0;
@@ -882,7 +978,10 @@
             event.stopPropagation();
             let vid = document.getElementById(`vidElement_${id}`);
             let btn = document.getElementById(`muteBtn_${id}`);
-            if(vid.muted) { vid.muted = false; btn.innerText = "🔊"; } else { vid.muted = true; btn.innerText = "🔇"; }
+            if(vid) {
+                if(vid.muted) { vid.muted = false; if(btn) btn.innerText = "🔊"; } 
+                else { vid.muted = true; if(btn) btn.innerText = "🔇"; }
+            }
         }
         function triggerLikeHandler(el, postId) {
             let isShorts = el.classList.contains('yt-action-circle-btn');
@@ -901,25 +1000,3 @@
                     });
                 } else {
                     let newLikes = currentLikes + 1;
-                    likedByArray.push(currentUID);
-                    postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
-                        el.innerText = "❤️"; el.style.color = isShorts ? "#c77dff" : "#ff3040";
-                        let countTxt = document.getElementById(isShorts ? `shortsLikeCountText_${postId}` : `likeCountVal_${postId}`);
-                        if (countTxt) countTxt.innerText = newLikes;
-                    });
-                }
-            });
-        }
-        function triggerSaveHandler(el, postId, viewSource) {}
-        function verifyIfPostAlreadySavedByUser(postId, elementId) {}
-        function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
-        function openEditProfileModal() { document.getElementById("editUsernameInput").value = currentUsername; document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
-        function saveProfileData() { 
-            let newU = document.getElementById("editUsernameInput").value.trim().toLowerCase();
-            let newB = document.getElementById("editBioInput").value.trim();
-            if(!newU) return alert("Fields mandatory.");
-            db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); });
-        }
-    </script>
-</body>
-</html>
