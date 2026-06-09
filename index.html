@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>OurSpace - world</title>
     
-    <link rel="manifest" href="manifest.json">
+    <link lang="en" rel="manifest" href="manifest.json">
     <script>
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js').catch(err => console.log("Service Worker Registration Skipped"));
@@ -71,9 +71,9 @@
         
         .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; position: relative; }
         .post-header-left { display: flex; align-items: center; gap: 10px; z-index: 5; }
-        .post-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, #5a189a, #9d4edd); display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; font-weight: bold; overflow: hidden; pointer-events: none; }
+        .post-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, #5a189a, #9d4edd); display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; font-weight: bold; overflow: hidden; }
         .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .post-header-left b { font-size: 14px; color: #fff; cursor: pointer; position: relative; z-index: 10; padding: 5px 0; }
+        .post-header-left b { font-size: 14px; color: #fff; cursor: pointer; position: relative; z-index: 10; }
         .post-header-left span { font-size: 12px; color: #8a8d9b; }
         .post-header-right { color: #c77dff; cursor: pointer; font-size: 18px; padding: 5px 10px; z-index: 10; position: relative; }
 
@@ -213,13 +213,29 @@
         }
         .modal-overlay.show-modal .modal-card { transform: scale(1) translateY(0); }
 
-        /* CONNECTIONS CONTAINER LAYOUT LIST */
         .follow-list-box { max-height: 250px; overflow-y: auto; margin-top: 15px; text-align: left; }
         .follow-list-user-card { display: flex; align-items: center; gap: 12px; padding: 10px; background: rgba(255,255,255,0.02); border: 1px solid rgba(157,78,221,0.1); border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s ease; opacity: 0; transform: translateY(8px); animation: slideUpFadeIn 0.25s forwards cubic-bezier(0.4, 0, 0.2, 1); }
         .follow-list-user-card:hover { background: rgba(157,78,221,0.08); border-color: #9d4edd; }
         .follow-list-user-card .mini-avatar { width: 32px; height: 32px; border-radius: 50%; background: #5a189a; display: flex; justify-content: center; align-items: center; font-size: 12px; font-weight: bold; overflow: hidden; }
 
         @keyframes slideUpFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        /* THREE DOTS DROPDOWN LAYER CONTROL */
+        .dropdown-menu-list { 
+            background: #18132b; 
+            border: 1px solid rgba(157, 78, 221, 0.4); 
+            border-radius: 12px; 
+            padding: 6px 0; 
+            display: none; 
+            position: absolute; 
+            right: 14px; 
+            top: 45px; 
+            z-index: 999999 !important; 
+            min-width: 140px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8); 
+        }
+        .dropdown-menu-list .dropdown-menu-item { padding: 11px 16px; font-size: 13px; color: #fff; cursor: pointer; text-align: left; font-weight: bold; transition: background 0.2s; }
+        .dropdown-menu-list .dropdown-menu-item:hover { background: rgba(157, 78, 221, 0.2); }
 
         #searchViewTab { display: none; width: 100%; max-width: 450px; text-align: center; padding: 0 15px; }
         .search-container-wrapper { display: flex; gap: 8px; margin-bottom: 20px; width: 100%; }
@@ -244,50 +260,6 @@
         .profile-stats span.clickable-stat { cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.2s; }
         .profile-stats span.clickable-stat:hover { background: rgba(157,78,221,0.15); }
         .profile-stats b { color: #c77dff; }
-        
-        .profile-follow-btn { padding: 6px 18px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; font-size: 13px; background: linear-gradient(45deg, #9d4edd, #5a189a); color: #fff; }
-        .profile-follow-btn.following { background: rgba(255,255,255,0.1) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.2) !important; }
-        .profile-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; width: 100%; }
-        .post-grid-item { background: rgba(255,255,255,0.02); aspect-ratio: 1 / 1; border-radius: 10px; border: 1px solid rgba(157, 78, 221, 0.1); display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer; }
-        .post-grid-item video { width: 100%; height: 100%; object-fit: cover; }
-        .action-inline-btn { margin-left: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid rgba(157,78,221,0.3); background: rgba(157,78,221,0.05); color: #c77dff; cursor: pointer; display: inline-block; }
-
-        /* CRITICAL EXPANDED FIX: PERFECT HIGH LAYER DROPDOWN MENU CSS FOR THREE DOTS */
-        .dropdown-menu-list { 
-            background: #18132b; 
-            border: 1px solid rgba(157, 78, 221, 0.4); 
-            border-radius: 12px; 
-            padding: 6px 0; 
-            display: none; 
-            position: absolute; 
-            right: 14px; 
-            top: 45px; 
-            z-index: 999999 !important; 
-            min-width: 140px; 
-            box-shadow: 0 8px 25px rgba(0,0,0,0.8); 
-        }
-        .dropdown-menu-list .dropdown-menu-item { padding: 11px 16px; font-size: 13px; color: #fff; cursor: pointer; text-align: left; font-weight: bold; transition: background 0.2s; }
-        .dropdown-menu-list .dropdown-menu-item:hover { background: rgba(157, 78, 221, 0.2); }
-
-        /* VIEWPORT PLATFORM CODES */
-        @media screen and (min-width: 769px) {
-            .top-nav { background: rgba(9, 6, 19, 0.95); padding: 16px 40px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(157,78,221,0.2); width: 100%; }
-            .nav-logo { font-size: 1.6em; font-weight: 800; cursor: pointer; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            .nav-icons { display: flex; gap: 8px; align-items: center; }
-            .nav-icons span { font-size: 13px; cursor: pointer; display: inline-block; padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157,78,221,0.1); }
-            .nav-icons span:hover { color: #c77dff; border-color: #c77dff; }
-        }
-        @media screen and (max-width: 768px) {
-            .top-nav { padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; background: #090613; border-bottom: 1px solid rgba(157,78,221,0.15); width: 100%; }
-            .nav-logo { font-size: 1.4em; background: linear-gradient(45deg, #c77dff, #fff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            .nav-icons { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; background: #090613 !important; border-top: 1px solid rgba(157,78,221,0.2) !important; padding: 10px 4px 12px 4px !important; display: grid !important; grid-template-columns: repeat(6, 1fr) !important; gap: 2px !important; z-index: 9999 !important; }
-            .nav-icons span { padding: 10px 1px !important; font-size: 10px !important; font-weight: 600 !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; color: #a5a7b4; }
-            .nav-icons span:hover { color: #c77dff !important; }
-            .content-area { padding-bottom: 110px; } 
-            #reelsSpaceView { height: calc(100vh - 160px); }
-            #messagingViewTab { height: calc(100vh - 160px); }
-            .profile-header { flex-direction: column; text-align: center; gap: 15px; }
-        }
     </style>
 </head>
 <body>
@@ -407,7 +379,6 @@
     <div class="modal-overlay" id="secretAdminModerationPanelModal">
         <div class="modal-card" style="max-width:420px;">
             <h3 style="color:#00ff88;">⚠️ Cloud Moderation Center</h3>
-            <p style="font-size:12px; color:#8a8d9b; margin-top:4px;">Purge reported content pipelines instantly.</p>
             <div class="follow-list-box" id="adminReportedContentLiveStreamArea" style="max-height:300px;"></div><br>
             <span class="switch-link" style="color:#ff5555;" onclick="closeModal('secretAdminModerationPanelModal')">Exit System Control</span>
         </div>
@@ -473,22 +444,8 @@
         }
 
         function initializeSystemNotificationPermissions() {
-            if ("Notification" in window) {
-                if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-                    Notification.requestPermission();
-                }
-            }
-        }
-
-        function executeOtaSystemNotificationBanner(sender, action) {
-            if ("Notification" in window && Notification.permission === "granted") {
-                const title = "OurSpace Sync Notification";
-                const options = {
-                    body: `@${sender} performed an action: ${action} on your published profile post data.`,
-                    icon: "https://upload.wikimedia.org/wikipedia/commons/8/84/Approved_img.png",
-                    silent: false
-                };
-                new Notification(title, options);
+            if ("Notification" in window && Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
             }
         }
 
@@ -571,6 +528,13 @@
             document.getElementById(boxId).style.display = "block";
         }
 
+        document.addEventListener("click", function(e) {
+            if (!e.target.classList.contains("post-header-right")) {
+                let dropdowns = document.querySelectorAll(".dropdown-menu-list");
+                dropdowns.forEach(d => d.style.display = "none");
+            }
+        });
+
         function openApp() {
             document.getElementById("authZoneWrapper").style.display = "none";
             document.getElementById("appScreen").style.display = "flex";
@@ -603,65 +567,6 @@
             document.getElementById("messagingViewTab").style.display = "flex";
         }
 
-        function showSpaceReels() {
-            hideAllViews();
-            let container = document.getElementById("reelVideoPlayerContainer");
-            db.collection("posts").orderBy("timestamp", "desc").get().then(snapshot => {
-                let videoPost = null;
-                let videoDocId = "";
-                snapshot.forEach(doc => { if(!videoPost && doc.data().video) { videoPost = doc.data(); videoDocId = doc.id; } });
-                if (!videoPost) { container.innerHTML = `<div class="no-posts-alert">Timeline empty.</div>`; } 
-                else {
-                    let shortsHeartIconSymbol = "🤍";
-                    let shortsHeartIconColor = "#ffffff";
-                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
-                        shortsHeartIconSymbol = "❤️";
-                        shortsHeartIconColor = "#c77dff";
-                    }
-
-                    container.innerHTML = `
-                        <div class="reel-video-wrapper" style="position:relative; width:100%; height:100%;">
-                            <video id="spaceVidElement_${videoDocId}" src="${videoPost.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${videoDocId}', 'space')"></video>
-                            <div class="video-status-toast" id="spaceToast_${videoDocId}">▶</div>
-                        </div>
-                        
-                        <div class="yt-shorts-side-actions">
-                            <div class="yt-action-item" onclick="triggerLikeHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}')">
-                                <div class="yt-action-circle-btn" id="shortsLikeBtn_${videoDocId}" style="color:${shortsHeartIconColor};">${shortsHeartIconSymbol}</div>
-                                <span id="shortsLikeCountText_${videoDocId}">${videoPost.likes || 0}</span>
-                            </div>
-                            <div class="yt-action-item" onclick="openShortsCommentDrawerTray('${videoDocId}')">
-                                <div class="yt-action-circle-btn">💬</div>
-                                <span>Comment</span>
-                            </div>
-                            <div class="yt-action-item" onclick="triggerNativeShareApi('${videoPost.author}', '${videoPost.text || ''}')">
-                                <div class="yt-action-circle-btn">🔗</div>
-                                <span>Share</span>
-                            </div>
-                            <div class="yt-action-item" onclick="triggerSaveHandler(this.querySelector('.yt-action-circle-btn'), '${videoDocId}', 'Space Reel')" id="spaceSaveBtn_${videoDocId}">
-                                <div class="yt-action-circle-btn">🔖</div>
-                                <span>Save</span>
-                            </div>
-                        </div>
-
-                        <div class="reel-overlay-info">
-                            <b onclick="navigateToUserProfile('${videoPost.author}')">@${videoPost.author}</b>
-                            <p>${videoPost.text || ""}</p>
-                        </div>`;
-                    
-                    if (videoPost.likedBy && videoPost.likedBy.includes(currentUID)) {
-                        document.getElementById(`shortsLikeBtn_${videoDocId}`).style.color = "#c77dff";
-                    }
-
-                    db.collection("users").doc(currentUID).collection("savedPosts").doc(videoDocId).get().then(doc => {
-                        let sBtn = document.getElementById(`spaceSaveBtn_${videoDocId}`);
-                        if(doc.exists && sBtn) sBtn.querySelector('.yt-action-circle-btn').style.color = "#c77dff";
-                    });
-                }
-                document.getElementById("reelsSpaceView").style.display = "block";
-            });
-        }
-
         function openModal(id) { 
             let el = document.getElementById(id);
             if(el) {
@@ -675,6 +580,49 @@
                 el.classList.remove("show-modal");
                 setTimeout(() => el.style.display = "none", 300);
             }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            let u = document.getElementById("signUser").value.trim().toLowerCase();
+            db.collection("users").where("username", "==", u).get().then(snapshot => {
+                if(!snapshot.empty) { alert("Selected username identity parameters are registered."); } 
+                else {
+                    auth.createUserWithEmailAndPassword(document.getElementById("signEmail").value.trim(), document.getElementById("signPass").value).then(cred => {
+                        return db.collection("users").doc(cred.user.uid).set({ username: u, email: document.getElementById("signEmail").value.trim(), bio: "User profile initialized.", followersCount: 0, followingCount: 0, avatar: "" });
+                    }).catch(err => alert(err.message));
+                }
+            });
+        }
+
+        function handleLogin(e) { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value).catch(err => alert("Identity check profile validation data mismatch.")); }
+        function logout() { auth.signOut(); window.location.reload(); }
+
+        function triggerProfileAvatarChangerWindow() {
+            if(viewedUser === currentUsername) { openCloudinaryUploadWidget('avatar'); }
+        }
+
+        function updateProfileAvatarDatabaseRegistry(url) {
+            db.collection("users").doc(currentUID).update({ avatar: url }).then(() => navigateToUserProfile(currentUsername));
+        }
+
+        function addNewPost() {
+            let txt = document.getElementById("postContentInput").value.trim();
+            let btn = document.getElementById("publishBtn");
+            if(!txt && !uploadedVideoURL) return;
+            btn.innerText = "Processing transactional transmission..."; btn.disabled = true;
+
+            db.collection("posts").add({
+                author: currentUsername, text: txt, video: uploadedVideoURL, timestamp: firebase.firestore.FieldValue.serverTimestamp(), likes: 0
+            }).then(() => { finalizePostCreation(); });
+        }
+
+        function finalizePostCreation() {
+            let btn = document.getElementById("publishBtn"); btn.innerText = "Publish"; btn.disabled = false;
+            uploadedVideoURL = ""; document.getElementById("postContentInput").value = "";
+            document.getElementById("uploadWidgetTrigger").innerText = "🎥 Select Video From Gallery";
+            document.getElementById("uploadWidgetTrigger").style.color = "#c77dff";
+            closeModal('postModal');
         }
 
         function listenToLiveGlobalFeed() {
@@ -697,6 +645,9 @@
                             <div class="mute-btn-overlay" onclick="togglePostVideoSoundAudio('${doc.id}', event)" id="muteBtn_${doc.id}">🔊</div>
                         </div>` : "";
 
+                    let isLiked = p.likedBy && p.likedBy.includes(currentUID);
+                    let heartStateSymbol = isLiked ? "❤️" : "🤍";
+
                     container.innerHTML += `
                         <div class="post" id="post_${doc.id}">
                             <div class="post-header">
@@ -716,10 +667,9 @@
                             ${videoBlock}
                             
                             <div class="action-tray">
-                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${p.likedBy && p.likedBy.includes(currentUID) ? "❤️" : "🤍"}</div>
+                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${heartStateSymbol}</div>
                                 <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                 <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
-                                <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}', 'Home Feed')" id="saveIconFeed_${doc.id}">🔖</div>
                             </div>
                             
                             <div class="post-text-details">
@@ -732,15 +682,17 @@
                             <div class="post-comments-section" id="commentsSection_${doc.id}">
                                 <div class="comments-list-box" id="commentsListBox_${doc.id}"></div>
                                 <div class="comment-input-form-holder">
-                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Post textual comment...">
+                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Post comment...">
                                     <button class="comment-post-action-btn" onclick="submitNewComment('${doc.id}')">Post</button>
                                 </div>
                             </div>
                         </div>`;
                     
-                    if(p.likedBy && p.likedBy.includes(currentUID)) {
-                        let fHrt = document.getElementById(`feedHeartBtn_${doc.id}`);
-                        if(fHrt) fHrt.style.color = "#ff3040";
+                    if(isLiked) {
+                        setTimeout(() => {
+                            let fHrt = document.getElementById(`feedHeartBtn_${doc.id}`);
+                            if(fHrt) fHrt.style.color = "#ff3040";
+                        }, 50);
                     }
 
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
@@ -751,36 +703,31 @@
 
         function executeReportPostDatabaseCall(postId, author, text) {
             db.collection("reports").add({
-                reportedPostId: postId,
-                postAuthor: author,
-                postText: text,
-                reportedBy: currentUsername,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                reportedPostId: postId, postAuthor: author, postText: text, reportedBy: currentUsername, timestamp: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
                 togglePostDropdownMenu(postId);
-                triggerGlowToastNotification("Post has been reported to Savit. Checking content flags.");
+                triggerGlowToastNotification("Reported to Savit. Checking parameters.");
             });
         }
 
         function openAdminPanelDashboardModal() {
             let area = document.getElementById("adminReportedContentLiveStreamArea");
-            area.innerHTML = `<span style="color:#8a8d9b; font-size:12px;">Syncing cloud reports...</span>`;
+            area.innerHTML = `<span>Syncing reports...</span>`;
             openModal("secretAdminModerationPanelModal");
 
             db.collection("reports").orderBy("timestamp", "desc").onSnapshot(snap => {
                 area.innerHTML = "";
-                if(snap.empty) { area.innerHTML = `<span style="color:#00ff88; font-size:13px; font-weight:bold;">All Clean! No pending flags.</span>`; return; }
+                if(snap.empty) { area.innerHTML = `<span style="color:#00ff88; font-size:13px; font-weight:bold;">All Clean!</span>`; return; }
                 
                 snap.forEach(doc => {
                     let r = doc.data();
                     area.innerHTML += `
                         <div class="follow-list-user-card" style="flex-direction:column; align-items:flex-start; gap:6px; padding:12px;">
-                            <span style="font-size:12px; color:#ffcc00; font-weight:bold;">Reported Content: @${r.postAuthor}</span>
-                            <p style="font-size:13px; color:#fff; word-break:break-all;">"${r.postText || '[Video Content]'}"</p>
-                            <span style="font-size:10px; color:#8a8d9b;">Flagged by @${r.reportedBy}</span>
+                            <span style="font-size:12px; color:#ffcc00; font-weight:bold;">Reported: @${r.postAuthor}</span>
+                            <p style="font-size:13px; color:#fff;">"${r.postText || '[Video]'}"</p>
                             <div style="display:flex; gap:10px; width:100%; margin-top:5px;">
-                                <button class="main-btn" style="padding:6px; font-size:11px; background:linear-gradient(45deg, #ff5555, #cc3333);" onclick="adminPurgeContentAction('${r.reportedPostId}', '${doc.id}')">🗑️ Delete Post</button>
-                                <button class="main-btn" style="padding:6px; font-size:11px; background:rgba(255,255,255,0.05); border:1px solid #8a8d9b; color:#fff;" onclick="adminDismissReportAction('${doc.id}')">✕ Dismiss</button>
+                                <button class="main-btn" style="padding:6px; font-size:11px; background:linear-gradient(45deg, #ff5555, #cc3333);" onclick="adminPurgeContentAction('${r.reportedPostId}', '${doc.id}')">🗑️ Delete</button>
+                                <button class="main-btn" style="padding:6px; font-size:11px; background:rgba(255,255,255,0.05); border:1px solid #8a8d9b;" onclick="adminDismissReportAction('${doc.id}')">✕ Dismiss</button>
                             </div>
                         </div>`;
                 });
@@ -788,30 +735,29 @@
         }
 
         function adminPurgeContentAction(postId, reportDocId) {
-            if(confirm("Permanently delete this content from server?")) {
+            if(confirm("Delete permanently?")) {
                 db.collection("posts").doc(postId).delete().then(() => {
-                    db.collection("reports").doc(reportDocId).delete().then(() => {
-                        alert("Content successfully wiped from OurSpace database nodes.");
-                    });
+                    db.collection("reports").doc(reportDocId).delete().then(() => alert("Purged successfully."));
                 });
             }
         }
 
         function adminDismissReportAction(reportDocId) {
-            db.collection("reports").doc(reportDocId).delete().then(() => {
-                triggerGlowToastNotification("Report dismissed successfully.");
-            });
+            db.collection("reports").doc(reportDocId).delete().then(() => triggerGlowToastNotification("Dismissed."));
         }
 
         function togglePostDropdownMenu(id) {
             let el = document.getElementById(`dropdown_${id}`);
-            if(el) el.style.display = el.style.display === "block" ? "none" : "block";
+            if(el) {
+                let currentStatus = el.style.display;
+                let dropdowns = document.querySelectorAll(".dropdown-menu-list");
+                dropdowns.forEach(d => d.style.display = "none");
+                el.style.display = currentStatus === "block" ? "none" : "block";
+            }
         }
 
         function deletePostFromDatabaseRegistry(id) {
-            if(confirm("Confirm action: delete permanently?")) {
-                db.collection("posts").doc(id).delete().then(() => alert("Post purged from cloud."));
-            }
+            if(confirm("Delete post?")) db.collection("posts").doc(id).delete();
         }
 
         function toggleCommentsTray(id) {
@@ -842,13 +788,10 @@
 
         function fetchPostAuthorAvatarImage(username, elementId) {
             db.collection("users").where("username", "==", username).get().then(snap => {
-                if(!snap.empty) {
-                    snap.forEach(doc => {
-                        let data = doc.data();
-                        let target = document.getElementById(elementId);
-                        if(target && data.avatar) target.innerHTML = `<img src="${data.avatar}">`;
-                    });
-                }
+                if(!snap.empty) snap.forEach(doc => {
+                    let target = document.getElementById(elementId);
+                    if(target && doc.data().avatar) target.innerHTML = `<img src="${doc.data().avatar}">`;
+                });
             });
         }
 
@@ -858,15 +801,13 @@
             document.getElementById("profileGridMasterAvatar").innerHTML = "👤";
             
             db.collection("users").where("username", "==", targetUser).get().then(snapshot => {
-                if(!snapshot.empty) {
-                    snapshot.forEach(doc => {
-                        let data = doc.data();
-                        document.getElementById("profBioText").innerText = data.bio || "Biographical summary description.";
-                        document.getElementById("followerCountNum").innerText = data.followersCount || 0;
-                        document.getElementById("followingCountNum").innerText = data.followingCount || 0;
-                        if(data.avatar) document.getElementById("profileGridMasterAvatar").innerHTML = `<img src="${data.avatar}">`;
-                    });
-                }
+                if(!snapshot.empty) snapshot.forEach(doc => {
+                    let data = doc.data();
+                    document.getElementById("profBioText").innerText = data.bio || "Biographical statement.";
+                    document.getElementById("followerCountNum").innerText = data.followersCount || 0;
+                    document.getElementById("followingCountNum").innerText = data.followingCount || 0;
+                    if(data.avatar) document.getElementById("profileGridMasterAvatar").innerHTML = `<img src="${data.avatar}">`;
+                });
             });
 
             let followContainer = document.getElementById("followActionContainer");
@@ -876,15 +817,13 @@
             if(targetUser !== currentUsername) {
                 editProfileBtn.style.display = "none";
                 securitySettingsBtn.style.display = "none";
-                
                 db.collection("users").doc(currentUID).collection("following").doc(targetUser).get().then(doc => {
                     let isFollowing = doc.exists;
                     followContainer.innerHTML = `
                         <button class="action-inline-btn" style="background:#9d4edd; color:white; border:none; margin:0;" onclick="openChatWithUser('${targetUser}')">💬 Message</button>
-                        <button class="profile-follow-btn ${isFollowing ? 'following' : ''}" style="padding:6px 18px; font-weight:bold; border-radius:8px; font-size:13px; cursor:pointer; ${isFollowing ? 'background:rgba(255,255,255,0.1); color:#fff; border:1px solid rgba(255,255,255,0.2);' : 'background:linear-gradient(45deg, #9d4edd, #5a189a); color:#fff; border:none;'}" onclick="toggleFollowUser('${targetUser}', ${isFollowing})">
+                        <button class="profile-follow-btn" style="padding:6px 18px; font-weight:bold; border-radius:8px; font-size:13px; cursor:pointer;" onclick="toggleFollowUser('${targetUser}', ${isFollowing})">
                             ${isFollowing ? 'Following' : 'Follow'}
-                        </button>
-                    `;
+                        </button>`;
                 });
             } else { 
                 editProfileBtn.style.display = "inline-block"; 
@@ -899,10 +838,8 @@
         function triggerFollowersListModalFetch(mode) {
             let titleEl = document.getElementById("followConnectionsModalTitleNode");
             let listEl = document.getElementById("followConnectionsDataPayloadList");
-            
             titleEl.innerText = mode === "followers" ? "Followers Registry" : "Following Directory";
-            listEl.innerHTML = `<span style="color:#8a8d9b; font-size:13px;">Streaming active packets...</span>`;
-            
+            listEl.innerHTML = `<span>Streaming active packets...</span>`;
             openModal("followConnectionsDisplayModal");
 
             if(mode === "following") {
@@ -910,8 +847,7 @@
                     if(!snap.empty) snap.forEach(uDoc => {
                         db.collection("users").doc(uDoc.id).collection("following").get().then(subSnap => {
                             listEl.innerHTML = "";
-                            if(subSnap.empty) { listEl.innerHTML = `<span style="color:#8a8d9b; font-size:13px;">List is empty.</span>`; return; }
-                            
+                            if(subSnap.empty) { listEl.innerHTML = `<span>List is empty.</span>`; return; }
                             let index = 0;
                             subSnap.forEach(fDoc => {
                                 let name = fDoc.id;
@@ -929,7 +865,6 @@
                 db.collectionGroup("following").get().then(globalSnap => {
                     listEl.innerHTML = "";
                     let index = 0;
-                    
                     globalSnap.forEach(fDoc => {
                         if(fDoc.id === viewedUser) {
                             let followerUID = fDoc.ref.parent.parent.id;
@@ -946,19 +881,7 @@
                             });
                         }
                     });
-                    setTimeout(() => {
-                        if(listEl.innerHTML === "") { listEl.innerHTML = `<span style="color:#8a8d9b; font-size:13px;">No followers found.</span>`; }
-                    }, 1200);
                 });
-            }
-        }
-
-        function openChatWithUser(targetUser) {
-            let msg = prompt("Enter your personal message for @" + targetUser);
-            if(msg) {
-                db.collection("chats").add({
-                    from: currentUsername, to: targetUser, text: msg, timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => alert("Message sent!"));
             }
         }
 
@@ -996,8 +919,6 @@
         function switchProfileTab(tab) {
             currentProfileTab = tab;
             let grid = document.getElementById("dynamicGridContainer"); grid.innerHTML = "";
-            document.getElementById("tabPostsBtn").style.color = (tab === 'posts') ? "#c77dff" : "#8a8d9b";
-            document.getElementById("tabSavedBtn").style.color = (tab === 'saved') ? "#c77dff" : "#8a8d9b";
             if(tab === "posts") {
                 db.collection("posts").where("author", "==", viewedUser).get().then(snap => {
                     document.getElementById("postCountNum").innerText = snap.size;
@@ -1019,13 +940,12 @@
             let vid = document.getElementById(`vidElement_${id}`);
             let btn = document.getElementById(`muteBtn_${id}`);
             if(vid) {
-                if(vid.muted) { vid.muted = false; if(btn) btn.innerText = "🔊"; } 
-                else { vid.muted = true; if(btn) btn.innerText = "🔇"; }
+                vid.muted = !vid.muted;
+                if(btn) btn.innerText = vid.muted ? "🔇" : "🔊";
             }
         }
 
         function triggerLikeHandler(el, postId) {
-            let isShorts = el.classList.contains('yt-action-circle-btn');
             let postRef = db.collection("posts").doc(postId);
             postRef.get().then(doc => {
                 if (!doc.exists) return;
@@ -1035,22 +955,47 @@
                     let newLikes = Math.max(0, currentLikes - 1);
                     likedByArray = likedByArray.filter(uid => uid !== currentUID);
                     postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
-                        el.innerText = "🤍"; el.style.color = isShorts ? "#ffffff" : "#f1f3f9";
-                        let countTxt = document.getElementById(isShorts ? `shortsLikeCountText_${postId}` : `likeCountVal_${postId}`);
+                        el.innerText = "🤍"; el.style.color = "#f1f3f9";
+                        let countTxt = document.getElementById(`likeCountVal_${postId}`);
                         if (countTxt) countTxt.innerText = newLikes;
                     });
                 } else {
                     let newLikes = currentLikes + 1;
                     likedByArray.push(currentUID);
                     postRef.update({ likes: newLikes, likedBy: likedByArray }).then(() => {
-                        el.innerText = "❤️"; el.style.color = isShorts ? "#c77dff" : "#ff3040";
-                        let countTxt = document.getElementById(isShorts ? `shortsLikeCountText_${postId}` : `likeCountVal_${postId}`);
+                        el.innerText = "❤️"; el.style.color = "#ff3040";
+                        let countTxt = document.getElementById(`likeCountVal_${postId}`);
                         if (countTxt) countTxt.innerText = newLikes;
                     });
                 }
             });
         }
-        function triggerSaveHandler(el, postId, viewSource) {}
+        function triggerNativeShareApi(author, text) {
+            navigator.clipboard.writeText(window.location.href);
+            triggerGlowToastNotification("Link copied!");
+        }
+        function executeLiveUserSearch() {
+            let val = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
+            let feedback = document.getElementById("searchResultsFeedback");
+            if(!val) { feedback.innerHTML = ""; return; }
+            db.collection("users").get().then(snap => {
+                feedback.innerHTML = "";
+                snap.forEach(doc => {
+                    let u = doc.data();
+                    if(u.username.includes(val)) {
+                        feedback.innerHTML += `
+                            <div class="search-user-card" onclick="navigateToUserProfile('${u.username}')">
+                                <b style="color:#fff;">${u.username}</b>
+                            </div>`;
+                    }
+                });
+            });
+        }
+        function openEditProfileModal() { openModal('editProfileModal'); }
+        function saveProfileData() {
+            let newB = document.getElementById("editBioInput").value.trim();
+            db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); });
+        }
     </script>
 </body>
 </html>
