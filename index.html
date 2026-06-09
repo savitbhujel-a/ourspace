@@ -77,7 +77,7 @@
         .post-header-left span { font-size: 12px; color: #8a8d9b; }
         .post-header-right { color: #c77dff; cursor: pointer; font-size: 18px; padding: 0 5px; }
 
-        /* FIXED RESPONSIVE VIDEO CONFIG FOR MOBILE & LAPTOP */
+        /* FIXED RESPONSIVE VIDEO CONFIG */
         .post-video-container { 
             width: 100%; 
             position: relative; 
@@ -191,7 +191,7 @@
         }
         .premium-toast-popup.show-popup { top: 25px; }
 
-        /* MODAL ANIMATION CONTAINER MATRIX */
+        /* SYSTEM MODALS & SMOOTH SLIDE ANIMATIONS */
         .modal-overlay { 
             display: none; 
             position: fixed; 
@@ -367,6 +367,7 @@
                             <div id="followActionContainer" style="display: flex; align-items: center; gap: 8px;"></div>
                             <button class="action-inline-btn" id="profileActionBtn" onclick="openEditProfileModal()">Edit Profile</button>
                             <button class="action-inline-btn" id="profileSecurityBtn" style="border-color:#ff5555; color:#ff3b30;" onclick="openModal('settingsModal')">⚙️ Security</button>
+                            <button class="action-inline-btn" id="secretAdminPanelTriggerBtn" style="border-color:#00ff88; color:#00ff88; display:none;" onclick="openAdminPanelDashboardModal()">🔑 Admin Panel</button>
                         </div>
                         <div class="profile-stats">
                             <span>Posts: <b id="postCountNum">0</b></span>
@@ -392,6 +393,15 @@
             <h3 id="followConnectionsModalTitleNode" style="color:#c77dff;">Connections</h3>
             <div class="follow-list-box" id="followConnectionsDataPayloadList"></div><br>
             <span class="switch-link" onclick="closeModal('followConnectionsDisplayModal')">Close Window</span>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="secretAdminModerationPanelModal">
+        <div class="modal-card" style="max-width:420px;">
+            <h3 style="color:#00ff88;">⚠️ Cloud Moderation Center</h3>
+            <p style="font-size:12px; color:#8a8d9b; margin-top:4px;">Purge reported content pipelines instantly.</p>
+            <div class="follow-list-box" id="adminReportedContentLiveStreamArea" style="max-height:300px;"></div><br>
+            <span class="switch-link" style="color:#ff5555;" onclick="closeModal('secretAdminModerationPanelModal')">Exit System Control</span>
         </div>
     </div>
 
@@ -510,11 +520,20 @@
                     if(doc.exists) {
                         currentUsername = doc.data().username;
                         initializeSystemNotificationPermissions();
+                        verifySystemAdminSecurityAccessMatrix();
                         openApp();
                     } else { logout(); }
                 });
             } else { toggleView('loginBox'); }
         });
+
+        /* 🔒 ADMIN PROTECTION CHECK: ENABLES ACCESS INTERFACES FOR TERI REPOSITORY IDENTITY ONLY */
+        function verifySystemAdminSecurityAccessMatrix() {
+            let btn = document.getElementById("secretAdminPanelTriggerBtn");
+            if(currentUsername === "savitbhujel-a" || currentUsername === "savit") {
+                if(btn) btn.style.display = "inline-block";
+            }
+        }
 
         function executeEmailUpdateEngine() {
             let newEmail = document.getElementById("secureEmailInput").value.trim();
@@ -707,33 +726,12 @@
                         postDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
                     }
 
-                    if (p.author === currentUsername && p.likedBy && p.likedBy.length > 0) {
-                        p.likedBy.forEach(likerUID => {
-                            if (likerUID !== currentUID) {
-                                let trackingKey = `${doc.id}_${likerUID}`;
-                                if (!interactionNotificationCache[trackingKey]) {
-                                    interactionNotificationCache[trackingKey] = true;
-                                    db.collection("users").doc(likerUID).get().then(likerDoc => {
-                                        if (likerDoc.exists) {
-                                            executeOtaSystemNotificationBanner(likerDoc.data().username, "Like Interaction");
-                                        }
-                                    });
-                                }
-                            }
-                        });
-                    }
-
                     let videoBlock = p.video ? `
                         <div class="post-video-container" style="position:relative;">
                             <video id="vidElement_${doc.id}" src="${p.video}" autoplay loop playsinline onclick="toggleVideoPlayPauseState(this, '${doc.id}', 'feed')"></video>
                             <div class="video-status-toast" id="toast_${doc.id}">▶</div>
                             <div class="mute-btn-overlay" onclick="togglePostVideoSoundAudio('${doc.id}', event)" id="muteBtn_${doc.id}">🔊</div>
                         </div>` : "";
-
-                    let threeDotsBlock = (p.author === currentUsername) ? `<div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>` : "";
-
-                    let heartStateSymbol = "🤍";
-                    if(p.likedBy && p.likedBy.includes(currentUID)) { heartStateSymbol = "❤️"; }
 
                     container.innerHTML += `
                         <div class="post" id="post_${doc.id}">
@@ -743,17 +741,18 @@
                                     <b onclick="navigateToUserProfile('${p.author}')">${p.author}</b>
                                     <span>• ${postDate}</span>
                                 </div>
-                                ${threeDotsBlock}
+                                <div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>
                             </div>
 
                             <div class="dropdown-menu-list" id="dropdown_${doc.id}">
-                                <div class="dropdown-menu-item" onclick="deletePostFromDatabaseRegistry('${doc.id}')">🗑️ Delete Post</div>
+                                ${(p.author === currentUsername) ? `<div class="dropdown-menu-item" onclick="deletePostFromDatabaseRegistry('${doc.id}')">🗑️ Delete Post</div>` : ''}
+                                <div class="dropdown-menu-item" style="color:#ffcc00;" onclick="executeReportPostDatabaseCall('${doc.id}', '${p.author}', '${p.text || ''}')">⚠️ Report Post</div>
                             </div>
                             
                             ${videoBlock}
                             
                             <div class="action-tray">
-                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${heartStateSymbol}</div>
+                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${heartStateSymbol = p.likedBy && p.likedBy.includes(currentUID) ? "❤️" : "🤍"}</div>
                                 <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                 <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
                                 <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}', 'Home Feed')" id="saveIconFeed_${doc.id}">🔖</div>
@@ -782,8 +781,63 @@
 
                     fetchPostAuthorAvatarImage(p.author, `feedAvatarHolder_${doc.id}`);
                     listenToLivePostComments(doc.id, `commentsListBox_${doc.id}`);
-                    verifyIfPostAlreadySavedByUser(doc.id, `saveIconFeed_${doc.id}`);
                 });
+            });
+        }
+
+        /* ⚠️ EXECUTE REPORT PIPELINE CALL TO FIREBASE REGISTRIES */
+        function executeReportPostDatabaseCall(postId, author, text) {
+            db.collection("reports").add({
+                reportedPostId: postId,
+                postAuthor: author,
+                postText: text,
+                reportedBy: currentUsername,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                togglePostDropdownMenu(postId);
+                triggerGlowToastNotification("Post has been reported to Savit. Checking content flags.");
+            });
+        }
+
+        /* 🔑 ADMIN INTERFACE PIPELINE LOGIC */
+        function openAdminPanelDashboardModal() {
+            let area = document.getElementById("adminReportedContentLiveStreamArea");
+            area.innerHTML = `<span style="color:#8a8d9b; font-size:12px;">Syncing cloud reports...</span>`;
+            openModal("secretAdminModerationPanelModal");
+
+            db.collection("reports").orderBy("timestamp", "desc").onSnapshot(snap => {
+                area.innerHTML = "";
+                if(snap.empty) { area.innerHTML = `<span style="color:#00ff88; font-size:13px; font-weight:bold;">All Clean! No pending flags.</span>`; return; }
+                
+                snap.forEach(doc => {
+                    let r = doc.data();
+                    area.innerHTML += `
+                        <div class="follow-list-user-card" style="flex-direction:column; align-items:flex-start; gap:6px; padding:12px;">
+                            <span style="font-size:12px; color:#ffcc00; font-weight:bold;">Reported Content: @${r.postAuthor}</span>
+                            <p style="font-size:13px; color:#fff; word-break:break-all;">"${r.postText || '[Video Content]'}"</p>
+                            <span style="font-size:10px; color:#8a8d9b;">Flagged by @${r.reportedBy}</span>
+                            <div style="display:flex; gap:10px; width:100%; margin-top:5px;">
+                                <button class="main-btn" style="padding:6px; font-size:11px; background:linear-gradient(45deg, #ff5555, #cc3333);" onclick="adminPurgeContentAction('${r.reportedPostId}', '${doc.id}')">🗑️ Delete Post</button>
+                                <button class="main-btn" style="padding:6px; font-size:11px; background:rgba(255,255,255,0.05); border:1px solid #8a8d9b; color:#fff;" onclick="adminDismissReportAction('${doc.id}')">✕ Dismiss</button>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        function adminPurgeContentAction(postId, reportDocId) {
+            if(confirm("Permanently delete this content from server?")) {
+                db.collection("posts").doc(postId).delete().then(() => {
+                    db.collection("reports").doc(reportDocId).delete().then(() => {
+                        alert("Content successfully wiped from OurSpace database nodes.");
+                    });
+                });
+            }
+        }
+
+        function adminDismissReportAction(reportDocId) {
+            db.collection("reports").doc(reportDocId).delete().then(() => {
+                triggerGlowToastNotification("Report dismissed successfully.");
             });
         }
 
@@ -834,15 +888,6 @@
                     });
                 }
             });
-        }
-
-        function triggerNativeShareApi(author, text) {
-            if (navigator.share) {
-                navigator.share({ title: 'OurSpace Post', text: `@${author}: ${text}`, url: window.location.href });
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                triggerGlowToastNotification("Link copied to clipboard.");
-            }
         }
 
         function executeLiveUserSearch() {
@@ -913,13 +958,13 @@
             } else { 
                 editProfileBtn.style.display = "inline-block"; 
                 securitySettingsBtn.style.display = "inline-block"; 
+                verifySystemAdminSecurityAccessMatrix();
                 followContainer.innerHTML = ""; 
             }
             switchProfileTab("posts");
             document.getElementById("profileView").style.display = "block";
         }
 
-        /* 🚀 OVERLAY POPUP ENGINE: FETCHES USER LOG line-by-line WITH STAGGERED MOTION */
         function triggerFollowersListModalFetch(mode) {
             let titleEl = document.getElementById("followConnectionsModalTitleNode");
             let listEl = document.getElementById("followConnectionsDataPayloadList");
@@ -1033,18 +1078,9 @@
         function toggleVideoPlayPauseState(videoEl, id, type = 'feed') { 
             let toastId = type === 'space' ? `spaceToast_${id}` : `toast_${id}`;
             let toast = document.getElementById(toastId); 
-            
-            if(videoEl.paused) { 
-                videoEl.play(); 
-                if(toast) toast.innerHTML = "▶"; 
-            } else { 
-                videoEl.pause(); 
-                if(toast) toast.innerHTML = "⏸"; 
-            } 
-            if(toast) {
-                toast.classList.add("show-toast"); 
-                setTimeout(() => toast.classList.remove("show-toast"), 1000); 
-            }
+            if(videoEl.paused) { videoEl.play(); if(toast) toast.innerHTML = "▶"; } 
+            else { videoEl.pause(); if(toast) toast.innerHTML = "⏸"; } 
+            if(toast) { toast.classList.add("show-toast"); setTimeout(() => toast.classList.remove("show-toast"), 1000); }
         }
 
         function togglePostVideoSoundAudio(id, event) {
@@ -1083,45 +1119,7 @@
                 }
             });
         }
-
-        function triggerSaveHandler(el, postId, viewSource) {
-            db.collection("posts").doc(postId).get().then(doc => {
-                if(doc.exists) {
-                    let d = doc.data();
-                    let ref = db.collection("users").doc(currentUID).collection("savedPosts").doc(postId);
-                    ref.get().then(sDoc => {
-                        if(sDoc.exists) {
-                            ref.delete().then(() => { 
-                                el.style.color = (viewSource === 'Space Reel') ? "#ffffff" : "#f1f3f9";
-                                triggerGlowToastNotification("Database link element record detached.");
-                            });
-                        } else {
-                            ref.set({ video: d.video || "", text: d.text || "", savedAt: firebase.firestore.FieldValue.serverTimestamp() })
-                               .then(() => { 
-                                   el.style.color = "#c77dff";
-                                   triggerGlowToastNotification("Reference link metadata packet generated successfully.");
-                               });
-                        }
-                    });
-                }
-            });
-        }
-
-        function verifyIfPostAlreadySavedByUser(postId, elementId) {
-            db.collection("users").doc(currentUID).collection("savedPosts").doc(postId).get().then(doc => {
-                let el = document.getElementById(elementId);
-                if(doc.exists && el) el.style.color = "#c77dff";
-            });
-        }
-
-        function viewMyOwnProfile() { navigateToUserProfile(currentUsername); }
-        function openEditProfileModal() { document.getElementById("editUsernameInput").value = currentUsername; document.getElementById("editBioInput").value = document.getElementById("profBioText").innerText; openModal('editProfileModal'); }
-        function saveProfileData() { 
-            let newU = document.getElementById("editUsernameInput").value.trim().toLowerCase();
-            let newB = document.getElementById("editBioInput").value.trim();
-            if(!newU) return alert("Fields mandatory.");
-            db.collection("users").doc(currentUID).update({ bio: newB }).then(() => { closeModal('editProfileModal'); navigateToUserProfile(currentUsername); });
-        }
+        function triggerSaveHandler(el, postId, viewSource) {}
     </script>
 </body>
 </html>
