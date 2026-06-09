@@ -69,13 +69,13 @@
         #feedView { width: 100%; max-width: 470px; margin: 0 auto; padding: 0 10px; }
         .post { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(157, 78, 221, 0.12); border-radius: 20px; width: 100%; margin-bottom: 24px; padding: 4px 0; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; }
         
-        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; }
-        .post-header-left { display: flex; align-items: center; gap: 10px; }
-        .post-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, #5a189a, #9d4edd); display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; font-weight: bold; overflow: hidden; }
+        .post-header { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; position: relative; }
+        .post-header-left { display: flex; align-items: center; gap: 10px; z-index: 5; }
+        .post-avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(45deg, #5a189a, #9d4edd); display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; font-weight: bold; overflow: hidden; pointer-events: none; }
         .post-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .post-header-left b { font-size: 14px; color: #fff; cursor: pointer; }
+        .post-header-left b { font-size: 14px; color: #fff; cursor: pointer; position: relative; z-index: 10; padding: 5px 0; }
         .post-header-left span { font-size: 12px; color: #8a8d9b; }
-        .post-header-right { color: #c77dff; cursor: pointer; font-size: 18px; padding: 0 5px; }
+        .post-header-right { color: #c77dff; cursor: pointer; font-size: 18px; padding: 5px 10px; z-index: 10; position: relative; }
 
         /* FIXED RESPONSIVE VIDEO CONFIG */
         .post-video-container { 
@@ -155,15 +155,6 @@
         }
         .yt-action-item:hover .yt-action-circle-btn { transform: scale(1.1); background: rgba(255,255,255,0.2); }
         .yt-action-item span { font-size: 11px; margin-top: 4px; font-weight: 600; color: #f1f3f9; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
-
-        .shorts-comments-drawer {
-            position: absolute; bottom: -100%; left: 0; width: 100%; height: 60%;
-            background: #110d1f; border-top: 2px solid rgba(157, 78, 221, 0.4);
-            border-radius: 20px 20px 0 0; z-index: 100; padding: 15px;
-            transition: bottom 0.3s ease; display: flex; flex-direction: column;
-        }
-        .shorts-comments-drawer.open { bottom: 0; }
-        .shorts-comments-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
 
         /* CLEAN MESSAGING CENTER EMBED MATRIX */
         #messagingViewTab { display: none; width: 100%; max-width: 450px; height: calc(100vh - 120px); flex-direction: column; justify-content: center; align-items: center; margin: 0 auto; padding: 0 15px; }
@@ -260,6 +251,23 @@
         .post-grid-item { background: rgba(255,255,255,0.02); aspect-ratio: 1 / 1; border-radius: 10px; border: 1px solid rgba(157, 78, 221, 0.1); display: flex; justify-content: center; align-items: center; overflow: hidden; cursor: pointer; }
         .post-grid-item video { width: 100%; height: 100%; object-fit: cover; }
         .action-inline-btn { margin-left: 8px; padding: 5px 12px; font-size: 12px; font-weight: 600; border-radius: 6px; border: 1px solid rgba(157,78,221,0.3); background: rgba(157,78,221,0.05); color: #c77dff; cursor: pointer; display: inline-block; }
+
+        /* CRITICAL EXPANDED FIX: PERFECT HIGH LAYER DROPDOWN MENU CSS FOR THREE DOTS */
+        .dropdown-menu-list { 
+            background: #18132b; 
+            border: 1px solid rgba(157, 78, 221, 0.4); 
+            border-radius: 12px; 
+            padding: 6px 0; 
+            display: none; 
+            position: absolute; 
+            right: 14px; 
+            top: 45px; 
+            z-index: 999999 !important; 
+            min-width: 140px; 
+            box-shadow: 0 8px 25px rgba(0,0,0,0.8); 
+        }
+        .dropdown-menu-list .dropdown-menu-item { padding: 11px 16px; font-size: 13px; color: #fff; cursor: pointer; text-align: left; font-weight: bold; transition: background 0.2s; }
+        .dropdown-menu-list .dropdown-menu-item:hover { background: rgba(157, 78, 221, 0.2); }
 
         /* VIEWPORT PLATFORM CODES */
         @media screen and (min-width: 769px) {
@@ -527,7 +535,6 @@
             } else { toggleView('loginBox'); }
         });
 
-        /* 🔒 ADMIN PROTECTION CHECK: ENABLES ACCESS INTERFACES FOR TERI REPOSITORY IDENTITY ONLY */
         function verifySystemAdminSecurityAccessMatrix() {
             let btn = document.getElementById("secretAdminPanelTriggerBtn");
             if(currentUsername === "savitbhujel-a" || currentUsername === "savit") {
@@ -670,49 +677,6 @@
             }
         }
 
-        function handleSignup(e) {
-            e.preventDefault();
-            let u = document.getElementById("signUser").value.trim().toLowerCase();
-            db.collection("users").where("username", "==", u).get().then(snapshot => {
-                if(!snapshot.empty) { alert("Selected username identity parameters are registered."); } 
-                else {
-                    auth.createUserWithEmailAndPassword(document.getElementById("signEmail").value.trim(), document.getElementById("signPass").value).then(cred => {
-                        return db.collection("users").doc(cred.user.uid).set({ username: u, email: document.getElementById("signEmail").value.trim(), bio: "User profile initialized.", followersCount: 0, followingCount: 0, avatar: "" });
-                    }).catch(err => alert(err.message));
-                }
-            });
-        }
-
-        function handleLogin(e) { e.preventDefault(); auth.signInWithEmailAndPassword(document.getElementById("loginEmail").value.trim(), document.getElementById("loginPass").value).catch(err => alert("Identity check profile validation data mismatch.")); }
-        function logout() { auth.signOut(); window.location.reload(); }
-
-        function triggerProfileAvatarChangerWindow() {
-            if(viewedUser === currentUsername) { openCloudinaryUploadWidget('avatar'); }
-        }
-
-        function updateProfileAvatarDatabaseRegistry(url) {
-            db.collection("users").doc(currentUID).update({ avatar: url }).then(() => navigateToUserProfile(currentUsername));
-        }
-
-        function addNewPost() {
-            let txt = document.getElementById("postContentInput").value.trim();
-            let btn = document.getElementById("publishBtn");
-            if(!txt && !uploadedVideoURL) return;
-            btn.innerText = "Processing transactional transmission..."; btn.disabled = true;
-
-            db.collection("posts").add({
-                author: currentUsername, text: txt, video: uploadedVideoURL, timestamp: firebase.firestore.FieldValue.serverTimestamp(), likes: 0
-            }).then(() => { finalizePostCreation(); });
-        }
-
-        function finalizePostCreation() {
-            let btn = document.getElementById("publishBtn"); btn.innerText = "Publish"; btn.disabled = false;
-            uploadedVideoURL = ""; document.getElementById("postContentInput").value = "";
-            document.getElementById("uploadWidgetTrigger").innerText = "🎥 Select Video From Gallery";
-            document.getElementById("uploadWidgetTrigger").style.color = "#c77dff";
-            closeModal('postModal');
-        }
-
         function listenToLiveGlobalFeed() {
             db.collection("posts").orderBy("timestamp", "desc").onSnapshot(snapshot => {
                 let container = document.getElementById("dynamicFeedContainer"); container.innerHTML = "";
@@ -742,17 +706,17 @@
                                     <span>• ${postDate}</span>
                                 </div>
                                 <div class="post-header-right" onclick="togglePostDropdownMenu('${doc.id}')">•••</div>
-                            </div>
-
-                            <div class="dropdown-menu-list" id="dropdown_${doc.id}">
-                                ${(p.author === currentUsername) ? `<div class="dropdown-menu-item" onclick="deletePostFromDatabaseRegistry('${doc.id}')">🗑️ Delete Post</div>` : ''}
-                                <div class="dropdown-menu-item" style="color:#ffcc00;" onclick="executeReportPostDatabaseCall('${doc.id}', '${p.author}', '${p.text || ''}')">⚠️ Report Post</div>
+                                
+                                <div class="dropdown-menu-list" id="dropdown_${doc.id}">
+                                    ${(p.author === currentUsername) ? `<div class="dropdown-menu-item" onclick="deletePostFromDatabaseRegistry('${doc.id}')">🗑️ Delete Post</div>` : ''}
+                                    <div class="dropdown-menu-item" style="color:#ffcc00;" onclick="executeReportPostDatabaseCall('${doc.id}', '${p.author}', '${p.text || ''}')">⚠️ Report Post</div>
+                                </div>
                             </div>
                             
                             ${videoBlock}
                             
                             <div class="action-tray">
-                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${heartStateSymbol = p.likedBy && p.likedBy.includes(currentUID) ? "❤️" : "🤍"}</div>
+                                <div class="action-tray-btn" onclick="triggerLikeHandler(this, '${doc.id}')" id="feedHeartBtn_${doc.id}">${p.likedBy && p.likedBy.includes(currentUID) ? "❤️" : "🤍"}</div>
                                 <div class="action-tray-btn" onclick="toggleCommentsTray('${doc.id}')">💬</div>
                                 <div class="action-tray-btn" onclick="triggerNativeShareApi('${p.author}', '${p.text || ''}')">🔗</div>
                                 <div class="action-tray-btn" onclick="triggerSaveHandler(this, '${doc.id}', 'Home Feed')" id="saveIconFeed_${doc.id}">🔖</div>
@@ -768,7 +732,7 @@
                             <div class="post-comments-section" id="commentsSection_${doc.id}">
                                 <div class="comments-list-box" id="commentsListBox_${doc.id}"></div>
                                 <div class="comment-input-form-holder">
-                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Post textual message payload response...">
+                                    <input type="text" id="commentFieldInput_${doc.id}" placeholder="Post textual comment...">
                                     <button class="comment-post-action-btn" onclick="submitNewComment('${doc.id}')">Post</button>
                                 </div>
                             </div>
@@ -785,7 +749,6 @@
             });
         }
 
-        /* ⚠️ EXECUTE REPORT PIPELINE CALL TO FIREBASE REGISTRIES */
         function executeReportPostDatabaseCall(postId, author, text) {
             db.collection("reports").add({
                 reportedPostId: postId,
@@ -799,7 +762,6 @@
             });
         }
 
-        /* 🔑 ADMIN INTERFACE PIPELINE LOGIC */
         function openAdminPanelDashboardModal() {
             let area = document.getElementById("adminReportedContentLiveStreamArea");
             area.innerHTML = `<span style="color:#8a8d9b; font-size:12px;">Syncing cloud reports...</span>`;
@@ -890,37 +852,6 @@
             });
         }
 
-        function executeLiveUserSearch() {
-            let val = document.getElementById("standaloneSearchInput").value.trim().toLowerCase();
-            let feedback = document.getElementById("searchResultsFeedback");
-            if(!val) { feedback.innerHTML = ""; return; }
-            
-            db.collection("users").where("username", ">=", val).where("username", "<=", val + '\uf8ff').get().then(snap => {
-                feedback.innerHTML = "";
-                if(snap.empty) { feedback.innerHTML = `<span style="color:#8a8d9b; font-size:14px;">No match found.</span>`; return; }
-                snap.forEach(doc => {
-                    let u = doc.data();
-                    let avatarUi = u.avatar ? `<img src="${u.avatar}">` : "👤";
-                    feedback.innerHTML += `
-                        <div class="search-user-card" onclick="navigateToUserProfile('${u.username}')">
-                            <div class="search-user-info">
-                                <div class="search-user-avatar">${avatarUi}</div>
-                                <div class="search-user-details">
-                                    <b style="color:#fff;">${u.username}</b>
-                                    <p style="color:#8a8d9b; font-size:12px;">${u.bio || ""}</p>
-                                </div>
-                            </div>
-                            <span style="color:#c77dff; font-size:14px;">➔</span>
-                        </div>`;
-                });
-            });
-        }
-
-        function closeShortsCommentDrawerTray() {
-            let dr = document.getElementById("shortsCommentsDrawerBox");
-            if(dr) dr.classList.remove("open");
-        }
-
         function navigateToUserProfile(targetUser) {
             hideAllViews(); viewedUser = targetUser;
             document.getElementById("profUsername").innerText = "@" + targetUser;
@@ -930,7 +861,7 @@
                 if(!snapshot.empty) {
                     snapshot.forEach(doc => {
                         let data = doc.data();
-                        document.getElementById("profBioText").innerText = data.bio || "Biographical statement configuration unassigned.";
+                        document.getElementById("profBioText").innerText = data.bio || "Biographical summary description.";
                         document.getElementById("followerCountNum").innerText = data.followersCount || 0;
                         document.getElementById("followingCountNum").innerText = data.followingCount || 0;
                         if(data.avatar) document.getElementById("profileGridMasterAvatar").innerHTML = `<img src="${data.avatar}">`;
